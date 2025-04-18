@@ -6,8 +6,8 @@ TaskManager::TaskManager() : nextId(1) {
 
 }
 
-void TaskManager::addTask(const std::string& title, const std::string& description) {
-	tasks.push_back(std::make_shared<Task>(nextId++, title, description));
+void TaskManager::addTask(const std::string& title, const std::string& description,const std::string& duedate,const int& priority) {
+	tasks.push_back(std::make_shared<Task>(nextId++, title, description,duedate,priority));
 	std::cout << "Task added successfully.\n";
 }
 
@@ -21,6 +21,8 @@ void TaskManager::displayTasks() const {
 		std::cout << "ID: " << task->getId()
 			<< "| Title: " << task->getTitle()
 			<< "| Description: " << task->getDescription()
+			<< "| DueDate :" << task->getDueDate()
+			<< "| Priority :" << task->getPriority()
 			<< "| Status: " << (task->isCompleted() ? "Completed" : "Pending") << "\n";
 	}
 }
@@ -46,5 +48,21 @@ void TaskManager::deleteTask(int id) {
 		}
 	 }
 	std::cout << "Task not found.\n";
+}
+
+void TaskManager::setSortStrategy(SortStrategy* s) {
+	strategy = s;
+}
+
+void TaskManager::sortTask()
+{
+	if (strategy)
+	{
+		strategy->sort(tasks);
+	}
+	else {
+		std::cout << "No sort strategy set.\n";
+	}
+
 }
 

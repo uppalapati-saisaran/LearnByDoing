@@ -1,10 +1,6 @@
 #include "Task.h"
 #include<iostream>
 
-Task::Task(int id, std::string title, std::string description) :
-	id(id), title(title), description(description), completed(false) {
-}
-
 std::string Task::getTitle() const
 {
 	return title;
@@ -26,3 +22,4 @@ bool Task::isCompleted() const {
 void Task::markedCompleted() {
 	completed = true;
 }
+
