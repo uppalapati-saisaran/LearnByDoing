@@ -5,14 +5,14 @@ Task::Task(int id, std::string title, std::string description) :
 	id(id), title(title), description(description), completed(false) {
 }
 
-void Task::markedCompleted() {
-	completed = true;
+std::string Task::getTitle() const
+{
+	return title;
 }
 
-void Task::display() const {
-	std::cout << "ID :" << id << "\nTitle: " << title
-		<< "\nDescription: " << description
-		<< "\nCompleted:" << (completed ? "Yes" : "No") << "\n";
+std::string Task::getDescription() const
+{
+	return description;
 }
 
 int Task::getId() const {
@@ -21,4 +21,8 @@ int Task::getId() const {
 
 bool Task::isCompleted() const {
 	return completed;
+}
+
+void Task::markedCompleted() {
+	completed = true;
 }

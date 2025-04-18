@@ -7,29 +7,29 @@ TaskManager::TaskManager() : nextId(1) {
 }
 
 void TaskManager::addTask(const std::string& title, const std::string& description) {
-	Task newTask(nextId, title, description);
-	tasks.push_back(newTask);
-	std::cout << "Task added with ID:" << nextId << "\n";
-	nextId++; 
+	tasks.push_back(std::make_shared<Task>(nextId++, title, description));
+	std::cout << "Task added successfully.\n";
 }
 
-void TaskManager::displayAllTasks() const {
+void TaskManager::displayTasks() const {
 	if (tasks.empty()) {
 		std::cout << "No tasks available \n";
 		return;
 	}
 
-	for (const Task& task : tasks) {
-		task.display();
-		std::cout << "-----------------------------\n"; 
+	for (const auto& task : tasks) {
+		std::cout << "ID: " << task->getId()
+			<< "| Title: " << task->getTitle()
+			<< "| Description: " << task->getDescription()
+			<< "| Status: " << (task->isCompleted() ? "Completed" : "Pending") << "\n";
 	}
 }
 
 void TaskManager::markTaskComplete(int id) {
-	for (Task& task : tasks) {
-		if (task.getId() == id)
+	for (auto& task : tasks) {
+		if (task->getId() == id)
 		{
-			task.markedCompleted();
+			task->markedCompleted();
 			std::cout << "Task " << id << " marked as completed. \n";
 			return;
 		}
@@ -38,16 +38,13 @@ void TaskManager::markTaskComplete(int id) {
 }
 
 void TaskManager::deleteTask(int id) {
-	auto it = std::remove_if(tasks.begin(), tasks.end(), [id](const Task& task) {
-		return task.getId() == id;
-		});
-
-	if (it != tasks.end()) {
-		tasks.erase(it, tasks.end());
-		std::cout << "Task " << id << " deleted.\n";
-	}
-	else {
-		std::cout << "Task with ID " << id << " not found.\n"; 
-	}
+	for (auto it = tasks.begin(); it != tasks.end(); ++it) {
+		if ((*it)->getId() == id) {
+			tasks.erase(it);
+			std::cout << "Task removed.\n";
+			return;
+		}
+	 }
+	std::cout << "Task not found.\n";
 }
 

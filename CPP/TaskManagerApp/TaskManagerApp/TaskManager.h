@@ -5,13 +5,13 @@
 #include <vector>
 
 class TaskManager {
-	std::vector<Task> tasks;
+	std::vector<std::shared_ptr<Task>> tasks;
 	int nextId;
 
 public:
 	TaskManager();
 	void addTask(const std::string& title, const std::string& description);
-	void displayAllTasks() const;
+	void displayTasks() const;
 	void markTaskComplete(int id);
 	void deleteTask(int id);
 };

@@ -2,28 +2,42 @@
 #include "TaskManager.h" 
 
 int main() {
-	TaskManager manager;
-
-	manager.addTask("Learn C++", "Pratice classes and vectors");
-	manager.addTask("Do homework", "Finish math and science");
-
-	std::cout << "\n All Tasks:\n";
-	manager.displayAllTasks();
-
-	manager.markTaskComplete(1);
-
 	std::cout << "\n After completing task 1:\n";
-	manager.displayAllTasks();
+    int choice;
+    std::string title, description;
+    int id;
 
-	manager.deleteTask(2);
+    while (true) {
+        std::cout << "\n--- Task Manager Menu ---\n";
+        std::cout << "1.Add Task \n2. Show tasks \n3. Complete Task \n4. Delete Task \n5. Exit \nChooser";
+        std::cin >> choice;
+        std::cin.ignore();
 
-	std::cout << "\nAfter deleting task 2:\n";
-	manager.displayAllTasks();
-
-	std::cout << "\n Press Enter to exit...";
-	std::cin.ignore();
-	std::cin.get(); 
-
-	return 0; 
+        switch (choice) {
+        case 1:
+            std::cout << "Enter title: ";
+            std::getline(std::cin, title);
+            std::cout << "Enter description: ";
+            std::getline(std::cin, description);
+            manager.addTask(title, description);
+            break;
+        case 2:
+            manager.displayTasks();
+            break;
+        case 3:
+            std::cout << "Enter Task ID to complete:";
+            std::cin >> id;
+            manager.markTaskComplete(id);
+            break;
+        case 4:
+            std::cin >> id;
+            manager.deleteTask(id);
+            break;
+        case 5:
+            return 0;
+        default:
+            std::cout << "Invalid option.\n";
+        }
+    }
 
 }

@@ -13,10 +13,13 @@ private:
 	bool completed;
 public:
 	Task(int id, std::string title, std::string description);
-	void markedCompleted(); 
-	void display() const; 
-	int getId() const; 
+
+	int getId() const;
+	std::string getTitle() const;
+	std::string getDescription() const;
+
 	bool isCompleted() const;
+	void markedCompleted();
 };
 
 #endif
