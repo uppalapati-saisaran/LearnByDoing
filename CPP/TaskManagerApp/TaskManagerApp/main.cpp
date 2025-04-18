@@ -2,7 +2,7 @@
 #include "TaskManager.h" 
 
 int main() {
-	std::cout << "\n After completing task 1:\n";
+    TaskManager manager;
     int choice;
     std::string title, description;
     int id;
@@ -30,6 +30,7 @@ int main() {
             manager.markTaskComplete(id);
             break;
         case 4:
+            std::cout << "Enter Task ID to delete :";
             std::cin >> id;
             manager.deleteTask(id);
             break;
