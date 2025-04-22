@@ -1,0 +1,182 @@
+1, how to find the 2nd highest salary?
+
+select max(sal) from emp where sal not in (select max(sal) from emp);
+
+select max(sal) from emp where sal < (select max(sal)) from emp); 
+
+2, Department Wise Highest Salary 
+
+select deptno,max(sal) from emp group by deptno;
+select deptno,min(sal) from emp group by deptno; 
+
+3, Number of employees in each deparatment.
+
+select deptno,count(*) from emp group by deptno; 
+
+4, Display alternate records 
+
+select rownum,empno,sal,ename from emp;
+
+select * from 
+   (select empno, ename, sal, rownum as rn 
+    from emp
+	order by rn)
+    where mod(rn,2) <> 0 
+	
+5, Find duplicated values and its frequency of a column.
+
+select ename,count(*) from emp
+group by ename having count(*) > 1;
+
+select ename,count(*) from emp
+group by ename order by count(*)
+
+6, Pattern matching using like operator 
+
+(a) Display the employee names whose name start with 'M'.
+
+select ename from emp where ename like 'M%';
+
+(b) Display the employee names whose name ends with 'N'.
+
+select ename from emp where ename like '%N'; 
+
+(c) Display the names of all employees having 'M' in any position in their name.
+
+select ename from emp where ename like '%M%'
+
+(d) Display the names of all employees whose name does not contain 'M' anywhere. 
+
+select ename from emp where ename not like '%M%' 
+
+Pattern matching 
+
+1, Display names of all employees whose name contains exactly 4 letters.
+
+select ename from emp where ename like '____' 
+
+2, Display the names of employees whose name contains the (i) second letter as 'L' 
+(ii) fourth letter as 'M' 
+
+select ename from emp where ename like '_L%';
+select ename from emp where ename like '___M%'; 
+
+3, Display the employee names and hire dates for the employees joined in the month of december 
+
+select hiredate,ename from emp where hiredate like '%DEC%'
+
+4, Display the names of employees whose name contains exactly 2 'L's 
+
+select ename from emp where ename like '%LL%';
+
+5, Display the names of employees whose name starts with 'J' and ends with 'M'
+
+select ename from emp where ename like 'J%M';
+
+
+7, Display nth row in sql 
+
+Disply the 4th row : - 
+
+select * from emp where rownum<=4 
+minus
+select * from emp where rownum<=3 
+// In the above apprach rownum cann't used with > or = operator. 
+
+or 
+
+select * from 
+(select rownum r,ename, sal from emp)  ==> Display only selected columns 
+where r = 4
+
+or
+
+select * from 
+(select rownum r,emp.* from emp) ==> Display all the columns  
+where r = 4 
+
+or 
+
+select * from
+(select rownum r,emp.* from emp) ==> Display all the columns 
+where r in (2,3,7);  ==> Only selected rows 
+
+https://www.youtube.com/watch?v=k7rg4CARxD8&list=PLqM7alHXFySGweLxxAdBDK1CcDEgF-Kwx&index=7
+
+8, 
+union in dbms 
+- union clause used to combine the result-set of two or more select queries.
+- Applying union between single column
+   select city from country1 union select city from country2 ==> if duplicate values present, it will display only once. 
+- The columns used in all the select statments must have the following.
+  - the same number of columns
+  - similar or compatible data types.
+  - same logical order 
+- Selecting more than one column in the select query 
+  - Whenever more than one column is specified in the select clause then the combination of all the columns considered that
+    is if both the values in rows same then only this considered as a duplicate value
+	
+union all:
+- union removes duplicate values while comparing where union all allows duplicate values when combining.
+  select city from sample1
+  union all
+  select city from sample2  ==> Duplicates values are displayed.
+  
+9, Inner join 
+- Based on the equality conditiion data is retrieved from multiple tables.
+- we must have a common column in both the tables with the same data type.
+- Right table row is joined with left table row only if there is a matching for the left table row in right table.
+ 
+  select ename,sal,dept.deptno,dname,loc 
+  from emp,dept 
+  where emp.deptno=dept.deptno 
+  
+  select ename,sal,d.deptno,dname,loc 
+  from emp e,dept d
+  where e.deptno=d.deptno;  => With alias name 
+  
+  Display employees who are working in Location Chicago from emp and dept table. 
+  
+  select ename,sal,d.deptno,dname,loc 
+  from emp,dept
+  where e.deptno=d.deptno and LOC='CHICAGO'
+  
+  Display the department name and total salaries from each department 
+  
+  select dname,sum(sal) from emp e,dept d 
+  where e.deptno=d.deptno 
+  group by dname
+ 
+10, Self join 
+- What it does 
+  - Joining a Table with itself is called self join.
+  - Comparing values of a values with the values of same column itself or different column values of the same table.
+  
+  Display empolyee details who are getting more salary than their manager salary.
+  
+  select e1.ename "employees" e2.ename "manager"
+  from emp e1,emp e2
+  where e2.empno == e1.mgr ==> Display employee and his/her manager.
+  
+  select e1.enmae "employees", e2.ename "manager", e2.sal
+  from emp e1,emp e2
+  where e1.mgr = e2.empno and  e1.sal > e2.sal;
+  
+
+  Display the employee details who joined before their manager.
+  
+  select e1.ename "employees", e2.ename "manager",e2.sal,e2.
+  from emp e1,emp e2 
+  where e1.mgr = e2.empno and e1.hiredate < e2.hiredate 
+
+  
+
+
+
+
+
+
+
+
+
+

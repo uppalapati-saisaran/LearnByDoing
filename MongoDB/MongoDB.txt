@@ -1,0 +1,120 @@
+
+https://www.youtube.com/watch?v=c2M-rlkkT5o
+
+test> show dbs 
+
+test> use admin 
+
+test> use school 
+
+school> show dbs // school will not listed here until you create collection.
+
+school> db.createCollection("students")
+
+school> db.dropDatabase() 
+
+school> db.students.insertOne({name:"Spongbob", age:30 , gpa:3.2})
+
+school> db.students.find() // Display all the collections. 
+
+school> db.students.insertMany([{name:"Patrick1", age:38, gpa:1.5 },{name:"Patrick2", age:38, gpa:1.5},{name:"Patrick3", age:38, gpa:1.5}])
+
+school> db.students.insertOne({name:"Larry",
+                               age: 32,
+							   gpa: 2.8,
+							   fullTime: false,
+							   registerDate: new Date(), // if it is empty, it takes system time/pass argument to it.
+							   gradutionDate: null,
+                               courses: ["Biology","Chemistry","Calculus"],							   })
+                               address: {street:"123 Fake st",
+							             city: "Bikini Bottom",
+										 zip: 12345}});
+										 
+school> db.students.find().sort({name:1})  // sort by name in alphabetically/ascending order 
+school> db.students.find().sort({name:-1}) // sort by name in reverse alphabetically/descending order 
+
+school> db.students.find().limit(1) // prints only one document.
+
+school> db.students.find().sort({gpa:-1}).limit(1) 
+
+school> db.students.find({name:"Spongebob"}) ==> Similar to where clause. 
+
+school> db.students.find({gpa:4.0,fullTime:true}) ==> Both fields should be satified. 
+
+school> db.students.find({},{name:true}) ==> Projection parameter. Display only that field set to true. 
+                                         ==> First parameter is query. Second parameter is projection parameter. 
+
+school> db.students.find({},{_id:false, name:true})
+
+school> db.students.find({},{_id:false, name:true, gpa:true})
+
+school> db.students.updateOne({name:"Spongebod"},{$set:{fullTime:true}}) // set fullTime field to true 
+
+school> db.students.updateOne({_id:"8ylasdfliajf"} ,{$unset:{fullTime:""}}) // fullTime field is removed. 
+
+school> db.students.updateMany({},{$set:{fullTime:false}}) 
+// {} represents all the fields. 
+// if fullTime doesn't exist in any of the collections. It will create for it. 
+
+school> db.students.updateMany({fulltime:{$exists:false}},{$set:{fulltime:true}}) 
+// if fullTime exist then only it will updated.
+
+school> db.students.deleteOne({name:"Larry"})
+
+school> db.students.deleteMany({fullTime:false})
+
+school> db.students.deleteMany({registerDate:{$exists:false}}) 
+
+school> db.students.find({name:{$ne:"Spongebob"}}) // collection name not equal to Spongbob 
+
+school> db.students.find({age:{$lt:20}})
+
+school> db.students.find({age:{$lte:20}})
+
+school> db.students.find({age:{$gte:20}})
+
+school> db.students.find({age:{$gte:30,$lte:4}})
+
+school> db.students.find({name:{$in:["sponbab","patrik","Sandry"]}}) // in 
+
+school> db.students.find({name:{$nin:["sponbab","patrik","Sandry"]}}) // not in 
+
+school> db.students.find({$and: [{fullTime:true},{age:{$lte:22}}]})
+
+school> db.students.find({$or: [{fullTime:true},{age:{$lte:22}}]})
+
+school> db.studends.find({age:{$lt:30}) 
+
+school> db.students.find({age:{$not:{$gte:30}}})
+
+school> db.students.find({name:"Larry"}).explain("executionStats")
+
+school> db.students.createIndex({name: 1})
+
+school> db.students.getIndexes()
+
+school> db.students.dropIndex("name_1")
+
+school> show collections
+
+school> db.createCollection("teachers",{capped:true,size:10000000, max:100}) 
+
+school> db.createCollection("teachers",{capped:true,size:10000000, max:100}, {autoIndexId:true})
+
+school> db.courses.drop()
+
+
+***************************************************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+

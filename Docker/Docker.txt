@@ -1,0 +1,100 @@
+https://www.youtube.com/watch?v=pg19Z8LL06w&t=1416s
+
+# docker run postgres ==> Download the service from internet. Run the service on your system. 
+
+# docker run -d -p 80:80 docket/gettting-started  ==> Copy and paste this command into your terminal and then come back. 
+
+# docker images // List running images 
+
+# docker ps // List running containers ( images are running are containers ) 
+
+# https://hub.docker.com/  ==> Docker images are found here. Docker hub registry (docker.io) is used by default.
+
+# docker pull nginx  ==> pulling the latest verion nginx web server from docker hub. 
+
+# docker pull nginx:1.23 ==> Pulling the specific version of nginx web server from docket hub.
+
+# docker images ==> Above pulled image is displayed here.
+
+# docker run nginx:1.23  ==> It is container 
+
+# docker ps ==> Shows above container in output. 
+
+# docker run -d nginx:1.23 // -d or --detach = Runs container in background and prints the container ID
+
+# docker logs <<containerid>> // display the logs 
+
+# docker run nginx:1.22-alpine 
+   // command searches for the file locally.
+   // if not found then it retrieves from dockerhub.
+   // if images is downloaded then it runs the image.
+  
+# docker stop <<containerid>> // stops the container. one or more containers can be stopped at single shot. 
+  
+# docker run -d -p 9000:80 nginx:1.23 
+// Publish container's port to the host 
+// 9000 is host's port.
+// 80 is container's port 
+// Standard to use the same port on your host as container is using.
+
+# docker ps -a  //list of all containers whether they are running or not.
+
+# docker start <<containerid>> // It restarts the container.
+
+# docker run --name web-app -d -p 9000:80 nginx:1.23
+// Instead of default name provided by the container. 
+// Customized name can be assigned to it during running the image.
+// Using the option --name <<Customized name>>
+
+***************************************************************************************************************************************
+
+                                       Building own Docker Images 
+
+***************************************************************************************************************************************
+
+==> Docker file is used to build own docker images. It's name Dockerfile. 
+
+==> Content of the Dockerfile file:
+
+FROM node:19-alphine   //Build this image from the specified image.
+
+COPY package.json /app/
+COPY src /app/
+
+// Copies files or directories from <src> and adds them to the file system of the container at the path <dest>
+// While "RUN" is executed in the container, "COPY" is executed on the host. 
+
+WORKDIR /app 
+
+// Sets the working directory for all following commands.
+
+RUN npm install               // Will execute any command in a shell inside the container environment.
+
+CMD ["node","server.js"] 
+
+// The instruction that is to be executed when a Docker container starts.
+// There can only be the one "CMD" instruction in a Dockerfile. 
+// Set the default executable and parameters for this executing container. 
+
+   
+==> How to build the image 
+
+#docker build -t node-app:1.0 . 
+
+-t or --tag = Sets a name and optionally a tag in the "name:tag" format  
+. represents the current directory. where image should be build. 
+
+# docker images  // it shows the current image created along with preious downloaded images.
+
+# docker run -d -p 3000:3000 node-app:1.0 
+
+*********************************************************************************************************************************************
+
+https://www.youtube.com/watch?v=3c-iBn73dDE
+
+
+
+
+
+
+
