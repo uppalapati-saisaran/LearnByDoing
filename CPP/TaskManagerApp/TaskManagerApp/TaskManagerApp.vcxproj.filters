@@ -21,10 +21,10 @@
     <ClInclude Include="TaskManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SortStrategy.h">
+    <ClInclude Include="TaskPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SortByPriority.h">
+    <ClInclude Include="TaskFilterStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +38,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SortByPriority.cpp">
+    <ClCompile Include="TaskPrinter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskFilterStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

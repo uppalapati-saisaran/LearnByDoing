@@ -1,25 +1,6 @@
 #include "Task.h"
 #include<iostream>
 
-std::string Task::getTitle() const
-{
-	return title;
+Task::Task(int id, const std::string& title)
+	  :id(id), title(title), isCompleted(false) {
 }
-
-std::string Task::getDescription() const
-{
-	return description;
-}
-
-int Task::getId() const {
-	return id;
-}
-
-bool Task::isCompleted() const {
-	return completed;
-}
-
-void Task::markedCompleted() {
-	completed = true;
-}
-

@@ -129,16 +129,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="SortByPriority.h" />
-    <ClInclude Include="SortStrategy.h" />
     <ClInclude Include="Task.h" />
+    <ClInclude Include="TaskFilterStrategy.h" />
     <ClInclude Include="TaskManager.h" />
+    <ClInclude Include="TaskPrinter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SortByPriority.cpp" />
     <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TaskFilterStrategy.cpp" />
     <ClCompile Include="TaskManager.cpp" />
+    <ClCompile Include="TaskPrinter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

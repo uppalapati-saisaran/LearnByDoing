@@ -1,55 +1,29 @@
-#include<iostream>
-#include "TaskManager.h" 
-#include "SortByPriority.h"
+#include "TaskManager.h"
+#include "TaskFilterStrategy.h"
+#include "Task.h"
 
-int main() {
-    TaskManager manager;
-    int choice;
-    std::string title, description, dueDate;
-        int id, priority;
+int main()
+{
+	TaskManager manager;
 
-    while (true) {
-        std::cout << "\n--- Task Manager Menu ---\n";
-        std::cout << "1.Add Task \n2. Show tasks \n3. Complete Task \n4. Delete Task \n5. Exit \n6. Sort by Priority \nChooser";
-        std::cin >> choice;
-        std::cin.ignore();
+	Task task1(1, "Write C++ code");
+	Task task2(2, "Refactor code using SOILD");
+	Task task3(3, "Test TestManager App");
 
-        switch (choice) {
-        case 1:
-            std::cout << "Enter title: ";
-            std::getline(std::cin, title);
-            std::cout << "Enter description: ";
-            std::getline(std::cin, description);
-            std::cout << "Enter date (MM-DD-YYYY):";
-            std::getline(std::cin, dueDate);
-            std::cout << "Enter priority: ";
-            std::cin >> priority;
-            manager.addTask(title, description,dueDate,priority);
-            break;
-        case 2:
-            manager.displayTasks();
-            break;
-        case 3:
-            std::cout << "Enter Task ID to complete:";
-            std::cin >> id;
-            manager.markTaskComplete(id);
-            break;
-        case 4:
-            std::cout << "Enter Task ID to delete :";
-            std::cin >> id;
-            manager.deleteTask(id);
-            break;
-        case 5:
-            return 0;
-        case 6:
-            manager.setSortStrategy(new SortByPriority()); 
-            manager.sortTask();
-            std::cout << "\nSorted by Priority:\n";
-            manager.displayTasks(); 
+	task2.isCompleted = true;
 
-        default:
-            std::cout << "Invalid option.\n";
-        }
-    }
+	manager.addTask(task1);
+	manager.addTask(task2);
+	manager.addTask(task3); 
+
+	std::cout << "\n All Task:\n";
+	AllTasks all;
+	manager.listTask(all);
+
+	std::cout << "\n Completed Tasks:\n";
+	CompletedTasks completed;
+	manager.listTask(completed); 
+
+	return 0;
 
 }
