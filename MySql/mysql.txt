@@ -171,6 +171,190 @@ union all:
 
   
 
+*****************************************************************************************************************************************************
+
+// create  a database 
+CREATE database employee_db; 
+
+// use a database
+USE employee_db; 
+
+// create a table 
+create table employee_db(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+	name VARCHAR(100),
+	department VARCHAR(50),
+	salary DECIMAL(10,2),
+	joining_date DATE
+);
+
+// insert dat 
+INSERT INTO employees (name, department, salary, joining_date) 
+values('sai saran','IT',75000,'2024-02-15');
+
+// Update date 
+UPDATE employees SET salary = 80000 where name = 'Sai Saran';
+
+// Delete data 
+Delete from employees where department = 'HR'
+
+// Select all 
+select * from employees;
+
+//Filter with where:
+select * from where department='IT' and salary > 60000;
+
+// order results
+select * from employees order by salary desc;
+
+// limit results
+select * from employees order by joining_date desc limit 5;
+
+// total salary per department 
+select department, sum(salary) as total salary from employees group by department
+
+// count of employees
+select count(*) from employees;
+
+// joining employees with departments
+select e.name,d.dept_namae 
+from employee e 
+join departments d on e.department = d.id 
+
+// find employees joined this year 
+select * from employees
+where YEAR(joining_date) = YEAR(CURDATE())
+
+// inner join
+// Get employees names and their department names.  
+select e.ename,d.dept_name
+from employees e 
+join department d on e.dept_id = d.id; 
+
+// Left Join
+// Get all employees even if they don't have a department 
+select e.name, d.dept_name
+from employees e 
+left join departments d on e.dept_id = d.id 
+
+// Right join
+// Get all employees even if no employees are assigned
+select e.name, d.dept_name 
+from employees e 
+right join departments d on e.dept_id = d.id 
+
+// Stored procedure 
+// Create a stored procedure to increase salary 
+DELIMITER $$
+
+CREATE PROCEDURE IncreaseSalary(IN emp_id INT, IN Increment DECIMAL(10,2))
+BEGIN
+  UPDATE employees
+  SET salary = salary + increment 
+  where id = emp_id;
+END $$ 
+
+DELIMITER;
+
+CALL IncreaseSalary(1,5000);
+
+****************************************************************************
+
+Employees with salary above department average:
+
+SELECT name,salary 
+FROM employees e 
+WHERE salary > ( 
+SELECT AVG(salary) 
+FROM employees 
+WHERE dept_id = e.dept_id 
+);
+
+
+**********************************************************************************
+
+Highest paid employees per department:
+
+select dept_id, name, salary 
+from employees e 
+where salary = ( 
+  select max(salary) from employee where dept_id = e.dept_id 
+ );
+ 
+ ********************************************************************************
+ 
+Indexing and Query Optimization 
+
+Why?
+- Indexing improves the speed of searches, joins, and WHERE filters.
+- Without indexes, queries scan the full table(slow) 
+
+- Create a Sample Table 
+CREATE TABLE employees(
+     id INT PRIMARY KEy AUTO_INCREMENET,
+	 name VARCHAR(100),
+	 dept_id INT,
+	 salary DECIMAL(10,2),
+	 joining_date DATE
+);
+
+Now assume you have 100,000 employees and you run:
+
+SELECT * FROM employees WHERE name = 'Sai Siran' 
+
+Problem:
+Without Index, MySQL scans all 100,000 rows line by line.
+
+Add an Index :
+
+CREATE INDEX idx_name ON employees(name);
+
+What happens now?
+MySQL creates a fast-lookup structure to quickly find rows with name 'Sai Siran'.
+
+Check if Query Uses Index 
+
+EXPLAIN SELECT * FROM employees WHERE name = "Sai Siran";
+
+Excepted Output(simplied): |id|select_type|table|type|key | key_len|ref|rows| Extra |
+                           |1 | SIMPLE | employees | ref | idx_name | 303 | const | 1 | Using where |
+						   
+You'll see output like this:
+Key                   rows                Extra 
+idx_name              1                   Using where 
+						   
+"key" column shows: idx_name is used -> Fast search!
+
+Multi-Column Index :
+
+If you often query:
+SELECT * FROM employees WHERE name = "Sai Siran" AND dept_id = 2;
+
+Create a multi-column index:
+CREATE INDEX idx_name_dept employees(name, dept_id);
+
+Best Pratices:
+- Index columns used in WHERE,JOIN, or ORDER BY.
+- Don't over-index (each index takes storage and slows inserts).
+- Use explain to verify performance 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

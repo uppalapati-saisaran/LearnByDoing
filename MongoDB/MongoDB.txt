@@ -107,7 +107,279 @@ school> db.courses.drop()
 ***************************************************************************************************************
 
 
+1. updateOne() and updateMany() 
 
+1, updateOne(): update a single matching document. 
+
+db.employees.updateOne( 
+    { name: "Sai Saran" },
+	{ $set: { department: "IT", salary: 80000}} 
+	
+Explanation:
+
+- Match a docment where name = "Sai Siran"
+- $set modifies fields department and salary.
+
+2, updateMany(): update multiple matching documents.
+
+db.employees.udpdateMany(
+    { department: "HR" },
+	{ $set: { status: "Transferred" }}
+);
+
+3, replaceOne() 
+
+Replaces the whole document(not just fields)
+
+db.employees.replaceOne(
+{ name: "Ravi"},
+{ naem: "Ravi", department: "Admin", salary: 50000}
+);
+
+4, find() with conditions and projections
+
+(a) Simple filter:
+db.employees.find({department: "IT"});
+- Shows all employees from IT
+
+(b) Project (show only certain fields):
+db.employeees.find(
+  { department: "IT" },
+  { name: 1, salary: 1, _id: 0 }
+);
+
+- This will show only name and salary._id: 0 hides the default ID 
+
+5, Sort(), limit(), skip() 
+
+a) Sort by salary descending:
+db.employees.find().sort({salary: -1}); 
+-1 means highest to lowest, 1 means lowest to highest.
+
+b) limit to 5 results:
+db.employees.find().limit(5) 
+
+c) skip first 5 and show next 5:
+db.employees.find().skip(5).limit(5);
+// useful for pagination 
+
+
+6, Aggregation 
+
+a) count employees by department:
+
+db.employees.aggregate([
+   { $group: { _id: "$departement", total: { $sum:1} }} 
+   ]); 
+
+
+b) Total salary per department 
+db.employees.aggregate([
+   { $group: { _id: "$department", totalSalary: { $sum: "$salary" }}} 
+   ]);
+   
+   
+**********************************************************************************
+
+Embedded Documents (Nested inside) 
+
+- you have an order with customer details inside the order:
+
+{
+    _id : 1,
+	order_no: "ORD123",
+	customer: {
+	    name: "Sai Siran",
+		email: "sai@example.com"
+	};
+	items: [
+	    { product: "Pen", qty: 2},
+		{ product: "Book", qty: 1 }
+	]
+}
+
+Advantages:
+- All related data in one place.
+- Fast to read 
+
+When to use:
+- Data is mostly read together.
+- Embedded document in small in size(below 16MB)
+
+********************************************************************************** 
+
+Reference Documents (Liked by ID) 
+
+- Split customer into a different collection.
+
+Customers:
+
+{
+_id: ObjectId("aaa123"),
+name: "Sai Siran",
+email: "sai@example.com"
+}
+
+Orders:
+
+{
+ _id: 1,
+ order_no: "ORD123",
+ customer_id: ObjectId("aaa123"),
+ items: [
+   { product: "Pen", qty: 2 }
+ ]
+}
+
+To get customer info:
+
+//Get customer separately.
+const customer = db.cutomers.findOne( { _id:ObjectId("aaa123") });
+
+// OR use aggregation with $lookup 
+db.orders.aggreage([
+   {
+      $lookup: {
+	     from: "customers",
+		 localField: "customer_id",
+		 foreignField: "_id",
+		 as: "customer"
+	  }
+	}
+});
+
+Advantages:
+
+- Less duplication.
+- useful when data grows big(e.g. big customer records)
+
+**************************************************************************************************************
+
+$lookup in Aggregation pipeline ( just like SQL joins)
+
+- $lookup is used to join two collections.
+
+- Order details along with customer name.
+
+customers Collection:
+ 
+{
+   _id: ObjectId("c1"),
+   name: "Sai Siran",
+   email: "sai@example.com"
+}
+
+
+Orders Collection:
+
+{
+   _id: ObjectId("o1"),
+   order_no: "ORD123",
+   customer_id: ObjectId("c1"),
+   Items: [
+   { product: "Pen", qty: 2 }
+   ] 
+}
+
+Use $lookup to Join 
+
+db.orders.aggregate([
+   {
+      $lookup: {
+	      from: "customers",    // Other collection name.
+		  localField: "customer_id",   //Field in orders
+		  foreignField: "_id",    // Field in customers
+		  as: "customer_info"  // Output array field names
+	  }
+   }
+]);
+
+output:
+{
+  _id: "o1",
+  order_no: "ORD123",
+  customer_id: ObjectId("c1"),
+  items: [...],
+  customer_info: [
+    {    
+	_id: "c1",
+	 name: "Sai Siran",
+	 email: "sai@example.com"
+	}
+  ]
+} 
+
+
+Optional: Flatten it with $unwind 
+- To avoid an array:
+{ customer_info: [ {...} ] }  
+
+- Use $unwind:
+{ $unwind: "$customer_info" }
+
+Then you can directly access:
+customer_info.name 
+
+Full Example with Unwind:
+
+db.orders.aggregate([
+ {
+  $lookup: {   // join two collections.
+    from: "customers", // Which collection to join
+    localField: "customer_id", // Field in current collection
+    foreignField: "_id",   // Field in joined collection field 
+    as: "customer_info"	  // Name of new joined field.
+  }
+ }, 
+ {
+   $unwind = "$customer_info"   // Flatten array to single object. 
+ },
+ {
+    $project: {    // Pick only required fields.
+	   order_no: 1,
+	   "customer_info.name": 1,
+	   "customer_info.email": 1
+    }
+  }
+]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
 
 
 

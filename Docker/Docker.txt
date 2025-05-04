@@ -92,6 +92,98 @@ CMD ["node","server.js"]
 
 https://www.youtube.com/watch?v=3c-iBn73dDE
 
+**********************************************************************************************************************************************
+
+Image : Blueprint of your app (e.g., OS + app + libraries )
+Container : Running instance of an image.
+Dockerfile : Script to build your image.
+Docker Hub : Cloud repo to push/pull images.
+
+Install Docker 
+
+# sudo apt update 
+# sudo apt install docker.io 
+
+To start docker:
+
+#sudo systemctl start docker 
+#sudo systemctl enable docker 
+
+#docker --version - check docker version
+
+#docker rm <container_id>  - Remove container 
+
+*********************************************************************************************************************************************
+
+Dockerfile (Build your own Image) 
+
+- Dockerfile to run Python Script 
+- Project structure:
+
+  /myapp 
+       | - app.py
+	   | - Dockerfile 
+	   
+- app.py 
+
+  python 
+
+  print("Hello from Docker container!")
+  
+- Dockerfile 
+
+  FROM python:3.10 
+  COPY app.py / 
+  CMD ["python", "app.py"]
+  
+- Build the image 
+  docker build -t mypythonapp 
+
+- Run the container 
+  docker run mypythonapp 
+
+- Docker Compose (Run multiple containers)
+
+- Used when your app depends on multiple services (e.g., app + database)
+- docker-compose.yml 
+
+Yaml 
+
+version: '3'
+services:
+   web:
+       image: mypythonapp 
+   db:
+      image: mysql:5.7
+	  enviroment:
+	    MYSQL_ROOT_PASSWORD: rootpass
+		
+run: docker-composer up 
+
+Docker in Production:
+
+- use docker-compose or Kubernetes to scale apps.
+- Monitor containers with tools like Prometheus, Grafana
+- Storage images in Docker Hub, AWS ECR, GitHub Container Registry
+
+Clean up Docker:
+
+- docker container prune # remove stopped containers
+- docker image prune # Remove unused images.
+
+
+  
+
+- 
+
+
+
+
+
+
+
+
+
 
 
 
