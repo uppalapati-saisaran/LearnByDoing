@@ -1,0 +1,123 @@
+Systm Project Idea: "Smart Task Schedular".
+
+Goal: 
+Create a python system the schedules and manages tasks (like reminders, email sending, reports, etc,),
+designed in a modular, scalable, and maintainable way.
+
+Phase 1: Requirements
+- Add, remove, and list tasks.
+- Each task has : Name, Schedule time, Action(e.g., print a message, run  a function)
+- Log every task when executed.
+- Support recurring tasks.
+
+Phase 2: Tech concepts, you'll learn 
+- Object-Oriented Design ( Task,schedular,Logger)
+- Separation of concerns (modules for tasks, scheduling, logging)
+- SOLID Principles (e.g., Open/Closed Principle)
+- Dependency Injection (Injection loggers, config, etc.)
+- Multithreading or Asyncio (for scheduling)
+- Unit Testing with unittest or pytest 
+- configuration from .json or .env 
+- Logging with logging module 
+
+Suggested File Structure:
+
+smart_schedular/
+ - schedular/
+        - __init__.py
+		- task.py            # Task class 
+		- scheduler.py       # schedular class 
+		- logger.py          # Logger class 
+		- config.py          # config loader 
+		
+ - tests/
+        - test_schedular.py 
+
+ - config.json               # Setting 
+ - main.py                   # Entry point 
+ - requirements.txt 
+
+1. Core Components (High-Level Design) 
+
+A. Task
+- Represents a job to be executed.
+- Has name, schedule, action, and recurrence.
+
+B. Scheduler 
+- Manages and executes tasks at a right time.
+- Supports adding/removing/listing tasks.
+- Can run in background (using thread/async).
+
+C. Logger 
+- Logs task events (e.g., "Task X executed at 10:30 A.M").
+
+D. Config 
+- Loads setting from JSON or .env 
+
+E. TaskRunner (Optional) 
+- Executes tasks in parallel or asynchronously.
+
+
+2, Class Diagram ( Text Format)
+
+Task class 
+- name 
+- schedule_time
+- action
+- recurring 
+
++ run() 
+
+|
+| users
+|
+V
+
+Schedular 
+
+- tasks: List 
+- logger 
+- config 
+
++ add_task()
++ remove_task()
++ run() 
+
+|
+| logs to
+|
+V
+
+Logger 
+
+- log_file_path
++ log(message)
+
+|
+| loads from 
+|
+V 
+
+Config 
+
+- filepath 
++ load() 
++ get_setting() 
+
+
+3, Design Principles Applied 
+
+- SRP: Each class has one clear responsibility.
+- Open/Closed: You can extend new types of tasks without changing Scheduler.
+- Dependency Injection: Logger and Config are passed in 
+
+
+
+
+
+
+
+
+
+
+
