@@ -1,0 +1,153 @@
+C++ Task Manager Project from idea to blueprint.
+
+1. Understand the Goal 
+
+Objective: Build a Task Manager that can:
+
+- Create, update, delete and list tasks.
+- Execute tasks using threads.
+- Schedule tasks using different algorithms.
+- Log changes and events.
+- Be easily maintainable ( SOLID + Design Patterns)
+- Be testable (unit test support)
+
+2. Define Core Entities ( Class Identification )
+
+Use Noun Extraction to identity entities:
+
+From requirements: "Task","TaskManager","Execution","Thread","Logger","Schedular","Storage"
+
+So, probable classes: Task, TaskManager, Schedular, Logger, TaskExecutor, StorageManager 
+
+3, Apply SOLID Principles to Responsibilities 
+
+Task - Represents a single task (data only, no logic)
+
+TaskManager - Manages task lifecycle ( create, update, delete, list, get)
+
+Schedular - Provides scheduleing algorithm (FIFO, Priority, etc.) (Strategy Pattern)
+
+TaskExecutor - Executes tasks ( multi-threaded )
+
+Logger - Listens to changes and logs ( Observer Pattern )
+
+StorageManager - Persists tasks (optional, could use File/DB)
+
+Each class does one thing, satisfying Single Responsibilities Principle.
+
+
+4. Define Key Relationships & Patterns 
+
+Design Patterns
+
+- Strategy Pattern : To plug in different scheduling strategies.
+- Observer Pattern : Logger observes task status changes.
+- Factory Pattern : Optional - to create Task objects cleanly.
+
+Class Relationships:
+
+- TaskManager owns Task objects.
+- TaskExecutor uses scheduler to decide order.
+- Logger subscribtes to TaskManager or TaskExecutor.
+
+5, Defin Public Interfaces (Header-First Design)
+
+Write .h files first to define contracts. Example:
+
+// Task.h 
+class Task {
+public:
+    Task(int id, const std std::string& name,int priority);
+	void SetStatus(Status status);
+	Status getStatus() const;
+	int getPriority() const;
+};
+
+
+6, Sequence Diagram ( Example Flow)
+
+User -> TaskManager : createTask() 
+TaskManager -> Schedular: addTask()
+TaskExecutor -> Schedular: getNextTask() 
+TaskExecutor -> Task: run() [ no thread ]
+Task -> Logger: notifyChange() 
+
+7, Plan for Extension 
+
+You may later want to add:
+
+- REST API or GUI 
+- Database Storage 
+- Real-time updates Design now to make these pluggable 
+
+Summary design steps:
+
+1, Understanding goals and features.
+2, Extract core entities (nouns)
+3, Apply SOLID to assign class responsibilities
+4, Choose design patterns for flexbility 
+5, Define class relationships 
+6, Create .h interfaces.
+7. Think about future extensibility 
+
+
+Continue C++ Task Manager Project 
+
+ITask: Interface for all tasks ( SRP, ISP)
+
+TaskManager: Core class using Singleton, handles task creation and execution.
+
+ThreadPool: Manages threads (Concurrency) 
+
+Process Manager: Manages child processes.
+
+TaskFactory: Uses Factory Pattern to create tasks.
+
+Schedular: Implements task scheduling algorithms (e.g., priority-based)
+
+CLI : Uses Command Pattern for UI logic 
+
+
+We can now begin implementing modules. I suggest proceeding like this:
+
+Step 1: Define interfaces and base classes 
+
+ITask - abstract interface for any task
+
+ITaskFactory - for the factory pattern
+
+ISchedular - interface for task scheduleing 
+
+Step 2: Implement One Task Example 
+
+- PrimeNumberTask - uses threading 
+- Add status reporting and cancellation (SRP,OCP)
+
+
+Step 3: Thread Pool
+
+- Worker thread manager that picks tasks from a queue and runs them.
+
+Step 4: Scheduler 
+
+- Priority-based task scheduling logic (algorithm-focused)
+
+Step 5: CLI Command Handling 
+
+- Add, view, pause, resume, cancel tasks.
+- Use command pattern
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
