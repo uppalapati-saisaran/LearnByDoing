@@ -1,0 +1,35 @@
+- Ticket creation,assignment, and status tracking
+- Database for persistent storage
+- Unit testing 
+- Optional: API (Flask) or Web UI(Flask/HTML)
+
+
+Project Overview: Ticket Tracking System 
+
+Entities:
+
+1, Customer - name, email 
+
+2, Ticket - title, descritpion, status (Open/In Progress/Closed), created_at, customer_id 
+
+3, Agent(optional) - for ticket assignment 
+
+Directory Structure:
+
+ticket_systen/
+--- app.py 
+--- models/
+   |_ database.py 
+   |_ customer.py 
+   |_ ticket.py 
+
+--- services/
+   |__ ticket_service.py 
+   
+--- tests/
+   |
+   |___ test_ticket_service.py 
+   
+--- requirements.txt 
+
+
