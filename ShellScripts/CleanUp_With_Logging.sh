@@ -24,6 +24,7 @@ echo "Target directory: $DIR" | tee -a "$LOG_FILE"
 
 if [ -d "$DIR" ]; then 
     find "$DIR" -type f -name "*.log"  -mtime +7 -exec rm -v {} \;
+	# -mtime +7: Means modification time is morethan 7 days ago.
 	| tee -a "$LOG_FILE"
 	echo "CleanUp complete. " | tee -a "$LOG_FILE"
 	else 
@@ -33,5 +34,11 @@ fi
 echo "Finished at $(date)" | tee -a "$LOG_FILE" 
 
  
+# your_command | tee -a filename 
+. | (pipe) sends theo output of your_command to the tee command.
+. tee: Reads from standard input and writes to both standard output and the specified file.
+, -a : Means append to the file rather than overwriting it.
+
+
 	
 	

@@ -1,0 +1,83 @@
+Step-by-Step: Set up Postfix as a Send Only Mail server 
+
+1. Install Postfix and mail utilities 
+
+#sudo apt update
+#sudo apt install postfix mailutils 
+
+During installation, choose:
+- "Internet Site" when prompted.
+- Enter your system's domain name (e.g., example.com)
+
+- you can reconfigure later with: sudo dpkg-reconfigure postfix 
+
+2, Configure Postfix to send via email ( or any SMTP relay)
+
+Edit /etc/postfix/main.cf and add or update 
+
+relayhost = [smtp.gmail.com]:587 
+- purpose : Tells postfix to relay all outgoing email through Gmail's SMTP server.
+- Note : Square brackets ([]) prevents DNS lookups for MX records - Postfix connects directly to this host.
+- :587 is the SMTP submission port with TLS (recommened over port 25) 
+
+smtp_use_tls = yes 
+- Purpose: Enable TLS encruption for outgoing emails, securing them during transit.
+- Note : TLS is required by most modern email providers like Gmail. 
+
+smtp_sasl_auth_enable = yes 
+- Purpose: Enables Simple Authentication and Security Layer (SASL) for SMTP.
+- Required to login to Email's SMTP server using a username and password 
+
+smtp_sasl_security_options = noanonymous 
+- Purpose : disables anonymous logins.
+- Ensures Postfix only attemps authenticated SMTP connections.
+
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd 
+- Purpose : Points to the file containing your SMTP credentials (e.g., Gmail username and app password)
+- The hash: prefix teslls Postfix it will use a hashed .db version created with postmap.
+
+smtp_tls_CAfile = /etc/ssl/certs/
+- Purpose : Specifies the certificate Authority file used to veriy the identify of the Gmail SMTP server.
+- Helps prevent main-in-the-middle attacks.
+
+
+3, Add Gmail credentials 
+
+create /etc/postfix/sasl_passwd:
+
+[smtp.gmail.com]:587 your_email@gmail.com:your_app_password 
+// This matches the vale of relayhost from main.cf.
+// The square brackets and port number ensure Postfix uses this exact server and port for authentication.
+// This is your Gmail username (your full Gmail adress).
+// This is not your Gamil password 
+- it mut be a Gmail App Password which you generate from https://myaccount, after enabling 2-step verfication.
+- Example: abcd efgh ijkl mnop 
+- Gmail blocks sign-ins from apps using real passwords unless you'r using App Paswords. 
+
+
+// Use a Gmail App Password, not your real Gmail password (enable 2FA in Gmail and create one at 
+https://myaccount.google.com/apppasswords
+
+4, Secure and update postfix 
+
+sudo postmap /etc/postfix/sasl_passwd 
+- This generates /etc/postfix/sasl_passwd.db which Postfix reads.
+
+sudo chown root:root /etc/postfix/sasl_passwd /etc/postfix
+sasl_passwd.db 
+sudo chmod 600 /etc/postfix/sasl_passwd /etc/postfix/main
+sasl_passwd.db 
+sudo systemctl restart postfix 
+
+
+5, Test Email 
+
+Try Sending a test mail:
+
+echo "This is a test" | mail -s "Test Email" your_email@gmail.com
+
+check /ver/log/mail.log if it falls 
+
+
+
+

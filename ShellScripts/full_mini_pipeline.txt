@@ -1,0 +1,276 @@
+Step by Step CI/CD script ( ci_cd_pipelin.sh)
+
+#!/bin/bash
+
+#Exit immediately it any command fails.
+set -e 
+
+set -e ensures that script stops if any commnad returns an error.
+Very important in CI/CD to avoid deploying broken code.
+
+1. Print Environment Info 
+
+echo "Starting CI/CD Pipeline"
+echo "Running on host: $(hostname)"
+echo "Current directory: $(pwd)"
+echo "Date: $(date)"
+
+echo prints message 
+$(...) executes a commnad and returns the result(e.g., hostname, pwd, and date show system info useful for logs).
+
+2. Install Dependencies (if needed) 
+
+echo "Installing dependencies..."
+
+#Example update and install Node.js (for Ubuntu)
+sudo apt-get update
+sudo apt-get install -y nodejs npm
+
+sudo apt-get update: Update package lists.
+apt-get install -y: installs packages without asking for confirmation.
+
+3, Code Setup 
+
+echo "Installing project dependencies..."
+npm install 
+
+This installs all dependencies listed in package.json.
+Could be pip install -r requirements.txt for Python or mvn install for java.
+
+4, Linting and Code Quality 
+
+echo "Running code linting"
+npm run lint 
+
+Ensures code style is consistent and follows best practices.
+Can use tools like eslint, flake8, or clang-tidy
+
+5, Run Unit Tests
+
+echo "Running tests..."
+npm test 
+
+Executes unit tests
+Logs failures if any test fails. In set -e mode, it stops the pipeline if tests fail.
+
+6, Build the Application
+
+echo "Building the project..."4
+npm run build 
+
+Compiles or bundles code.
+In C++: g++ main.cpp -o app 
+In Java: mvn package 
+
+7, Package the Artifcat 
+
+echo "Packaging application..."
+ZIP_FILE-"build_$(date + %Y%m%d_%H%M%S).zip"
+zip -r $ZIP_FILE build/
+
+Creates a zip archive of the build.
+-r recursively adds a files in the build/ directory.
+
+8, Upload to Artifact Storage(e.g., AWS S3)
+
+echo "Uploading artifact to S3..."
+aws s3 cp $ZIP_FILE s3://my-app-artifacts/
+
+This command needs AWS CLI configured.
+Secure credentials using enviroment varaibles or secrets manage.
+
+9, Deploy to staging Server
+echo "Deploying to staging server"
+scp $ZIP_FILE user@s taging-server:/var/www/app/
+ssh user@s taging-server "unzip -o /var/www/app/$ZIP_FILE -d /var/www/app && systemctl restart app-service"
+
+scp securely copies files to the server.
+ssh logs into the server and:
+
+- Unzips the build.
+- Restarts the app using systemctl 
+
+10, Notify Team (Optional)
+
+echo "Sending slack notifiation..."
+
+curl -X POST -H 'content-type: application/json' \
+     --data '{"text": " CI/CD pipeline copleted sucessfully!"}'
+\
+     https://hooks.slack.com/services/XXXX/YYYYY/ZZZZZ
+	 
+Sends a notification to Slack. You need to configure an Incoming Webhook.
+
+Full Script Recap: [ ci_cd_pipeline.sh ]
+
+#!/bin/bash 
+set -e
+
+echo "Starting CI/CD Pipeline"
+echo "Host: $(hostname), Directory: ${pwd}, Date: $(date)"
+
+#Install system dependencies
+sudo apt-get update
+sudo apt-get install -y node.js npm zip 
+
+#Install system dependencies 
+npm install 
+
+#Lint and test 
+npm run lint 
+npm test 
+
+#Build the app 
+npm run build 
+
+#Package the build 
+ZIP_FILE="build_$(date +%Y%m%d_%H%M%S).zip"
+zip -r $ZIP_FILE build/
+
+#Upload to S3
+
+aws s3 cp $ZIP_FILE s3://my-app-artifacts/
+
+#Deploy the server 
+
+scp $ZIP_FILE user@s taging-server:/var/www/app/
+ssh user@s taging-server "unzip -o /var/www/app/%ZIP_FILE -d /var/www/app && systemclt restart app-service"
+
+#Notify team 
+
+curl -X POST -H 'Content-type: application/json' \
+     --data '{"text":"CI/CD completed successfully!"}' \
+	 https://hooks.slack.com/services/XXXXX/YYYYY/ZZZZZ
+	 
+	 
+**********************************************************************************************************************************************************
+
+Integrate the Bash Script into a CI/CD tool. 
+
+Let's go with the most common tool: GitHub Actions - It's widely used and works seamlessly with GitHub repositories.
+
+Objective: 
+Take the ci_cd_pipeline.sh logic and integrate it into a GitHub Actions workflow ( .github/workflows/ci.yml) so that the pipeline runs automatically when you push code.
+
+Project structure Assumption 
+
+We assume your project looks lik this (Node.js example - we'll adapt it to your tech stack later if needed)
+
+your-project/
+|-    build/     #Output build directory 
+|-    src/       #Source code 
+|-    ci_cd_pipeline.sh  #Optional: can embed or remove this 
+|-    package.json    # Project definition 
+|-    .github/workflows/ci.yml    # Github actions workflow file.
+
+Step by Step: GitHub Actions Integration 
+1. Create the Workflow File 
+Path: .github/worflow/ci.yml 
+ci.yml as a set of instructions you give to a robot on GitHub.
+Whenever you push your code or create a pull request, this robot follows your instructions automatically - it installs, test, builds, and deploys your project.
+
+
+yaml
+
+name: CI/CD Pipeline  // This is the name of your robot task - just for display. You'll see this name in the GitHub Actions tab. 
+
+
+This tells when the robot should start working:
+- When someone pushes code to the main branches
+- or Opens a pull request (like a request to merge code)
+on:
+   push:
+      branches:
+	     - main 
+   
+   pull_request:
+
+   
+jobs: //This starts a job -- like a task list 
+   // it will run on a Linux machine provided by GitHub 
+   build-and-deploy:
+      runs-on: ubuntu-latest 
+
+   // Github downloads your code from the repository.
+   // Think of it as saying: "Grab my code so I can work on it."
+   steps:
+   - name: Checkout code 
+     uses: actions/checkout@v3 
+	
+   // Get the correct programming environment.
+   // Here, we're saying: "Please install Node.js verion 18 so I can run the app."
+   - name: Set up Bode.js
+     uses: actions/setup-node@4 
+	 with:
+      node-version: '18' 
+ 
+   // Install all tools or packages your app needs (from package.json). 
+   - name: Install dependencies 
+     run: npm install 
+ 
+   // Check if the code is clean and follows good formatting.
+   - name: Lint the code
+     run: npm run lint 
+
+   // Run automated tests to make sure nothing is broken. 
+   - name: Run unit tests
+     run: npm test 
+
+   // Build the app - like compliling, bundling or preparing files for deployment 
+   - name: Build the project 
+     run: npm run build 
+
+   // Put the built files into a ZIP file -- like packing your project into a box 
+   - name: Package the build 
+     run: | 
+         ZIP_FILE="build_$(date +%Y%m%d_%H%M%S).zip"
+         zip -r $ZIP_FILE build/ 
+
+   // Upload the ZIP file to GITHUB as a downloadable file for later use or backup.
+   - name: Upload artifact to GitHub (optional)
+     uses: actions/upload-artifact@v4 	 
+     with:
+	    name:app-build 
+		path: build_*.zip 
+		
+  // send the ZIP file to your server and restart your app 
+  // scp : Securely sends the file 
+  // ssh: connects to the server
+  // unzip & systemclt retart: Unpacks the files and restarts the service
+  - name: Deploy to staging server 
+    run: |
+	    scp build_*zip ${{ secrets.SSH_USER }}@${{ secrets.STAGING_HOST }}:/var/www/app
+		ssh ${{ secrets.SSH_USER }}@${{ secrets.STAGING_HOST }}"
+		    unzip -o /ver/www/app/build_*.zip -d /var/www/app &&
+			sudo systemclt restart app-service 
+		"
+
+  // send a message to your slack team saying, "Hey! The deployment is done and successful!"	
+  - name: Send slack notification 
+    run: |
+	    curl -X POST -H 'Content-type: application\json' \
+		--data '{"text":" CI/CD pipeline succedded!"}' \
+		${{ secrets.SLACK_WEBHOOK }}
+  
+// When you push your code, GitHub runs this script. 
+// It installs tools,check your code, builds it up, Sends it to a server, restarts the app, and tells your team - all automatically.
+
+ 
+		
+   	 
+   
+
+
+
+	 
+
+
+
+
+
+
+
+
+
+
+

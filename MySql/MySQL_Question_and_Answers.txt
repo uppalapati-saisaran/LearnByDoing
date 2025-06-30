@@ -1,0 +1,326 @@
+1, What is MySQL?
+
+A, 
+- MySQL is an open source relational database management system that uses structured Query Language to manage data.
+- It's commonly used in web applications and supports a wide range of platforms.
+
+Explanation:
+It is know for its speed, reliablility and ease to use.
+MySQL is part of the LAMP stack: Linux, Apache, MySQL, PHP/Python.
+
+2, What are different data types in MySQL?
+A, MySQL supports several data types:
+
+- Numeric: INT, BIGINT, FLOAT, DOUBLE, DECIMAL
+- String: CHAR, VARCHAR, TEXT, BLOB 
+- Date & Time: DATE, TIME, DATETIME, TIMESTAMP, YEAR 
+
+Explanation: Each data type is used based on the kind of data being stored. 
+             For example, VARCHAR for variable-length strings, INT for integers, DECIMAL for precise values like money.
+			 
+3, What is the difference between CHAR and VARCHAR?
+A, 
+ - CHAR(n) is a fixed length string. It always stores n characters.
+ - VARCHAR(n) is  a variable-length string. It stores only the actual length of the string up to n characters.
+ 
+CHAR(5) stores 'Hi' as 'Hi   '
+VARCHAR(5) stores 'Hi' as 'Hi'
+
+Explanation: CHAR is faster for fixed size strings,but VARCHAR saves spsce strings vary in length. 
+
+4, What is the primary key?
+A, 
+   A primary key is a column (or set of columns) that uniquely identifiest each row in a table. 
+   
+Features:
+
+- Unique values
+- Cannot be NULL.
+- Only one primary key per table 
+
+CREATE TABLE employee(id INT PRIMARY KEY, name VARCHAR(100));
+
+5, What is the difference between WHERE and HAVING?
+A,
+
+- WHERE filters rows before grouping 
+- HAVING filters groups after aggregation 
+
+SELECT department, COUNT(*) FROM employees
+where salary > 3000 GROUP BY department HAVING COUNT(*) > 5;
+
+1. Look at the employee table. 
+you're starting with a table called employee, which has information about workers - like their department, salary etc
+
+2. Only picks employees who earn more than $3000.
+This part: where salary > 3000
+says: "Only look at employees making more than $3000."
+
+3. Group them by department.
+GROUP BY department 
+
+says: Now, take those employees and sort them into groups based on which department they belong to.
+so if there are 3 departments - HR,IT, Sales - you now have 3 groups.
+
+4. Count how many employees are in each group 
+SELECT department, COUNT(*)
+
+means: For each department, show the department name and how many employees ( who earns > $3000) are in it.
+
+5, Only show departments tht have more than 5 such employees.
+This 
+HAVING COUNT(*) > 5 
+means: Don't show department unless they have more than 5 employees making over $30000.
+
+Finaly Summary: Show me each department that has more than 5 employees earing over $3000, and tell me how many such employees are in each. 
+
+
+6, What are joins in MySQL? Explain types.
+
+A, Joins are used to combine rows from two or more tables based in a related column.
+Types:
+- INNER JOIN: Returns records the match in both tables.
+- LEFT JOIN: Returns all records from the left table, even if there is no match in the right.
+- RIGHT JOIN: Returns all records from the right table.
+- FULL JOIN: Not supported natively in MYSQL but can be simulated using UNION.
+
+SELECT e.name, d.name AS dept_name
+FROM employee e
+INNTER JOIN department d ON e.dept_id = d.id 
+
+
+7, What is indexing? How does it improve performance?
+A, An index is a data structure that improves the speed of data retrieval.
+Explanation: When you query with a WHERE clause or join, MySQL can use the index to quickly locate rows
+instead of scanning the whole table.
+
+Example:
+CREATE INDEX idx_emp_name ON employees(name);
+// CREATE INDEX: This tells the database to make a shortcut.
+// index_name: you give the index a name (it can be anything like idx_employeee_name)
+// ON employee(name): you are saying "Make the shortcut on the name coloumn in the employee table."
+
+What Does an Index do?
+
+An index is like a book's table of contents. Instead of searching every page, you jump directly to where you need to go.
+so if you often search for employees by name:
+SELECT * FROM employee WHERE name = 'Alice';
+an index on name will make this much faster, especially if the table has thousands of rows.
+
+
+8, What is normalization?
+A, Normalizaion is the process of organizing data to reduce redundancy and improve integrity. 
+
+Forms:
+- 1 NF : Atomic values, no repeating groups.
+- 2 NF : No partial dependecny
+- 3 NF : No transitive dependency 
+
+Example: Splitting a table with employee and department info into two separate tables to avoid repetition.
+
+- Normailization breaks down a table into smaller tables to eliminate redundancy and improve data integrity.
+
+Instead of:
+employee(emp_id, name, dept_name)
+Normalize to:
+department(id,dept_name)
+employee(emp_id,name,dept_id)
+
+9, Difference between TRUNCATE, DELETE, and DROP?
+A,
+
+Operation       Deletes Data        Can Rollback             Affects Structure 
+
+DELETE          Yes(rows)           Yes(If in transcation)   No 
+
+TRUNCATE        Yes(all rows)       No                       No 
+
+DROP            Yes(table)          Mo                       Yes 
+
+
+10, What are stored procedures and functions in MySQL?
+A,
+Stored procedure: A set of SQL statements stored in the database that can be executed with a call.
+Function: Similar to procedures but must return a value.
+
+Example:
+
+DELIMITER //
+CREATE PROCEDURE GetAllEmployees()
+BEGIN
+   SELECT * FROM employees;
+END //
+DELIMITER 
+
+CALL GetAllEmployee()
+
+11, What is a foreign key in MySQL?
+A, A foreign key is a column in one table that refers to the primiery key in another table.
+
+Purpose: To maintain referential integrity.
+
+Example:
+
+CREATE TABLE department (
+   id INT PRIMARY KEY,
+   name VARCHAR(100)
+);
+
+CREATE TABLE employee (
+   id INT PRIMARY KEY,
+   name VARCHAR(100),
+   dept_id INT,
+   FOREIGN KEY (dept_id) REFERENCES department(id) 
+);
+
+
+12, Explain transcations in MySQL?
+A, A transcation is  a set of SQL operations that are executed as a single unit.
+
+ACID properities:
+- Atomicity: All or nothing
+- Consistency: Valid state 
+- Isolation: No Interference
+- Durability: Persisted after commit 
+
+Example:
+
+START TRANSCATION;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT;
+
+13, How to optimize a slow MySQL query?
+A, 
+- Use indexes
+- Avoid SELECT *, specify needed columns.
+- Normalize data 
+- Use appropriate data types.
+- Use joins instead of subqueries when needed.
+
+14, What is the difference between UNION and UNION ALL?
+A,
+
+- UNIOM - Combines results and remove duplicates.
+- UNION ALL - Combines results including duplicates.
+
+SELECT name FROM customers
+UNION
+SELECT name FROM suppliers 
+
+15, What is the difference between InnoDB and MyISAM?
+A, 
+Feature          InnoDB     MyISAM 
+
+Transcations     Yes        No 
+Foreign keys     Yes        No 
+Row Locking      Yes        No (Table level)
+Crash Recovery   Better     Poor 
+
+
+16, How to calculate total, average or max salary by department?
+A,
+SELECT department, 
+       COUNT(*) AS total_employees, 
+       AVG(salary) AS avg_salary,
+	   MAX(salary) AS max_salary
+FROM employee 
+GROUP By department 
+
+
+17, What is a subquery? Given an example?
+A,
+  A subquery is a query inside another query.
+  
+SELECT name FROM employee
+WHERE salary > (SELECT AVG(salary) FROM EMPLOYEE);
+
+18, what are transcations and how are they used?
+A, Transcations ensure atomicity. You can commit or rollback.
+
+START TRANSCATION
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT;
+
+USE ROLLBACK: instead of COMMIT; to undo 
+
+19, what is view?
+
+CREATE VIEW high_salary AS
+SELECT name, salary
+FROM employee
+WHERE salary > 5000;
+
+20, what is a trigger?
+
+CREATE TRIGGER before_insert_employee 
+       BEFORE INSERT ON employee 
+	   FOR EACH ROW 
+	   SET NEW.created_at = NOW() 
+	   
+21,How to optimize queries?
+A,
+- Use indexes wisely.
+- Avoid SELECT *
+- Use LIMIT for larget datasets.
+- Use Explain to analyze performance
+- Noramlize data
+- cache repeate queries 
+
+22, What is a temporary table?
+A,
+Temporary tables are session-specific and disapper after the session ends.
+
+CREATE TEMPORARY TABLE temp_high_salary AS 
+SELECT * FROM employee WHERE salary > 5000;
+
+23, How to use the CASE statements in SQL?
+A,
+CASE is used for conditional logic in queries 
+
+SELECT name,salary,
+   CASE 
+     WHEN salary >= 7000 THEN 'High'
+	 WHEN slary >= 4000 THEN 'Medium'
+	 ELSE 'Low'
+   END AS salary_range 
+FROM employee; 
+
+24, What are some common date/time functions in MySQL?
+A,
+-- current date and time 
+SELECT NOW();
+
+-- Format date
+SELECT DATE_FORMAT(NOW(), '%Y-%m-%d');
+
+-- Get employees hired in the last 30 days 
+SELECT * FROM employee 
+WHERE hire_date >= CURDATE() - INTERVAL 30 DAY;
+
+25, How does AUTO_INCREMENT work?
+
+CREATE TABLE employee (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   name VARCHAR(100),
+   join_date DATE DEFAULT CURDATE()
+   );
+   
+Explanation:
+- AUTO_INCREMENT automatically generates unique numbers.
+- DEFAULT assigns value when none is provided. 
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+ 
+ 
+ 

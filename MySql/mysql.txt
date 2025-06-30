@@ -158,7 +158,7 @@ union all:
   from emp e1,emp e2
   where e2.empno == e1.mgr ==> Display employee and his/her manager.
   
-  select e1.enmae "employees", e2.ename "manager", e2.sal
+  select e1.ename "employees", e2.ename "manager", e2.sal
   from emp e1,emp e2
   where e1.mgr = e2.empno and  e1.sal > e2.sal;
   
@@ -289,6 +289,14 @@ Why?
 - Indexing improves the speed of searches, joins, and WHERE filters.
 - Without indexes, queries scan the full table(slow) 
 
+Types of Indexes :
+
+PRIMARY KEY - Unique and not null; only one per table. 
+UNIQUE - Must contain unique values.
+INDEX/KEY - Normal Index, can have duplicates.
+FULL TEXT - For text searching (used in MATCH AGAINST)
+SPATIAL - For GIS data (geometric types)
+
 - Create a Sample Table 
 CREATE TABLE employees(
      id INT PRIMARY KEy AUTO_INCREMENET,
@@ -334,10 +342,210 @@ Create a multi-column index:
 CREATE INDEX idx_name_dept employees(name, dept_id);
 
 Best Pratices:
-- Index columns used in WHERE,JOIN, or ORDER BY.
+- Index columns used in WHERE,JOIN,ORDER BY, and GROUP BY
 - Don't over-index (each index takes storage and slows inserts).
 - Use explain to verify performance 
 
+**********************************************************************************************************
+
+Advanced MySQL Topics:
+
+1, Subquerie 
+
+- In SELECT, FROM, and WHERE
+- Correlated Vs Non-Corrleated subqueries 
+
+2, Indexes 
+
+- Types: PRIMARY, UNIQUE, FULLTEXT, INDEX 
+- How indexes affect performance.
+- When not to use indexes 
+
+3, Views 
+
+- Creating and updating views.
+- When to use views (read-only abstraction)
+
+4, Stored Procedures & Functions
+
+- Syntax and use-cases 
+- IN, OUT, INOUT parameters
+- Error handling using DECLARE ... HANDLER 
+
+5, Triggers
+
+- Before/After Insert, Update, Delete 
+- use case: audit logging, validation 
+
+6, Transcations & Rollback 
+
+- START TRANSCATION,COMMIT,ROLLBACK
+- Isloation levels (READ COMITTED,REPEATABLE, READ, etc)
+
+1, Subqueries in MySQL 
+
+- A subquery is a query inside another query. It's enclosed in parentheses and can return: A single value, A row, A table.
+
+1.1 Subquery in SELECT 
+
+- Show each employee's salary as a percentage of the total salary.
+
+SELECT 
+    name,
+	salary,
+	ROUND((salary/(SELECT SUM(salary) FROM employees)) * 100,2) 
+  AS percent_total 
+  FROM 
+    employees;
+	
+1.2 Subquery in WHERE 
+
+- SELECT name, salary
+  FROM employees
+  WHERE salary > (SELECT AVG(salary) FROM employees);
+  
+1.3 Subquery in FROM (Derived Table)
+
+- SELECT dept_name, avg_salary 
+  FROM (
+    SELECT department AS dept_name, AVG(salary) AS avg_salary
+	FROM employees 
+	GROUP BY department
+  ) AS dept_avg 
+  where avg_salary > 60000;
+  
+1.4 Correlated Subquery (Row-by-Row Execution)
+
+- Get employees whose salary is above the average of their own department.
+
+SELECT name,department,salary 
+FROM employees e 
+WHERE salary > (
+SELECT AVG(salary) FROM employees
+WHERE department = e.department
+);
+
+*******************************************************************************************************
+
+
+What is a View?
+
+- A view is a virtual table based on the result of the SELECT query. 
+-It doesn't store data, but lets you reuse complex queries as if they're a regular table.
+
+
+Why use views?
+
+- Simplify complex joins/queries 
+- Improve readability
+- Enforce access control (hide sensitive columns)
+- Reuse business logic 
+
+
+1, Create a view 
+
+CREATE VIEW high_earners AS 
+SELECT name,department, salary 
+FROM employees 
+WHERE salary > 60000;
+
+
+2, Use the View 
+
+SELECT * FROM high_earners;
+
+
+3, Update a View 
+
+CREATE OR REPLACE VIEW high_earners AS 
+SELECT name, salary 
+FROM employees
+WHERE salary > 70000;
+
+4, Drop a View 
+
+DROP VIEW high_earners;
+
+Types of Views 
+
+- Read only Views 
+  If the view includes joins, aggregates, or subqueries, it's not updatable.
+  
+- Updatebale views 
+  If based on a single table without GROUP BY, DISTINCT, etc,, It can be updated.
+  
+CREATE VIEW hr_employees AS 
+SELECT id,name 
+FROM employees
+WHERE department = 'HR';
+
+- Update through the view 
+UPDATE hr_employees SET name = 'Alice Smith' WHERE id = 1;
+
+View Limitations:
+
+- No indexes on views.
+- Views can't accept parameters (not like stored procedures)
+- Performance: Each view query runs every time it's accessed. 
+
+Let's create a Join View using two tables 
+
+employees
+
+CREATE TABLE employees(
+   id INT PRIMARY KEY,
+   name VARCHAR(50),
+   department_id INT,
+   salary DECIMAL(10,2)
+};
+
+departments
+
+CREATE TABLE departments (
+   id INT PRIMARY KEY,
+   department_name VARCHAR(50)
+);
+
+INSERT INTO employees VALUES
+(1,'Alice',1,50000),
+(2,'Bob',1,60000),
+(3,'Charlie', 2, 70000);
+
+INSERT INTO departments VALUES
+(1,'HR'),
+(2,'IT');
+
+Create a Join View
+
+CREATE VIEW employee_details AS 
+SELECT e.id, e.name, d.department_name, e.salary
+FROM employees e 
+JOIN deparments d ON e.department_id = d.id;
+
+
+Now you can simple query:
+SELECT * FROM employee_details;
+
+High Earners with Department Info:
+
+CREATE VIEW high_earners AS
+SELECT e.id, e.name, d.department_name, e.salary 
+from employees e 
+join departments d ON e.department_id = d.id 
+WHERE e.salary > 60000;
+
+SELECT * FROM high_earners;
+
+SELECT * FROM high_earners ORDER BY salary DESC;
+
+SELECT * FROM high_earners WHERE department_name = 'IT';
+
+****************************************************************************************************
+
+
+
+
+ 
 
 
 

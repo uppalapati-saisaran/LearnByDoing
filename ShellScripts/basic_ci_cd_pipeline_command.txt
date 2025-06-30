@@ -1,0 +1,104 @@
+Common Uses of Linux Scripting in CI/CD Pipelines:
+
+1, Enviroment Setup 
+
+- Install dependencies (e.g., Python, Node.js, Docker)
+- Export environment variables.
+- Setup SSH Keys, authentication tokens, etc.
+
+# Example 
+sudo apt-get update 
+sudo apt-get install -y python3.pip
+export ENV = production 
+
+2, Code Build Automation 
+
+- Compile code (for C++, Java etc)
+- Run linters or formatters.
+- Package software artifacts (e.g., JARs, Doctor images)
+
+#Example for Java
+mvn clean install 
+
+3, Running Tests
+
+- Unit, Integration, and system tests.
+- Collecting and reporting test results.
+
+#Example for running tests
+pytest tests/ --junitxml = results.xml 
+
+4, Artifact Uploading 
+
+- Push build artifacts to artifact repositories like Artifactory, S3, Nexus 
+
+aws s3 cp my-app.zip s3://my-bucket/releases/
+
+5, Deployment 
+
+- Deploy code to staging/production enviroments.
+- Restart services using systemd or Docker.
+
+#Docker deployment 
+docker build -t my-app:latest .
+docker run -d -p 80:80 my-app:latest 
+
+
+6, Nofitifcation and logging 
+- Send status to slack, email or update jira.
+- Log results to files or monitoring tools 
+
+curl -X POST -H 'Content-type: application/json' \
+     --data '{"test":"Deployment finished!"}' \
+	 https://hooks.slack.com/services/XXXX
+	 
+
+Where Linux Scripting Fits in CI/CD tools:
+
+GitHub Actions: 
+
+Yaml 
+
+- name: Run shell script 
+  run: |
+    echo "Building..."
+	./build.sh 
+	
+Jenkins: Jenkins pipelines often embed shell commands:
+
+Groovy
+
+stage('Build') {
+   steps {
+      sh 'make build'
+   }
+}
+
+Gitlib CI: .gitlab-ci.yml includes bash commands:
+
+yaml 
+
+script:
+   ./deploy.sh 
+   
+ 
+Best Practices
+
+- Keep scripts modular and reusable.
+- Add logging and error handling 
+
+  set -e #exit an error 
+  echo "Deploying..."
+  
+- Use configuration files instead of hardcoding values.
+
+- securly manage secrets (don't put passwords in scripts) 
+
+
+
+ 
+
+
+
+
+
