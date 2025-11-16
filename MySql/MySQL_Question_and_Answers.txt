@@ -8,6 +8,8 @@ Explanation:
 It is know for its speed, reliablility and ease to use.
 MySQL is part of the LAMP stack: Linux, Apache, MySQL, PHP/Python.
 
+********************************************************************************************************************* 02-08-2025 
+
 2, What are different data types in MySQL?
 A, MySQL supports several data types:
 
@@ -15,8 +17,11 @@ A, MySQL supports several data types:
 - String: CHAR, VARCHAR, TEXT, BLOB 
 - Date & Time: DATE, TIME, DATETIME, TIMESTAMP, YEAR 
 
+
 Explanation: Each data type is used based on the kind of data being stored. 
              For example, VARCHAR for variable-length strings, INT for integers, DECIMAL for precise values like money.
+			 
+******************************************************************************************************************** 02-08-2025 
 			 
 3, What is the difference between CHAR and VARCHAR?
 A, 
@@ -27,6 +32,8 @@ CHAR(5) stores 'Hi' as 'Hi   '
 VARCHAR(5) stores 'Hi' as 'Hi'
 
 Explanation: CHAR is faster for fixed size strings,but VARCHAR saves spsce strings vary in length. 
+
+******************************************************************************************************************** 02-08-2025
 
 4, What is the primary key?
 A, 
@@ -40,6 +47,8 @@ Features:
 
 CREATE TABLE employee(id INT PRIMARY KEY, name VARCHAR(100));
 
+******************************************************************************************************************** 09-08-2025
+
 5, What is the difference between WHERE and HAVING?
 A,
 
@@ -47,7 +56,7 @@ A,
 - HAVING filters groups after aggregation 
 
 SELECT department, COUNT(*) FROM employees
-where salary > 3000 GROUP BY department HAVING COUNT(*) > 5;
+WHERE salary > 3000 GROUP BY department HAVING COUNT(*) > 5;
 
 1. Look at the employee table. 
 you're starting with a table called employee, which has information about workers - like their department, salary etc
@@ -70,10 +79,11 @@ means: For each department, show the department name and how many employees ( wh
 5, Only show departments tht have more than 5 such employees.
 This 
 HAVING COUNT(*) > 5 
-means: Don't show department unless they have more than 5 employees making over $30000.
+means: Don't show department unless they have more than 5 employees making over $3000
 
 Finaly Summary: Show me each department that has more than 5 employees earing over $3000, and tell me how many such employees are in each. 
 
+******************************************************************************************************************** 09-8-2025
 
 6, What are joins in MySQL? Explain types.
 
@@ -88,6 +98,7 @@ SELECT e.name, d.name AS dept_name
 FROM employee e
 INNTER JOIN department d ON e.dept_id = d.id 
 
+******************************************************************************************************************** 09-08-2025 
 
 7, What is indexing? How does it improve performance?
 A, An index is a data structure that improves the speed of data retrieval.
@@ -107,9 +118,11 @@ so if you often search for employees by name:
 SELECT * FROM employee WHERE name = 'Alice';
 an index on name will make this much faster, especially if the table has thousands of rows.
 
+******************************************************************************************************************** 09-08-2025 
 
 8, What is normalization?
 A, Normalizaion is the process of organizing data to reduce redundancy and improve integrity. 
+- Data integrity in a database means ensuring that the data is accurate, consistent, and reliable through its entire lifecycle. 
 
 Forms:
 - 1 NF : Atomic values, no repeating groups.
@@ -126,6 +139,8 @@ Normalize to:
 department(id,dept_name)
 employee(emp_id,name,dept_id)
 
+******************************************************************************************************************** 09-08-2025
+
 9, Difference between TRUNCATE, DELETE, and DROP?
 A,
 
@@ -137,25 +152,93 @@ TRUNCATE        Yes(all rows)       No                       No
 
 DROP            Yes(table)          Mo                       Yes 
 
+DELETE FROM table_name 
+// specifies the table from which you want to delete rows 
+WHERE condition; 
+// specifies which rows to delete based on a condition. Without WHERE, all rows in the table will be deleted!
+
+TRUNCATE TABLE table_name 
+What does it do?
+- Deletes all rows from a table quickly.
+- Resets any auto-increment counters(like primary key IDs).
+- Does not log individual row deletions, so it's faster than DELETE.
+- Keeps the table structure and its indexes intact - you can still insert new data after trunation.
+
+DROP TABLE table_name;
+
+What does it do?
+- Permanently deletes the entire data from the database.
+- This includes all the data, the table structure, indexes, triggers, constraints, everything.
+- Once dropped, the table cannot be recovered unless you have a backup.
+- Use with cautions 
+
+
+******************************************************************************************************************** 09-08-2025
+
 
 10, What are stored procedures and functions in MySQL?
 A,
 Stored procedure: A set of SQL statements stored in the database that can be executed with a call.
 Function: Similar to procedures but must return a value.
 
-Example:
+Procedure Example 1: 
 
 DELIMITER //
 CREATE PROCEDURE GetAllEmployees()
 BEGIN
    SELECT * FROM employees;
 END //
-DELIMITER 
+DELIMITER ; 
 
 CALL GetAllEmployee()
 
+Example 2: Procedure to get employee details by their ID 
+DELIMTEER $$
+
+CREATE PROCEDURE GetEmployeeByID(IN emp_id INT)
+BEGIN 
+    SELECT * FROM employees
+	WHERE id = emp_id; 
+END $$
+
+DELIMTER ;
+
+Explanation:
+- DELIMTER $$ - Changes the statement delimiter from ; to $$ so MySQL knows where the procedure ends.
+- CREATE PROCEDURE GetEmployeeByID(IN emp_id INT) - creates a procedure named GetEmployeeByID with an input parameter emp_id
+- THE BEGIN .. END block contains SQL statements that run when the procedure is called.
+- SELECT * FROM employees WHERE id = emp_id; - Returns the employee record matching the input id 
+- DELIMITER; = Resets the delimiter back to ;. 
+
+How to call this procedure?
+
+CALL GetEmployeeByID(5);
+// This will return the employee record with id = 5 
+
+Example: Function to Calculate annual salary from monthly salary 
+
+DELIMITER $$ 
+
+CREATE FUNCTION GetAnnualSalary (montly_salary DECIMAL(10,2)) 
+RETURNS DECIMAL(10,2) 
+DETERMINISTIC 
+BEGIN 
+    RETURN monthly_salary * 12
+END $$
+
+DELIMITER ;
+
+Explanation:
+
+- CREATE FUNCTION GetAnnaulSalary(...) Defines a funciton with one parameter monthly_salary 
+- RETURNS DECIMAL(10,2) - Specifies the data type of the return value. 
+- DETERMINISTIC - Means the function always returns the same outptu for the same input (Important for optimization).
+- RETURN monthly_salary * 12 - calculation that produces the result
+
+******************************************************************************************************************** 10-08-2025
+
 11, What is a foreign key in MySQL?
-A, A foreign key is a column in one table that refers to the primiery key in another table.
+A, A foreign key is a column in one table that refers to the primary key in another table.
 
 Purpose: To maintain referential integrity.
 
@@ -173,9 +256,10 @@ CREATE TABLE employee (
    FOREIGN KEY (dept_id) REFERENCES department(id) 
 );
 
+*******************************************************************************************************************
 
 12, Explain transcations in MySQL?
-A, A transcation is  a set of SQL operations that are executed as a single unit.
+A, A transcation is a set of SQL operations that are executed as a single unit.
 
 ACID properities:
 - Atomicity: All or nothing
@@ -190,6 +274,8 @@ UPDATE accounts SET balance = balance - 100 WHERE id = 1;
 UPDATE accounts SET balance = balance + 100 WHERE id = 2;
 COMMIT;
 
+*********************************************************************************************************************
+
 13, How to optimize a slow MySQL query?
 A, 
 - Use indexes
@@ -197,6 +283,9 @@ A,
 - Normalize data 
 - Use appropriate data types.
 - Use joins instead of subqueries when needed.
+
+
+*********************************************************************************************************************
 
 14, What is the difference between UNION and UNION ALL?
 A,
@@ -208,6 +297,8 @@ SELECT name FROM customers
 UNION
 SELECT name FROM suppliers 
 
+*********************************************************************************************************************
+
 15, What is the difference between InnoDB and MyISAM?
 A, 
 Feature          InnoDB     MyISAM 
@@ -217,6 +308,7 @@ Foreign keys     Yes        No
 Row Locking      Yes        No (Table level)
 Crash Recovery   Better     Poor 
 
+*******************************************************************************************************************
 
 16, How to calculate total, average or max salary by department?
 A,
@@ -227,6 +319,7 @@ SELECT department,
 FROM employee 
 GROUP By department 
 
+*******************************************************************************************************************
 
 17, What is a subquery? Given an example?
 A,
@@ -234,6 +327,8 @@ A,
   
 SELECT name FROM employee
 WHERE salary > (SELECT AVG(salary) FROM EMPLOYEE);
+
+*******************************************************************************************************************
 
 18, what are transcations and how are they used?
 A, Transcations ensure atomicity. You can commit or rollback.
@@ -245,6 +340,8 @@ COMMIT;
 
 USE ROLLBACK: instead of COMMIT; to undo 
 
+********************************************************************************************************************
+
 19, what is view?
 
 CREATE VIEW high_salary AS
@@ -252,12 +349,16 @@ SELECT name, salary
 FROM employee
 WHERE salary > 5000;
 
+*******************************************************************************************************************
+
 20, what is a trigger?
 
 CREATE TRIGGER before_insert_employee 
        BEFORE INSERT ON employee 
 	   FOR EACH ROW 
 	   SET NEW.created_at = NOW() 
+	   
+*****************************************************************************************************************
 	   
 21,How to optimize queries?
 A,
@@ -268,12 +369,16 @@ A,
 - Noramlize data
 - cache repeate queries 
 
+***************************************************************************************************************
+
 22, What is a temporary table?
 A,
 Temporary tables are session-specific and disapper after the session ends.
 
 CREATE TEMPORARY TABLE temp_high_salary AS 
 SELECT * FROM employee WHERE salary > 5000;
+
+*****************************************************************************************************************
 
 23, How to use the CASE statements in SQL?
 A,
@@ -287,6 +392,8 @@ SELECT name,salary,
    END AS salary_range 
 FROM employee; 
 
+****************************************************************************************************************
+
 24, What are some common date/time functions in MySQL?
 A,
 -- current date and time 
@@ -298,6 +405,8 @@ SELECT DATE_FORMAT(NOW(), '%Y-%m-%d');
 -- Get employees hired in the last 30 days 
 SELECT * FROM employee 
 WHERE hire_date >= CURDATE() - INTERVAL 30 DAY;
+
+***************************************************************************************************************
 
 25, How does AUTO_INCREMENT work?
 
@@ -311,9 +420,727 @@ Explanation:
 - AUTO_INCREMENT automatically generates unique numbers.
 - DEFAULT assigns value when none is provided. 
  
- 
+ **********************************************************************************************************
 
+ 19-07-2025 
  
+ How to create a user-defined function?
+ 
+ DELIMITER //
+ CREATE FUNCTION GetAnnualSalary(monthly DECIMAL(10,2)) 
+ RETURNS DECIMAL(10,2) 
+ BEGIN
+   RETURN monthly * 12 
+ END //
+ DELIMITER 
+ 
+ Use it like :
+ SELECT name,GETAnnualSalary(salary) AS annual_salary FROM employee; 
+ 
+ 
+ *********************************************************************************************************
+ 
+ How does EXPLAIN help in optimizing a query?
+ 
+ EXPLAIN SELECT * FROM employee WHERE name = 'John' 
+ 
+ Explanation:
+ - Shows how MYSQL executes a query 
+ - Helps detect full table scans, missing indexes, inefficient joins. 
+ 
+ ********************************************************************************************************
+ 
+ Subqueries in FROM, WHERE, and SELECT 
+ 
+ Examples of different types of subqueries 
+ 
+ In WHERE clause:
+ 
+ SELECT name FROM employee 
+ WHERE dept_id IN (SELECT  id from departent WHERE name = 'IT') 
+ 
+ IN FROM clause:
+ 
+ SELECT avg_salary FROM 
+ (SELECT department, AVG(salary) as avg_salary 
+ FROM employee GROUP BY deparatment) AS dept_avg; 
+ 
+ In SELECT clause:
+ 
+ SELECT name,
+ (SELECT name from department WHERE id = e.dept_id) AS dept_name 
+ FROM employee e; 
+ 
+**********************************************************************************************************
+
+What is a Trigger in MySQL?
+
+Triggers are automatic actions in response to INSERT, UPDATE, or DELETE 
+
+CREATE TRIGGER log_salary_change 
+AFTER UPDATE ON employee 
+FOR EACH ROW 
+BEGiN 
+  INSERT INTO audit_log(emp_id, old_salary, new_salary, changed_at)
+  VALUES (OLD.id, OLD.salary, NEW.salary, NOW());
+END;
+
+
+*********************************************************************************************************
+
+What is a window function?
+
+- Performs calculations across rows related to the current row, without collapsing the rows.
+
+SELECT name,salary, 
+       RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS 
+FROM employee;
+
+*******************************************************************************************************
+
+What is a CTE and how do you use it?
+Common Table Expressions 
+
+WITH dept_salary AS(
+  SELECT department, AVG(salary) AS avg_salary 
+  FROM employee 
+  GROUP BY department 
+) 
+
+SELECT * FROM dept_salary WHERE avg_salary > 5000; 
+
+**********************************************************************************************************
+
+Scenerio 1: Get the Latest Order for Each Customer 
+
+You work at an e-commerence company. you need to fetch he most recent order (latest order_date)
+placed by each customer 
+
+orders - table 
+order_id, customer_id, order_date - columns in the table 
+
+SELECT o.* 
+FROM orders o
+INNER JOIN(
+    SELECT customer_id, MAX(order_date) AS latest_order 
+	FROM orders 
+	GROUP BY customer_id
+	) latest 
+	ON o.custumer_id = latest.custumer_id AND o.order_date = latest.latest_order 
+
+
+Spoon-Fed Explanation:
+
+Step 1: Understand the goal 
+We want one row per customer, showing the latest order.
+
+Step 2: Inner Query (Subquery)
+
+SELECT customer_id, MAX(order_date) AS latest_order 
+FROM orders
+GROUP BY customer_id 
+
+- Grouping by customer_id 
+- For each group, finding the maximum order_date 
+- Output :
+      customer_id / latest_order 
+
+
+Step 3: Join back to Get Full Order Details 
+
+FROM orders 0 
+INNER JOIN( ... ) latest 
+ON o.customer_id = latest.customer_id 
+AND o.order_date = latest.latest order'
+
+- Join orders with the result of the subquery 
+- Match customer_id AND the order_date with the latest one 
+- This way, we get full details of the latest order 
+
+Output:
+
+order_id |  customer_id | order_date 
+
+*******************************************************************************************************************************
+
+
+Scenario 2: Find Employees Without Managers 
+
+Problem: You are working with an HR system. Find employees who do not have managers assigned. 
+
+employees 
+
+emp_id name manager_id 
+
+Query:
+
+SELECT * FROM employees WHERE manager_id IS NULL;
+
+Spoon-Fed Explanation:
+
+- We're filtering rows where the manager_id is NULL
+- This means they don't report to anyone --> top-level employees 
+
+Output:
+
+emp_id name manager_id 
+
+*******************************************************************************************************************************
+
+Scenario 3: Total Revenue Per Product 
+
+In a sales report, you need to calcuate the total revenue per product 
+
+product_id quantity price_per_unit 
+
+SELECT product_id, SUM(quantity * price_per_unit) as total_revene FROM sales GROUP BY product_id;
+
+Spoon Fed Explanation:
+
+Step 1: Calculate revenue for each row 
+- Multiply quantity x price_per_unit 
+
+Step 2: Group by product_id 
+- Use SUM() to total the revenue for each product 
+
+product_id | total_revenue 
+
+**********************************************************************************************************************************
+
+Scenerio 4: Count of Employees Per Department 
+
+Problem: 
+You need to show how many employees work in each department.
+
+SELECT department, COUNT(*) AS num_employees 
+FROM employees
+GROUP BY department 
+
+- GROUP BY department : group rows by department 
+- COUNT(*): Count the number of rows in each group. 
+
+**********************************************************************************************************************************
+
+Scenerio 1 : Employee with the Highest Salary 
+
+Problem: You have a table called employees:  Find the employee(s) with the highest salary. 
+
+SELECT name,salary 
+FROM employee 
+WHERE salary = (SELECT MAX(salary) FROM employees); 
+
+Explanation:
+1, (SELECT MAX(salary) FROM employees ) -> finds the highest salary (e.g., 90000) 
+2, WHERE salary = ... -> check which employee(s) match that value.
+3, Returns:
+   name     salary 
+   Diana    90000 
+   
+- Handles ties (if two employees have the same highest salary, both are shown). 
+
+SQL Query 2 (Alternative, Using ORDER BY) 
+
+SELECT name,salary 
+FROM employees 
+ORDER BY salary DESC 
+LIMIT 1; 
+
+
+
+Explanation:
+- ORDER BY salary DESC -> sorts from highest to lowest.
+- LIMIT 1 -> Picks the first row (highest)
+- Faster when you only want one result, but does not handle ties unless you change it. 
+
+Scenerio 2 : Top 3 Highest Salaries (Ranking) 
+
+SLECT name, salary 
+FROM employees 
+ORDER BY salary DESC 
+LIMIT 3;
+
+- Gets top 3 employees with highest salaries.
+- If salaries are tied, it just picks 3 rows, not distint salary levels. 
+
+Advanced (With Window Functions) 
+
+SELECT name, salary 
+FROM (
+     SELECT name, salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk 
+     FROM employees 
+) AS ranked 
+WHERE rnk <= 3 
+
+- DENSE_RANK() ensures ties are handled.
+- Example: if two employees both have 90000, they both get rank 1, and the next salary (80000) is rank 2. 
+
+Scenario 3: Highest Salary per Department 
+
+SELECT department, name, salary 
+FROM employee e 
+WHERE salary = (
+    SELECT MAX(salary) 
+	FROM employees 
+	WHERE department = e.department
+); 
+-> Finds top earner in each department. 
+
+Scenrio 4: Second Highest Salary 
+
+Query 1 (Using MAX with subquery) 
+
+SELECT name, salary 
+FROM employees 
+WHERE salary = (
+      SELECT MAX(salary)
+	  FROM employees 
+	  WHERE salary < (SELECT MAX(salary) FROM employees) 
+); 
+
+Explanation:
+
+1, SELECT MAX(salary) from employee -> gets the high salary 
+2, WHERE salary < (highest) -> ignores the top salary 
+3, MAX(salary) again -> finds the highest from the remaining salaries.
+4, WHERE salary = ... -> fetches employees with that salary 
+- Handles ties ( multiple employees with 2nd highest salary) 
+
+Query 2 ( Using DISTINCT + ORDER BY )
+
+SELECT DISTINCT salary 
+FROM employees 
+ORDER BY salary DESC
+LIMIT 1 OFFSET 1;
+
+- ORDER BY salary DESC -> sort salaries from high -> low 
+- DISTINCT -> removes duplicates
+- LIMIT 1 OFFSET 1 -> skips the 1st highest and picks the next.
+- Returns just the 2nd highest salary, not employee names.
+
+
+Scenerio 5 : Employees Who Earn More Than Their Manager
+
+Assume we have a table employees with a column manager_id that refers to anothe employee.
+
+SELECT e.name AS employee, e.salary, , m.name AS manager, m.salary AS manager_salary
+FROM employees e 
+JOIN employees m ON e.manager_id = m.emp_id 
+WHERE e.salary > m.salary 
+
+Explanation
+- JOIN employees m ON e.manager_id = m.emp_id -> joins employees with their managers.
+- WHERE e.salary > m.salary -> filters employees earning more than their manager.
+
+Scenerio 6: Find Duplicate Records 
+- Suppose some employees were entered twice.
+- WE want to detect duplicates base on name and department.
+
+SELECT name, department, COUNT(*) AS count
+FROM employees 
+GROUP BY name, department 
+HAVING COUNT(*) > 1; 
+
+Explanation:
+- GROUP BY name, department -> groups identical rows.
+- COUNT(*) -> counts how many times they appear 
+- HAVING COUNT(*)>1 -> shows only duplicates 
+- Useful in data cleaning 
+
+Scenario 7: Department with the Highest Average Salary 
+
+SELECT department, AVG(salary) AS avg_salary 
+FROM employees 
+GROUP BY department 
+ORDER BY avg_salary DESC 
+LIMIT 1 
+
+Explanation:
+1, GROUP BY department -> groups employees by department.
+2, AVG(salary) -> calculates average salary in each department.
+3, ORDER BY avg_salary DESC LIMIT 1 -> Picks the department with the highest average. 
+
+Scenario 8 : Employees Not in Any Department 
+Sometimes, employees may exist without being assigned a department. 
+
+SELECT e.emp_id, e.name 
+FROM employee e 
+LEFT JOIN departments d ON e.department_id = d.dept_id 
+WHERE d.dept_id IS NULL 
+
+Explanation:
+1, LEFT_JOIN -> brings all employees. even if no department exists.
+2, d.dept_id IS NULL -> filters only employess with no department assigned. 
+- Useful for finding data integrity issues.
+
+Scenerio 9: Departments with More than 5 Employeees 
+
+SELECT department_id, COUNT(*) AS employee_count 
+FROM employees 
+GROUP BY department_id 
+HAVING COUNT(*) > 5;
+
+Explanation:
+- GROUP BY department_id -> counts employees per department 
+- HAVING COUNT(*) > 5 -> keeps only departments with more thatn 5 employees.
+- Very common in business reporting 
+
+
+Scenerio 10: Employees Who joined in the Last 30 days 
+Assume thre is a column hire_date 
+
+SELECT emp_id, name, hire_date 
+FROM employees 
+WHERE hiredate >= CURDATE() - INTERVAL 30 DAY;
+
+Explanation:
+- CURDATE() -> gives today's date.
+- INTERVAL 30 DAY -> substracts 30 days 
+- hire_date >= ... -> Picks employees who joined in last 30 days.
+- Useful for HR Reporting 
+
+Scenario 11: Find Cumulative Salary (Running Total) 
+- Suppose we want to see how salaries add up in order of joining.
+
+SELECT emp_id, name, salary 
+      SUM(salary) OVER (OVER BY hire_date) AS running_total 
+FROM employees; 
+
+Explanation:
+- SUM(salary) OVER (ORDER BY hire_date) -> calculating running total.
+- AS we move row by row (based on hire_date), salary keeps adding up.
+- This is a Window Function, used a lot in analytics.
+
+
+Scenerio 12 : Top 3 Employees in Each department (Ranked by Salary)
+
+SELECT emp_id, name, department_id, salary, 
+       RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as rank_in_dept 
+FROM employees
+WHERE rank_in_dept <=3;
+
+Note: Some SQL engines don't allow filtering on window functions directly.
+you may need a subquery:
+
+SELECT * 
+FROM (
+      SELECT emp_id, name, department_id, salary,
+	        RANK() OVER (PARTITION BY department_id ORDER_BY salary DESC) AS rank_in_dept 
+	  FROM employees 
+	  ) t 
+WHERE rank_ind_dept <= 3; 
+
+Explanation:
+- PARTITION BY department_id -> reset ranking per department.
+- ORDER BY salary DESC -> ranks highest paid first.
+- rank_in_dept <= 3 -> Picks top 3 per department.
+- Common in Performance & bonus calculation/ 
+
+**********************************************************************************************************************************************
+
+Scenerio 13: Highest Paid Employee in Each department 
+
+SELECT e.department_id, e.name, e.salary 
+FROM employees e 
+WHERE salary = (
+    SELECT MAX(salary)
+	FROM employees 
+	WHERE department_id = e.department_id 
+) 
+
+Explanation:
+1, the innear query finds the maximum salary per department.
+2, the outer query returns employees whose salary equals that maximum.
+3, Handle ties (multliple top earners.)
+
+
+******************************************************************************************************************************
+
+
+CREATE TABLE employee(id INT PRIMARY KEY, name VARCHAR(100));
+
+INSERT INTO employee(id,name) 
+VALUES(1,'Sai') ;
+
+ALTER TABLE employee add department VARCHAR(100); 
+ALTER TABLE employee add salary DECIMAL(7,2);
+
+UPDATE employee set department='Marketing',salary=2000
+where id=1;
+
+INSERT INTO employee VALUES(2,'Paarth','Marketing',10000);
+
+SELECT department,COUNT(*) FROM employee
+WHERE salary > 3000 GROUP BY department HAVING COUNT(*) >= 1;
+
+DELETE FROM employee;
+
+ALTER TABLE employee MODIFY COLUMN department INT;
+
+CREATE TABLE department(dep_id INT PRIMARY KEY,dept_name VARCHAR(100));
+
+ALTER TABLE employee 
+ADD CONSTRAINT fk_depart 
+FOREIGN KEY(department) 
+REFERENCES department(dep_id) ON UPDATE CASCADE;
+
+DESC employee;
+
+DESC department;
+
+INSERT INTO department VALUES(1,'Marketing');
+INSERT INTO employee VALUES(1,'SaiSaran',1,5000);
+
+SELECT * FROM department;
+
+SELECT * FROM employee;
+
+select e.name, d.dept_name FROM employee e 
+INNER JOIN department d where e.department = d.dep_id;
+
+CREATE INDEX idx_emp_name ON employee(name);
+
+SELECT * FROM employee where name='SaiSaran';
+
+DELIMITER // 
+CREATE PROCEDURE GetAllEmployee()
+BEGIN
+ SELECT * FROM employee;
+END // 
+DELIMITER ;
+
+CALL GetAllEmployee()
+
+
+*************************************************************************************************************************************	  
+	  
+Scenerio 14: Percentage of Total Salary Contributed by Each Employee 
+
+SELECT name,
+       salary,
+	   ROUND(salary * 100/ (SELECT SUM(salary) FROM employees),2) AS salary_percentage 
+FROM employees; 
+
+Explanation:
+- (SELECT SUM(salary) FROM employees) -> total salary of all employeee.
+- Each employee's salary divided by that total x 100 gives their percentage share.
+- ROUND(...,2) -> limits to 2 decimal plac
+
+**********************************************************************************************************************************
+
+Scenerio 15: Employees with the same salary (Ties)
+
+SELECT salary, COUNT(*) AS employee_count 
+FROM employees
+GROUP BY salary 
+HAVING COUNT(*) > 1;
+
+Explanation:
+
+GROUP BY salary -> groups all employees with the same salary.
+HAVING COUNT(*) > 1 -> Keeps only those salaries shared by multiple employees. 
+
+- Useful for detecting salary duplicates (common in audits)
+
+
+**************************************************************************************************************************************
+
+Scenerio 16: Montly Hiring Trend (Number of Employees Hired Each Month) 
+Assume hire_date column exists.
+
+SELECT DATE_FORMAT(hire_date,'%Y-%m') AS month,
+       COUNT(*) as hires 
+FROM employees 
+GROUP BY DATE_FORMAT(hire_date, '%Y-%m')
+ORDER BY month 
+
+Explanation:
+- DATE_FORMAT(...,'%Y-%m' -> extracts Year-Month (like 2025-10).
+- COUNT(*) -> counts employees hired that month.
+- ORDER BY MONTH -> shows the trend in order 
+
+- Useful for HR dashboards and data analytics. 
+
+****************************************************************************************************************************************
+
+Scenario 17 : Department with the Lowest Average Salary
+
+SELECT department_id, AVG(salary) AS avg_salary 
+FROM employees 
+GROUP BY deparment_id 
+ORDER BY avg_salary ASC 
+LIMIT 1;
+
+Explanation:
+- AVG(salary) : finds average per department.
+- ORDER BY ASC LIMIT 1 -> picks the lowest average.
+
+- Useful identify underpaid departments.
+
+***************************************************************************************************************************************
+
+Scenerio 18: Find employees who earn more than department average 
+
+SELECT e.name,e.salary,e.department_id 
+FROM employees e 
+JOIN ( 
+  SELECT department_id, AVG(salary) AS avg_salary 
+  FROM employees 
+  GROUP BY department_id 
+  ) dept_avg 
+ON e.department_id = dept_avg.department_id 
+WHERE e.salary > dept_avg.salary
+ 
+Explanation:
+1, Inner query -> finds average salary per department.
+2, Outer query-> joins employees with their department's average.
+3, WHERE e.salary > avg_salary -> filters above average earners.
+
+***************************************************************************************************************************************
+
+1, Highest Paid Employee in Each Department - advanced (handles ties, large tables) 
+
+Query (uses window function + CTE) 
+
+WITH ranked AS (
+   SELECT
+     emp_id, 
+     name,
+     department_id,
+     salary,
+     RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) AS dept_rank 
+   FROM employees 
+   ) 
+SELECT emp_id, name, department_id, salary 
+FROM ranked 
+WHERE dept_rank = 1; 
+
+Spoon-fed explanation (line-by-line)
+1. WITH ranked AS(...) -> create a named temporary result(CTE) ranked to hold intermediate results.
+2, SELECT emp_id, name, department_id, salary, -> choose the columns we need for final output and ranking.
+3, RANK() OVER (PARTITION BY department_id ORDER BY salay DESC) AS dept_rank - windows function:
+   - PARTITION BY deparment_id restarts ranking for each department.
+   - ORDER BY salary DESC gives highest salary rank 1.
+   - RANK() gives the same rank to ties (multiple people with same top salary get rank 1).
+4, Outer SELECT ... FROM ranked where dept_rank = 1 - pick only top-ranked rows per department,rturning ties when present. 
+
+When to use this pattern.
+
+- Use when you want top N per group and must preserve ties.
+- Works will on MySQL 8+ , PostgreSQL, SQL Server, Oracle. 
+
+Performance & tuning (spoon fed)
+- Index: create a composite index on (deparment_id, salary) to help ordering/grouping:
+    CREATE INDEX idx_emp_dept_salary ON employees(department_id, salary DESC); 
+- EXPLAIN the query to ensure optimizer uses the index.
+- If the table is huge and this query runs frequently, consider a materialized result(e.g.,maintain a dept_top_earners table refreshed nightly).
+- If department cardinality is low, scanning may be cheap; otherwise partitioned by deparment_id may help for very large tables.
+
+Edge cases & notes:
+- NULL salaries: decide policy (treat as 0 or ignore). Add WHERE salary IS NOT NULL inside CTE if you want to ignore NULLs.
+- If you want exactly one top row even when ties exist (break ties deterministically), use ROW_NUMBER() with a tie-break column.
+
+*****************************************************************************************************************************************
+
+2) Percentage of Total Salary Contributed by Each Employee -- advanced (accurate with window functions)
+
+Query(single pass, window function)
+
+SELECT
+   emp_id,
+   name,
+   salary,
+   ROUND(salary * 100.0/SUM(salary) OVER(),2) AS salary_percentage 
+FROM employees 
+WHERE salary IS NOT NULL;
+
+Spoon-fed explanation:
+
+1, SUM(salary) OVER() - window function with empty parition, computes the sum across the entire result set (total payroll) in the same query, avoiding a separate aggregation subquery.
+2, salary * 100.0 / SUM(...) - compute contribution as percentage. Multiply by 100.0 to force floating arithmetic.
+3, ROUND(...,2) - format to two decimal places for readability.
+
+Performance & tuning:
+
+- this is one table scan and often more efficient than salary/(SELECT SUM(...) FROM employees) if optimier cannot reuse results.
+- Ensure salary column type supports decimal arithetic (DECIMAL recommended for money).
+- If you must exclude certain employee states (e.g. terminated), add a WHERE status='active' filter - then the winodw sum will be over active employees only.
+
+Edge cases & notes:
+- if total sum = 0, you'll get division by zero - protect with NULLIF:
+  
+  ROUND(salary * 100.0/ NULLIF(SUM(salary) OVER(),0,2) 
+- if you want group-levl percentages (e.g., percent of dept total), use SUM(salary) OVER (PARTITIOB BY department_id).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+   
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

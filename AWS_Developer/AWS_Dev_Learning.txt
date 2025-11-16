@@ -1,0 +1,2686 @@
+AWS Certified Developer - Associate (AVA-CO2) 
+
+1, AWS Fundamentals 
+
+Concepts  - Why you should know 
+What is AWS - Cloud basics, pay-as-you-go, IaaS vs PaaS vs Saas 
+AWS Global Infrastruture - Region, Availability Zone, Edge Location 
+Free Tier - Services included, monthly usage limits 
+
+2, Identify and Access Management (IAM)
+Concept - Key Topics 
+IAM users, Groups, Roles - Who/What can access AWS 
+IAM Policies (JSON) - Grant permission to users/roles 
+IAM Best Pratices - Least privilege, MFA, avoid root access 
+IAM Roles for Services - Lamdba/EC2 assumes roles to access S3, DynamoDB, etc.
+
+3, Compute Services 
+
+a, Amazon EC2 
+- Launch, stop, terminate instance 
+- Security Groups
+- User data scripts 
+- Key pairs for SSH
+- Elastic IP
+
+b, AWS Lambda (SERVERLESS)
+- Create, trigger, and test Lambda functions.
+- Event source: API Gateway, S3, DynamoDB Streams, SQS. etc. 
+- Environment variables
+- Memory and timeout settings
+- Layers
+- Concurrency and cold starts 
+
+4, Storage Services 
+
+a, Amazon S3
+- Buckets, Objects
+- Object lifecycle rules 
+- Bucket Policies and ACLs 
+- Static Website hosting 
+- S3 Events to trigger Lambda 
+- Encrytion: SSE-S3, SSE-KMS 
+
+5, Databases 
+
+a, Amazon DynamoBD
+- Tables, Items, Attributes
+- Primary Key vs composite key 
+- Provisioned vs On-Demand Capacity 
+- GSI and LSI
+- Query vs Scan 
+- Time To Live (TTL)
+- DynamoDB Streams + Lamdba trigger 
+
+b, Amazon RDS 
+- Basic SQL databases(MySQL,PostgreSQL)
+- Multi-AZ,Backups,Read Replicas 
+
+6, Application Integration 
+Service - What you should know 
+Amazon SQS - Message Queue, delay queues, dead letter queues 
+Amazon SNS - Send notifications via email, SMS, Lamdba 
+Amazon EventBridge - Trigger events between AWS services 
+Step Functions - Orchestration of Lamdba steps 
+
+7, Developer Tools 
+Tool - Use 
+AWS CLI - Command line interface 
+SDKs (Boto3 for Python) - Programmatically interact with AWS 
+AWS Cloud8 - Cloud-based IDE
+CodeCommit - AWS Git repository 
+CodeBuild - Build & test your code 
+codePipeline - CI/CD automation
+CodeDeploy - Deploy apps to EC2, Lamdba and ECS 
+
+8, API Development 
+Amazon API Gateway 
+- Create REST APIs 
+- Methods (GET,POST,DELETE)
+- Stages and Deployment
+- Integration with Lambda 
+- Caching, Throlttling 
+- Request/Response Mapping 
+
+9, Monitoring and Logging 
+Service - What you should Know 
+Amazon CloudWatch - Metrics, Logs, Alarms, Dashboards 
+AWS X-Ray - Trace Lambda/API calls 
+CloudTrail - Track account activity
+Log retention - Configure expiration
+
+10, Security and Encryption 
+IAM permissions 
+KMS (Key Management Service)
+S3 build policies
+Lamdba environement variable encruption 
+Secrets Manager/Systems Manager Parameter Store 
+
+11, Deployment and CI/CD 
+- Deploy Lambda using ZIP, console, or CLI
+- Use SAM (Serverless Application Model) or CloudFormation 
+- Continous Integration (CI) with CodeBuild 
+- Continous Deployment (CD) with CodePipeline 
+- Versioning and aliases in Lambda 
+
+12, Error Handling and Debugging 
+- Retry behaviour in Lambda 
+- Dead Leter Queue (DLQ) for Lambda & SQS 
+- Throttling and concurrenty limits 
+- API Gateway error handling 
+- Monitoring with CloudWatch/X-Ray 
+
+13, Serverless Best Practices 
+- Avoid tight coupling (use events)
+- Use environment variables 
+- Error handling with retries and DLQ
+- Break into microservices 
+- Keep Lamdba packages small 
+
+14, Billing and Pricing (Basic)
+- understand pricing for S3,Lambda, DynamoDB, EC2 
+- Cost Explorer 
+- AWS Budgets 
+
+Want Practices Projects?
+- Upload image to S3 via Lambda 
+- Store contact from data in DynamoDB using API Gateway 
+- To-do App with Lambda + API Gateway + DynamoDB 
+- Notification system using SNS + SQS 
+- CI/CD pipeline using CodePipeline 
+
+************************************************************************************************************
+
+1, What is AWS?
+- AWS stands for Amazon Web Services.
+- It's like a big toolbox in the cloud that lets you build and run software without buying hardware (like servers, harddrives, etc).
+
+Real-Life Example:
+
+-Image you're building an app(like Instagram):
+
+What you Need -  AWS Gives you 
+
+A computer to run you app - EC2 (Elastic Compute Cloud) (virtual server) 
+A place to store images - S3 (Simple Storge Service) (cloud storage) 
+A database - DynamoDB or RDS (Relational data base service) 
+Code execution - Lambda (runs code without a server)
+API (Application programming Interface) to connect to app - API (Application programmming interface ) Gateway 
+User login system - IAM(Identity and Access Managment) / Cognite 
+Logs & monitoring - CloudWatch 
+
+You don't need to buy or manage real servers. You just use the services, pay for what you use, and build your app!
+
+******************************************************************************************************************* 28-07-2025,03-08-2025,10-08-2025
+
+2, Why AWS is Important for Developers?
+
+A a developer, AWS helps you:
+- Write and deploy code easily (using Lambda, EC2 (Elastic Compute Cloud))
+- Store data (using S3 (Simple Storage Service), DynamoDB)
+- Make APIs (Application programming interface) (using API(Application programming Interface) Gateway) 
+- Automate deployments(CodePipeline,CodeDeploy)
+- Add notifications (SNS (Simple Notification Service) ,SQS (Simple Queue Service) 
+
+******************************************************************************************************************28-07-2025,03-08-2025, 10-08-2025 
+
+3, What Does AWS Developer Certfication Focus on ?
+A. The AWS Certified Developer - Associate (DVA-CO2) checks 
+- Can you build apps using AWS (Amazon Web Service) services?
+- Do you understand Lambda, S3 (Simple Storage Service) ,DynamoDB,API (Application programming Interface) Gateway 
+- Can you connect services together?
+- Can you secure them using IAM (Identity and Access managment)?
+- Can you monitor them using CloudWatch?
+
+- You don't need to manage servers. You just write code and use AWS services like LEGO blocks to build real-world applications. 
+
+******************************************************************************************************************28-07-2025, 03-08-2025, 10-08-2025 
+
+4, What is "Cloud Computing"?
+A, Cloud = Computers on the Internet 
+
+- Instead of buying your own computer servers, you rent someone else's servers (like Amazon's, Google's or Microsoft's) to 
+  Store data, Run apps, Host Websites, Analyze big data and And more 
+  
+Real-Life Analogy:
+Think of cloud computing like elecricity. 
+You don't build a power station at home. You pay only for the electricity you use. 
+
+- In the same way: You don't buy servers - you pay only the computing, storage or services you use.
+
+Three Cloud Basics:
+1, Types of cloud Services (The "What") 
+Service Types  -  Full Form 
+IaaS  - Infrastructure as a Service 
+PaaS  - Platform as a Service 
+SaaS  - Software as a Service 
+
+2, Type of Cloud Deployment (The "Where")
+Type - Meaning - Example 
+Public Cloud - Shared servers over the internet - AWS,Azure,GCP
+Private Cloud - Only for one company - A company's internal data center 
+Hybrid Cloud - Mix of public + private cloud - Store Sentivie data privately, other data publicly 
+
+3, Benefits of the Cloud 
+Benefit - What is means 
+Scalable - Add more power only when needed 
+Cost-effective - Pay-as-you-go (no upfront cost for servers)
+Reliable - Backups and servers are managed by cloud providers 
+Global Access - Access from anywhere in the world 
+Secure - Encruption, firewalls and access control 
+
+Real-World Example:
+Imagine you're builing a mobile app that stores photos and videos:
+
+Task - Cloud Tool (AWS)
+Store user photos - S3(storage) (Simple Storage Service) 
+Host backend code - Lamdba (Function as a service) 
+Use database - DynamoDB (NoSQL database)
+Handle user logins - Cognito (Auth)
+Send notifications - SNS (Simple Notification Service) 
+Monitor performance - CloudWatch 
+
+You don't manage any servers - AWS does that for you. 
+
+******************************************************************************************************************28-07-2025,03-08-2025, 10-08-2025
+
+What does "Pay as you go" mean?
+
+You only pay for what you use, just like a mobile recharge plan or electricity bill.
+
+Real-Life analogy :
+
+Electricity at home:
+- you don't pay for the whole year at once.
+- you pay monthly, based on how many units of electricity you used. 
+
+Cloud Example (Like AWS(Amazon Web Services))
+
+Image this:
+you rent a virtual computer on AWS(Amazon Web Services) called EC2 (Elastic Cloud Computing) instance to run your app.
+- If you use it for 2 hours, you only pay for 2 hours
+- If you stop it, you stop paying
+- No montly subscription or fixed fee (unless you reserve) 
+
+"Pay as you go" includes: 
+
+Service - What you Pay For 
+Compute (EC2 {Elastic Cloud Compute} ) - Per second or per hour 
+Storage (S3 {Simple Storage Services })  - Per GB stored per month 
+Database - Per read/write or per request
+Networking - Per GB of data transferred 
+
+Benefits of Pay-As-You-Go: 
+
+Benefit - Why it's Good 
+No unfront cost - Start with $0 or 0
+Cost-effective - Use more, pay more. Use less pay less 
+No Waste - You don't pay when you're not using it. 
+Flexible - Great for startups or changing workloads 
+
+************************************************************************************************************28-07-2025, 03-08-2025, 10-08-2025  
+
+IaaS vs PaaS vs Saas : 
+
+- These are cloud service models - the ways you use the cloud. 
+- Think of it like ordering food:
+   Model - Real-Life Analogy 
+   IaaS - You cook everything at home 
+   PaaS - You get a pizza base and add your own toppings.
+   Saas - You order a ready-made pizza 
+
+1, Iaas (Infrastruture as a Service)
+
+Definition - You rent raw infrastructure - virtual machines, storage, networks - and manage everything else yourself. 
+
+Analogy: Like renting land and utilities - you build your own house (OS,app, etc.) on it. 
+
+What you Manage : OS, Runtime, Middleware, Your App, Security patches 
+
+Example Services : AWS EC2 (Elastic Compute Cloud) , Azure Virtual Machines, Google Compute Engine 
+
+Developer Example : You use AWS EC2 to deploy your app:
+
+#Launch a VM, install dependencies manually 
+sudo apt install nginx 
+- sudo - Run the command as root(superuser), because installing software requires admin privileges.
+- apt - Advanced Package Tool - Ubuntu's package manager 
+- install - Tells apt to install a package 
+- nginx - The name of the software package to install (the NGINX web server) 
+python3 app.py 
+
+You handle everything: setup, scaling, patching 
+
+2, Paas (Platform as a Service )
+
+Definition - You rent a platform - per-configured OS + runtime - to just focus on writing and deploying your app. 
+
+Anaology: Like renting a fully-built house with Kichen, plumbing, etc. - you just bring your furniture (your code) 
+
+What you Manage: Just your app and data 
+
+Example Services : Heroku, Google App Engine, Azure App Services 
+
+Developer Example: On Heroku: 
+                   git push heroku main 
+				   // git - you'r using Git(version control system)
+				   // push - you want to upload your local code to a remote repository 
+				   // heroku - The name of the remote (Heroku's Git Server)
+				   // main - The branch you're pushing (usually main or master) 
+				   
+Boom: You Flash/Django/Node app is deployed with zero config.
+
+
+3, Saas (Softare as a Service) 
+
+Definition : You just use the software through a browser or API (Application programming interface)  - no deployment, no infrastructure 
+
+Analogy: Like subscribing to a meal delivery - you eat, they cook, clean, and deliver.
+
+What you Manage: Nothing (except using it) 
+
+Example Services: Gmail, Zoom, Google Docs, Salesforce and ChatGPT 
+
+Developer Example: You use Gmail or GitHub in your browoer. You don't host, maintain, or scale anything. 
+
+
+Comparsion Table:
+
+Feature   Iaas   Paas    Saas 
+You manage - Most of it - Just code/data - Nothing 
+Flexibility - High - Medium - Low 
+Scalability - Manual - Automatic - Bulit-in 
+Dev workload - High(Infra setup) - Medium (just code) - Low (just use) 
+Use Case - Custom deployment - Fast dev/delivery - Business use 
+
+
+Summary:
+
+Layer  - IaaS  - Paas - Saas 
+You get - Servers - A runtime -  A complete app 
+Your build - Everything - Just code - Nothing 
+You pay for - Infrastructure - Platform - Software use 
+
+************************************************************************************28-07-2025, 03-08-2025,10-08-2025 
+
+
+AWS (Amazon Web Services) Global Infrastructure Overview:
+
+AWS's (Amazon Web Services) global infrastructure is designed to provide:
+- High avaliability , Low latency, Fault tolerance, and Disaster recovery 
+
+AWS is built using three main components:
+
+Component -  Think of it as.... - Example 
+
+Region  -  Country/large area - us-east-1(N. Virginia)
+
+Availability Zone (AZ) - Data Center group in a region - us-east-1a, us-east-lb 
+
+Edge Location - Local content delivery - CDN point near users 
+
+1, Regions 
+What is it?
+A Region is a geographical area that contains 2 or more Availability Zones (AZs).
+- Each region in isoloated from others. 
+
+Example Regions: us-ease-1: North Virginia (popular,oldest), ap-south-1: Mumbai, ca-central-1:Canada (Central) , eu-west-1: Ireland 
+
+Developer Use: Choose a region near yours users for low latency: 
+
+aws configure --region ap-south-1 
+// is used to setup or update AWS CLI configuration, specifically the region for your AWS operations.
+// aws configure - This command launches an interaction setup wizard to configure the AWS CLI with Access Key ID, Secret Access Key, Default region, Output format 
+// --region ap-south-1: This flag overrides the default region only for this command i.e., the region ap-south-1 (Mumbai) is used only during this configuration session.
+
+2, Availability Zones (AZs)
+
+- Each region has 2 to 6 AZs (most have 3+)
+- An AZ = one or more isolated data centers with: independent power, separate networking, Physical distance from other AZs ( for fault tolerance)
+
+Why AZs?
+
+- High availability: If one AZ fails, others are still up.
+- Disaster recovery: Spread services across AZs.
+
+Best pratics: Deploy across multipler AZs.
+
+3, Edge Locations 
+- These are content delivery endpoints used by AmazonCloudFront (CDN).
+- Located in hundreds of cities worldwide.
+- Purpose: Cache data closer to users -> faster websites, videos, apps.
+
+Think Netflix: Content is streamed from nearest edge, not central data center.
+
+Bonus concepts:
+
+Local Zones:
+- Extend AWS services to major cities closer to users (e.g., for gaming, live streaming).
+- Lower Latency than a region 
+
+WaveLength Zones:
+- Used for 5G applications -> ultra-low latency on mobile networks.
+
+AWS Outposts:
+- Run AWS services on-premises(your own data center), but managed by AWS. 
+
+How does AWS ensure high availability?
+
+A, AWS uses regions with multiple availability Zones. you can deploy your applications across AZs so that even if one fails,
+   other continue serving users. Edge Locations help serve content faster by caching it near users globally. 
+  
+
+************************************************************************************28-07-2025, 10-08-2025
+ 
+What is AWS Free Tier?
+
+- AWS Free Tier gives you free access to many AWS services so you can learn, experiment, or build small apps without paying. 
+- There are 3 types of Free Tier offers:
+
+Type - Duration - Example 
+Always Free - No Expiry - Lambda, DynamoDB, CloudWatch 
+12-Month Free Tier - 12 months - EC2 (Elastic Compute Cloud) , S3 (Simple Storage Service) ,RDS (Relational Database Service) , CloudFront (after signup)
+Trail Offers - Short term - Amazon SageMaker,Redshift etc. 
+
+Popular 12-month Free Tier Services :
+
+Service  - What's Free Per Month? - Notes 
+EC2 (Elastic cloud compute)  - 750 hours of 12.micro or 13.micro - Enough to run 1 instance all month 
+S3 (Simple Storage Service) - 5GB of storage - Standard storage class only 
+RDS (Relational Database Service) - 750 hours of db.12.micro for MySQL,PostgreSQL, etc  - Good for learning databases 
+Lambda - 1 million requests + 400,000 GB-seconds compute - Scales with usage, always free 
+CloudFront - 50 GB data + 2M requests  - Great for static website/CDN (Content Delivery Network) 
+DynamoDB - 25 GB storage + 200 M requests - Always free tier,super useful. 
+
+Always Free (No Expiry)
+
+These are forever free,within limits 
+
+Service - Free Tier Limit 
+Lambda - 1 millioin requests/month
+cloudWatch - 10 custom metrics + 5GB logs 
+DynamoDB - 25GB storage, 200M reads/writes/month 
+Glue data Catalog - 1 millin objects stored 
+
+Things to Watch Out For:
+1, Monitor usage - Use AWS (Amazon web servicds)  billing Dashboard to track what you are using.
+2, Stay within limits: Going beyond free limits -> you pay 
+3, 12-month timer starts on account creation, not on first use.
+3, Stop unused EC2 (Elastic compute cloud) /RDS (Relational Database service) instances or they keep consuming free hours. 
+
+Real Example: Build a Free static Website 
+
+You can use:
+- S3 (Simple Storage Service) (5GB free) to store your HTML/CSS/JS files.
+- CloudFront (50 GB free) for fast content delivery.
+- Route 53(not free) for custom domain (optional) 
+
+
+************************************************************************************28-07-2025, 10-08-2025
+
+IAM users: 
+
+What is IAM in AWS?
+
+IAM (Identity and Access Management) is a service that helps you securely control access to AWS (Amazon Web Services) services and resources.
+
+Key Functions:
+1, Authentication - Who is the user?
+2, Authorization - What is the user allowed to do?
+
+Key components of IAM (Identity and Access Management) 
+
+Users - Individual people or services who use AWS (Amazon web services) 
+Groups - Collection of users with common permissions
+Policies - JSON documents that define permissions 
+Roles - Temporary access with specific permissions 
+Permissions - Actions allowed or denied 
+
+Example Use Cases:
+
+- Allow a developer to access only S3 (Simple Storage Service) and Lamdba.
+- Allow EC2 (Elastic compute cloud) instances to write logs to CloudWatch.
+- Deny access to delete a database for junior engineers. 
+
+IAM (Identity and Access Management) Policy Example ( S3 Read-Only) 
+
+{
+ "Version": "2012-10-17",
+ "Statement": [{
+   "Effect":"Allow",
+   "Action:":["s3.GetObject"],
+   "Resource": "arn:aws::s3::my-bucket/*"
+}] 
+
+IAM (Identity and Access Management) best pratices:
+
+- Use least privilege (give only necessary access).
+- Use roles for EC2 (Elastic compute cloud) , not access keys.
+- Enable MFA(Multi-Factor Authentication)
+- Monitor with CloudTrail and Access Advisor 
+
+
+************************************************************************************ 10-08-2025 
+
+IAM Groups: 
+
+Why Use IAM (Identity and Access Management)  Groups?
+- Instead of assigning permissions one by one to each user (which is painful), you:
+  - Create a group (e.g., Developers, Admins) 
+  - Attach policies (permissions) to that group 
+  - Add users to that group 
+  
+Benefits:
+- Simplifies management
+- Ensure consistency 
+- Easier auditing & updates 
+
+Example Scenario:
+
+Let's say you have 3 developers:
+
+- Alice, Bob, Charile 
+Instead of assigning s3 (simple storage service)  access to each:
+1, Create a group called S3(simple storage service)-Read Only.
+2, Attach an S3 (simple storage service) ReadOnly policy to the group.
+3, Add Alice, Bob, Charlie to that group 
+
+- Now they all have s3 (simple storage service) read access!
+
+Creating a Group (AWS {Amazon Web services}  Console Steps)
+
+1, Go to IAM (Identity and access management)  in the AWS (Amazon Web services) console.
+2, Click on "User groups"
+3, Click "Create group"
+4, Name the group (e.g, Developers)
+5, Attach policies (like AmazonS3ReadOnlyAccess)
+6, Add users to the group 
+7, Done!
+
+Same Group Policy (Custom JSON(java script object notation) policy for S3 (simple storage software) ReadOnly) 
+
+{
+"Version":"2012-10-17",
+"Statement":[{
+ "Effect":"Allow",
+ "Action":["s3:GetObject","s3:ListBucket"],
+ "Resource":["arn:aws:s3::my-bucket"."arn:aws:s3::my-bucket/*"] 
+}] 
+
+IAM Group vs IAM Role vs IAM User 
+
+Feature - Group - Role - Users 
+
+Who?  -  For users - For services or cross account access - An individual 
+
+Permissions?  Yes(via policy) - Yes (via policy) - Yes(via policy) 
+
+Login? -  No (used only for - No (assumed temporaliy) - Yes 
+          grouping) 
+		  
+Example - developer's group - EC2 role to write logs - alice 
+
+*************************************************************************************************** 10-08-2025 
+
+
+What is an IAM Role?
+
+- An IAM Role is like a temporary identity with specific permissions that any trusted entity
+  (user,app,service,EC2(Elastic Cloud compute) ,Lamdba,another AWS (Amazon web services) account) can assume to perform actions. 
+  
+- Think of a role as a "uniform" - when someone wear it, they get the authority (permissions) that come with it. 
+
+Why Use Roles?
+
+- Grant temporary permissions.
+- Avoid long-term access keys or passwords.
+- Allow services like EC2 (Elastic compute cloud) , Lamdba to securely call other AWS (Amzaon Web Services) services.
+- Enable cross-account access securely. 
+
+Common Use Cases:
+
+Use Case - Description 
+
+EC2 (Elastic compute cloud)  instance to S3 (simple storage service) - An EC2 (Elastic compute cloud) instance writes logs to S3 (simple storage service) using a role 
+
+Lamdba to DynamoDB - Lambda function reads/writes data in DynamoDB via a role 
+
+Cross-account access - User in Account A accesses resources in Account B by assuming a role 
+
+Federated login - Login via Google, Facebook etc, and assume a role in AWS ( Amazon Web Services)  
+
+IAM (Identity and access management) Role Components: 
+1, Trust Policy (Who can assume the role?)
+2, Permissions Policy (What can the role do?) 
+
+Trust Policy (Who can assume the role?) 
+
+Here's a basic trust policy that lets EC2 (Elastic compute cloud) assume the role:
+
+{
+"Version":"2012-10-17",
+"Statement":[{
+"Effect":"Allow",
+"principal":{
+  "Service":"ec2.amazonaws.com"
+},
+"Action":"sts:AssumeRole" 
+}]
+}
+
+sts:AssumeRole means "I want to put on the uniform(role)." 
+
+Permissions Policy (What can the role do?)
+- Attach policies just like a user/group. Example: S3 (Simple Storage Service) ReadOnly 
+
+{ 
+"Version":"2012-10-17",
+"Statement":[{
+"Effect":"Allow",
+"Action":"["s3.GetObect","s3:ListBucket"],
+"Resource":"*"
+}]
+}
+
+Example Scenario: EC2 (Elastic compute cloud) Role to Access S3 (simple storage service) 
+
+1, Create IAM (Identity and access management) role 
+      - Trusted entity: EC2 (Elastic Compute Cloud) 
+	  - Permissions: S3 read access (Simple Storage Service) 
+	  
+2, Attach role to EC2 (Elastic cloud compute) instance 
+3, EC2 (Elastic compute cloud) instance now has access to S3 (simple storage service) without keys. 
+
+
+********************************************************************************************************************************** 10-08-2025 
+
+IAM (Identity and Access management)  best practices in Cloud:
+
+1, Principle of Least Privilege (PoLP)
+- Only give the minimum permissions needed to do the job 
+
+. Use fine-grained IAM policies 
+. Avoid using * in Action or Resource 
+. Regularly audit permissions 
+
+Example (AWS IAS Policy):
+
+{
+"Effect": "Allow",
+"Action": "s3:GetObject",
+"Resource": "arn:aws:s3::my-bucket/*"
+}
+
+2, Use Roles Instead of Users 
+-  Assign IAM roles to applications, instances, containers - not IAM users.
+. Use IAM roles for EC2, Lambda, EKS, etc. 
+. Use federated access (e.g., SSO via Okta, AD) for users 
+
+3, Enable MFA (Multi-Factor Authentication) 
+- Require MFA for all privileged accounts and users.
+. Use virtual MFA (like Google Authenticator) or hardware tokens 
+. Especially critical for root/admin accounts. 
+
+4, Group Users with Roles or Permissions 
+- Manage users via groups, not individual policies.
+. Example :
+  1, Developers group -> Read/write to Dev resources.
+  2, QA group -> Read-only to Production resources 
+  
+5. Monitor and Audit with cloud logging 
+- Use audit logs to track who accessed what and when.
+. AWS: Enable CloudTrail, Access Analyzer, and Config 
+. Azure: Use Azure Monitor, Activity Logs 
+. GCP : Use Cloud Audit Logs 
+
+6. Use Temporary Credentials (STS tokens) 
+- Avoid long-lived credentials or static access type.
+. USe AWS STS, Azure AD tokens, or GCP short-lived OAuth tokens.
+- Auto-rotate and expire credentials.
+
+7, Never Hardcode Secrets 
+Never store IAM keys, passwords, or tokens in code or Git. 
+- Use secret managers:
+. AWS Secrets Manager 
+. Azure Key vault 
+. GCP Secret Manager 
+
+8, Apply Resource-Level Permissions:
+Don't just assign service-level access. Use resource-level scoping.
+
+Example: Allow read access only to a specific S3 bucket, not all buckets. 
+
+9, Regularly Review and Rotate Access:
+
+Periodically: 
+1, Audit who has access.
+2, Remove unused accounts/roles.
+3, Rotote IAM keys and credentials
+
+10. Use IAM Policy Simulator or Access Analyzer 
+- Test policies before applying them. 
+. AWS: IAM policy simulator 
+. Azure: Use What-If tool in role assignments
+. GCP : Use policy Troubleshooter 
+
+IAM Hardening Quick Checklist:
+
+Best Practics - Enabled?
+MFA for root & users - Yes 
+No hardcoded secrets in code - Enable 
+Principle of least privilege - Enable 
+IAM roles for compute resource - Enable 
+Cloud Trail/Montoring enabled - Enable 
+Temporary credentials only - Enable 
+Secrets in Vault/Manager - Eanble 
+Policy review rotation - Eanble 
+
+*******************************************************************************************************************
+
+IAM Roles for AWS Services 
+
+What is an IAM Role?
+- An IAM role is an AWS identity with specific permission that can be assumed by AWS services, applications, or users.
+
+. Unlike users, roles don't have long-term credentials (username/password or access keys).
+. Roles are used by AWS services like EC2, Lambda, ECS, etc. to perform actions on your behalf.
+ 
+Why are Roles Important on the Exam?
+- They help you:
+. Grant access safely and temporarily.
+. Avoid using static access keys in your app.
+. Follow the principle of least privilege 
+
+Common Use Cases on the AWS Developer Exam:
+
+Service - Role Use Case 
+EC2 - Instance needs to call S3,DynamoDB, etc.
+Lambda - Lambda function needs to call other AWS services.
+ECS Tasks - Containerized app needs permissions to access other AWS resources. 
+CodeBuild - Needs to access GitHub, S3 artifacts, or deploy 
+Step Function - Needs to invoke Lambda or other services 
+API Gateway + Cognito - Assume IAM role to access backend securely
+
+Example: IAM Role for Lambda Function 
+1, Create IAM Role with trust policy for Lambda:
+{
+ "Version":"2012-10-17",
+ "Statement": [{ 
+    "Effect":"Allow",
+    "Principal":{
+       "Service":"lambda.amazonaws.con"
+	 },
+    "Action": "sts:AssumeRole" 	 
+ }]
+} 
+
+2, Attach policy to allow access to S3 
+{
+  "Effect":"Allow",
+  "Action":["s3:GetObject","s3:PutObject"],
+  "Resource": "arn:aws:s3::my-bucket/*" 
+}
+
+3, Assign role to Lambda during creation or update 
+
+Trust Relationship:
+
+- IAM roles are assumed by AWS services. 
+- The trust policy defines who can assume the role. 
+
+Common trusted entities: 
+. "Service":"lambda.amazonaws.com" 
+. "Service":"ec2.aamzonaws.com"
+. "Service":"ecs-tasks.amazonaws.com" 
+
+Spot Wrong Access Scenarios: 
+
+- x - Lambda function using hardcoded credentials instead of a role. 
+- x - EC2 instance needs S3 access but no IAM role is attached.
+- x - Role assigned to user instead of service 
+
+- Always choose IAM roles over access keys for services. 
+
+
+How Temporary Credentials Work:
+- When a service assumes a role, AWS uses STS (Security Token Service) to provide:
+1, Access key ID
+2, Secret Access Key 
+3, Session Token (valid for a short period)
+These are rotated and managed automatically for the service.
+
+You have an EC2 instance that needs to upload logs to an S3 bucket. 
+What is the best way to provide access?
+
+A) Use IAM user credentials stored in environment.
+B) Attach an IAM role to the EC2 instance with s3:PutObject permissions. -  Correct Answer 
+C) Add the EC2 instance to an S3 bucket policy.
+D) Create a Lambda function to copy logs from EC2 to S3 
+
+Summary:
+
+IAM Role - Temporary credentials for AWS services 
+Trust Policy - Defines who can assume the role 
+Service-linked Roles - Managed by AWS for specific services 
+STS - Issues temp credentials when role is assumed. 
+Least Privilege - Always grant minimym permissions .
+
+***************************************************************************************************************************************************
+ 
+Compute Services:
+
+1, Amazon EC2 ( Elastic Compute Cloud) 
+- What it is: Virtual servers in the cloud.
+- When to choose each service: Full control of server environment. 
+- Type : Iaas(VMs) 
+- UseCase : Full control over OS, install any software, custom networking. 
+- Pricing Model: Pay per second(Linux), per hour (Windows)
+- Exam keywords: Instance types, security Groups, EBS, AutoScaling, UserData 
+- Key exam points:
+  - You choose instance types (CPU, RAM, network).
+  - Can be on-demand, reserved, spot or dedicated hosts.
+  - Connect using SSH(Linux) or RDP (Windows).
+  - Store data using EBS volumes (block storage).
+  - User data scripts can run on boot for automation.
+  - Scaling: use with Auto Scaling Groups (ASG) 
+  - Load balancing: Elastic Load Balance (ELB)
+  - Security: controlled by Security Groups 
+  
+
+2, AWS Lambda 
+- What it is: Serverless compute - you just run code, no servers to manage 
+- When to choose each service: Event driven, no server management, short tasks. 
+- Type : Serverless Functions
+- Use Case : Event-driven tasks, short processes, microservices, API backend.
+- Pricing Model: Pay per request + execution itme (GB-Sec)
+- Exam Keywords: Event source, cold start, environment variables, IAM role, 15-min limit 
+
+- Key exam points:
+   - Supports multiple languages: Python, Node.js, Java, Go, etc.
+   - Triggered by events (API Gateway, S3 Uploads, DynamoDB streams, EventBridge, et.).
+   - Pay Per request and execution time.
+   - Cold start vs Warm start
+   - Environment variables for configuration.
+   = IAM role attached to lamdba for permissions.
+   - Max execution time: 15 minutes. 
+   
+3, AWS Elastic Beanstalk 
+- What it is: PaaS for deploying web apps without managing infrastructure.
+- When to choose each service: Easy deployment of web apps without managing infrastructure. 
+- Type : PaaS
+- Use Case: Deploy web apps fast without managing servers.
+- Pricing Model: Pay for underlying resources (EC2, S3, etc) 
+- Exam Keywords: .ebextensions, manage scaling, multiple languages, still EC2 underneath. 
+- Key exam points: 
+    - Supports Java,.NET,Node.js,PHP,Python,Go,Docker.
+	- Handles provisioning, load balancing, scaling and monitoring.
+	- You still have access to underlying EC2 instances.
+	- You can configure via configuration files (.ebextensions).
+	
+4, Amazon ECS (Elastic Container Service)
+- What it is: Fully managed container orhestration.
+- When to choose each service: Containers and microservices.
+- Type: Container Orchestration 
+- Use Case: Microservices,Docker container hosting 
+- Pricing Model - Pay for EC2/Fargate resources used.
+- Exam Keywords - Task definition, Cluster, Service, ECR integration 
+- Key exam points:
+    - Launch types: EC2(you manage instances) or Fargate(serverless containers)
+	- Define Task Definitions (blueprint for containers)
+	- Works with ECR(Elastic Container Registry) to store container images.
+	- Integrates with ALB(Application Load Balancer) for routing.
+	
+5, Amazon EKS (Elastic Kubernetes Service)
+- What it is: Managed Kubernetes service.
+- When to choose each service: Containers and microservices. 
+- Type: Managed Kubernetes 
+- Usecase: Kubernetes workloads without managing control plane. 
+- Pricing Model - Pay for worker nodes (EC2 or Fargate) + EKS fee 
+- Exam Keywords - Control plane, RBAC, worker nodes. 
+- Key exam points:
+    - Runs kubernetes control plane for you.
+	- Can use EC2 or Fargate worker nodes.
+	- Integraes with IAM for RBAC (role-based access control)
+	
+6, AWS Fargate:
+- What it is : Serverless Compute for containers.
+- When to choose each service: Containers and microservices. 
+- Type: Serverless Containers
+- UseCase : Run containers without managing servers.
+- Pricing Model: Pay per vCPU + GB RAM per second.
+- Exam Keywords- No EC2, ECS/EKS launch type, serverless containers. 
+- Key exam points:
+   - Works with ECS and EKS 
+   - No Server management - AWS provisions compute.
+   - Pay only for vCPU and memory your containers use.
+   
+7, AWS Batch
+- What it is: Run batch computing workloads at any scale.
+- When to choose each service: Scheduled or large-scale batch jobs. 
+- Type: Batch processing 
+- UseCase: Pay for compute used (often with Spot)
+- Exam Keyword: Jobs, queue, automatic, scaling. 
+- Key examp points:
+   - Great for jobs needing high performance computing (HPC).
+   - Automatically provisions compute based on job needs.
+   - Works with Spot instances to save cost.
+   
+8, AWS LightSail 
+- What it is : Simple, low-cost compute for smalls apps or websites:
+- When to choose each service: Small-scale projects or quick setups. 
+- Type : Simple Compute 
+- UseCase: small apps, websites, quick prototypes 
+- PriceModel: Fixed montly bundle 
+- Exam Keyword: Preconfigured stack, low cost, predicate pricing. 
+- Key exam points:
+    - Includes compute,storage, and networking in one bundle.
+	- Good for beginners or small depolyments.
+	- Supports preconfigured stacks (WordPress, LAMP, etc.)
+	
+****************************************************************************************************************
+
+Amazon EC2
+
+1, What is EC2?
+- Elastic compute cloud = virtual machines in AWS
+- You control OS,software,network,storage.
+- Used when you need full control over enviroment. 
+
+2, Core Concepts 
+
+InstanctTypes:
+Explanation: Different combinations of CPU,RAM,storage,network 
+Exam Tip: Remember instance families: t2.micro (general), c5.large(compute), r5.large(memory) 
+
+AMI (Amazon Machine Image) 
+Explanation: Template to launch EC2 (Elastic Compute Cloud)  with OS (operating system) + preinstalled software.
+Exam Tip: Custom AMIs (Amazon Machine Image) can speed deployment. 
+
+EBS (Elastic Block Store)
+Explanation: Persistent block storage attached to EC2 (elastic compute cloud),
+Exam Tip: Can be SSD (Solid State Drive) or HDD (Hard Disk Drive) , snapshot to s3 (simple storage service)
+
+Instance Store:
+Explanation: Temporary storage physically attached to host. 
+Exam Tip: Data lost on stop/termiate 
+
+Security Groups:
+Explanation: Virtual firewall for inbound/outbound rules. 
+Exam Tip: Stateful - return traffic is automatically allowed. 
+
+Key Points:
+Exmplanation: SSH (Secure Shell) /RDP (Remote Desktop Protocol) authentication 
+Exam Tip: Store .pem file securely.
+
+3. Pricing Models:
+
+Model : On-Demond 
+When to use: Short-term, unpredictable workloads 
+Exam Keyword: Pay per sec/minute 
+
+Model : Reserved
+When to use: Long term workloads (1-3 year)
+Exam Keyword: Cheapest if committed 
+
+Model: Spot 
+When to use: Flexible, fault-tolerant workloads 
+Exam keyword - Up to 90% cheaper, but can be interruped 
+
+Model: Dedicated Host 
+When to use: Compilance/licensing needs 
+Exam keyword: Physical server isolation 
+
+4, Networking 
+- Elastic IP -> Static IPv4 adress 
+- VPC -> EC2 lives inside a virtual private cloud.
+- Public vs Private Subnet -> Internet facing vs internal 
+- ENI (Elastic Network Interface) -> Extra network card for EC2 
+
+5, Scaling 
+- Auto Scaling Groups (ASG) ->  Add/remove EC2 bases on load.
+- Elastic Load Balancer (ELB) -> Distributes traffice to multiple EC2s 
+
+6, Automattion 
+- User Data Scripts - Run commands at first boot (install packages, configs)
+- Cloud-init on Linux handles startup scripts 
+- System Manager (SSM) - Manager EC2 without SSH 
+
+7,Security :
+- Attach IAM Role to EC2 -> Gives permissions to AWS services without storing credentials.
+- Use Security Groups instead of opening all ports.
+- Use SSH session manager for secure shell without exposing port 22
+
+8, Developer-Focused Integrations 
+- CodeDeploy can deploy apps directly to EC2 
+- CloudWatch for logs/metrics 
+- CloudFormation to create EC2 via templates.
+- SDKs/CLI to manage EC2 programmatically. 
+
+Common Exam Questions:
+1, Which storage option permits after instance termination?
+A, EBS (if "Delete" on Termination" is off/)
+
+2, How to give EC2 permisoins to S2 without access keys? 
+A, Attach IAM Role 
+
+3, What's the differetnc between security groups and NACLs?
+A, SG = stateful, attached to EC2 
+   NACL - stateless, attached to subnets
+   
+4, How to automtically install software at launch? 
+A, User Data Script 
+
+**************************************************************************************************************
+
+Amazon EC2 Launch Process 
+
+1, Choose AMI ( Amazon Machine Image )
+   - Pre-configured OS image (Linux, Windows, or custom) 
+   - Can include pre-installed software 
+   Exam tip:
+     - Public AMIs -> provided by AWS or community 
+	 - Private AMIs -> your own, in our account 
+	 
+2, Choose Instance Type
+   - Defines vCPU, RAM, network, storage performance.
+   - Example familites:
+     * t = general purpose 
+	 * c = compute optimized 
+	 * r = memory optimized 
+	 * p/g = GPU/ML 
+   - Exam tip: Matching workload to right instance family saves cost.
+   
+3, Configure Instance Details 
+   - Number of instances.
+   - Network settings:
+       - VPC - Virtual Network for EC2
+	   - Subnet - Availability zone placement 
+	   - Auto- assigned public IP - Yes for internet access.
+   - IAM Role - Grant AWS permissions without access keys.
+   - Shutdown behaviour: Stop vs Terminate 
+   - User Data script -> Runs once at first boot (software install, configs).
+   
+4, Add Storage 
+   - EBS volumes -> Persistent, survive stop/start.
+   - volume types: gp3(general SSD), io1/io2 (provisioned IOPS), st1/sc1(HDD).
+   - Enable/disable- Delete on Termination
+   - Optionally add Instance Store (temporary storage)
+   
+5, Add Tags
+   - Key-value pairs for identification (e.g., Name = MyAppServer).
+   - Exam tip: Tags can be used for cost allocation, automation. 
+   
+6, Configure Security Group 
+   - virtual firewall: control inbound/outbound rules.
+   - Examples: 
+      - Allow SSH(22) for Linux access.
+	  - Allow RDP(3389) for windows access.
+   - Stateful: return traffic is automatically allowed. 
+   
+7, Review & Launch
+   - Check all settings
+   - Create or choose key pair for login.
+   - Download .pem file for SSH access (Linux) or .ppk (Windows via PUTTY).
+   
+8, Connect to Instance 
+   - Linux :
+        ssh -i mykey.pem ec2-user@<Public-IP>
+   - Windows: Decrypt password using key pair, connect via RDP.
+   
+9, Post-Launch Actions:
+   - Install app denpendencies.
+   - Attach to ELB if load balancing is needed.
+   - Enable CloudWatching monitoring.
+   - Use Systems Manager Session Manager for secure shell without opening ports.
+   
+Exam Pitfalls:
+1, If you stop EC2 -> EBS persists; terminate -> EBS may delete unless disabled.
+2, Without IAM Role, code on EC2 can't access AWS APIs securely.
+3, Instance Store data is lost if stopped or terminted.
+4, Security Groups default -> all outbound allowed, inbound denied. 
+
+***********************************************************************************************************
+
+What Happens When you Stop an EC2 instance? 
+1. Definition
+- Stop = Shutdown the instance (like powering off a physcial computer) but keep the EBS volume and settings.
+- Instance can be restarted later. 
+
+2. Key Effects 
+Feature - Behaviour when stopped 
+
+EBS Volumes - Remain attached and data is retained (unless you manually detach or delete)
+Instance Store - Data is lost (because it's temporary) 
+Public IP4 - Lost if it was auto-assiged (ephemeral). Keep it only if you use Elastic IP.
+Privat IP4 - Remains the same. 
+Billing - EC2 compute charges stop; EBS storage charges continue. 
+Elastic IP - No extra cost if attached to running instance, but charges apply if stopped. 
+RAM/Processes - Lost - nothing runs while stopped. 
+
+3. Technical Details 
+- Instance state changes :  running -> stopping -> stopped. 
+- You can change instance type when stopped.
+- you can modify EBS volumes when stopped.
+- you can move to another Availaibility Zone only by creating an AMI and launching a new instance. 
+
+4. Stop vs Terminate 
+
+Action: Stop 
+EBS Data: Preserved 
+Instance Store Data: Lost 
+Instance Availability: Can restart 
+
+Action: Terminate 
+EBS Data: Deleted if "Delete on Termination" enabled 
+Instance Store Data : Lost 
+Instance Availability : Cannot restart 
+
+5, Common Exam Traps 
+1, Willing stopping EC2 keep public IP? 
+   -> No, unless using Elastic IP4
+ 
+2, Does stopping incur charges?
+   -> No compute charges, but still pay for EBS 
+   
+3, Can you restart EC2 with same private IP?
+   -> Yes, same private IP within Same VPC 
+   
+6, Real Example 
+If you have 
+- 1 EC2 instance with t2.micro (on-demand)
+- 8 GB gp3 EBS volume 
+
+Running for 30 days - Charged for compute + storage 
+Stopped for 30 days - Charged only for EBS storage. 
+
+
+**********************************************************************************************************************************************
+
+
+What is the EC2 Termination?
+- Terminate = Shutdown and permantely delete the instance.
+- You cannot restart it after termination.
+- The underlying virtual machine is gone.
+
+What happens when you terminate an EC2 instance
+
+Resource  - Terminate Effect 
+
+Root EBS volume - By default -> delete if "Delete on Termination" is enabled (default setting). you can uncheck it to keep the volume. 
+
+Additional EBS volume - Persist by default (must delete manually if not needed) 
+
+Instance Store Volumes - Data lost permantely (non-persistent)
+
+Public IPv4  - Release (gone forever) 
+
+Elastic IP -  Detaches and stays in your account ( can reattach to another instance)
+
+Private IPv4 - Lost (cannot reuse) 
+
+Billing - Compute charges stop immediately, storage charges remain volume if volumes persist. 
+
+Key Difference:  Stop vs Terminate 
+
+Action : Stop 
+EBS : Preserved 
+Instance Store : Lost 
+Public IP : Lost unless Elastic IP 
+Restart Possible : Yes 
+
+Action : Terminate 
+EBS Data : Deleted (unless disabled)
+Instance Store : Lost 
+Public IP : Lost 
+Restart Possible : No 
+
+
+Common Exam Traps:
+
+1, if I terminate an EC2, do I still pay for EBS?
+A, Yes, if volumes are not deleted.
+
+2, Can I restart a terminated instance?
+A, No, Only possible if you made a AMI or snapshot before.
+
+3, What happens to Elastic IP after termination?
+A, It's detached but still in your account (unless released)
+
+4, What about data in instance store?
+A, Gone forever after termination.
+
+
+Real Example:
+
+- EC2 instance with :
+        Root EBS Volume (default "Delete on Termination" = true)
+		One extra EBS volume 
+		
+- After termination:
+       - Root volume deleted.
+	   - Extra EBS volume stilll exists (and incurs change)
+	   - Public IP gone 
+	   - Cannot bring back the instance. 
+	   
+Exam keyword to Remember:
+- Stop = Pause (can restart)
+- Terminate - Permanent delete
+
+
+*********************************************************************************************************************************
+
+What is EC2 Reboot?
+
+- Reboot = Restart the virtual machine (like pressing reset on a physical computer)
+- The instance is stopped and started internally by AWS, but it does not go through Stop/Start lifecycle. 
+
+What happens during reboot 
+
+Resource - Effect during reboot 
+
+1, Instance ID - Remain the same. 
+2, Private IPv4  - Remains the same.
+3, Public IPv4 - Remains the same (even if auto-assigned) 
+4, Elastic IP - Still attached 
+5, EBS volumes - Stay attached, data preserved 
+6, Instance Store volumes - Data perserved (not wiped, unlike stop/start)
+7, RAM - Lost (processes stop)
+8, Billing - Continues (no pause in charges)
+
+Key difference:
+
+Action : Reboot 
+Public IP : Kept 
+Instance Data Store: Preserved 
+Restart Possible? Yes (Same instance) 
+Billing: Still billed 
+
+Action: Stop 
+Public IP: Lost (unless Elastic IP)
+Instance Store Data : Lost 
+Restart possible? Yes 
+Billing: No compute billing 
+
+Action: Terminate 
+Public IP  : lost 
+Instance store data : Lost 
+Restart possible? : No 
+Billing - No compute billing 
+
+
+How to reboot:
+
+- AWS Console -> Select Instance -> Actions -> Reboot instance 
+- AWS CLI -> 
+  aws ec2 reboot-instances --instance-ids i-12345678990ababce 
+  
+Common Exam Types:
+
+1, Does reboot replace the instance?
+A, No, instance stays in same host (usually)
+
+2, Does reboot change IPs?
+A, No, both public and private stay the same 
+
+3, Does reboot wipe instancee store data?
+A, No, preserved 
+
+4, Do you get charged during reboot?
+A, Yes, compute billing continues 
+
+
+Examp Keyword to Remember:
+
+- Reboot - Soft restart (no resource changes)
+- Stop - Shutdown ( can restart but some resources change) 
+- Terminate - Permanate delete .
+
+
+*********************************************************************************************************************************************************
+
+
+What is Ec2 Hibernate?
+- Hibernate = Save the RAM state of the instance to disk, then shut it down. 
+- When restarted, it resumes from RAM snapshot (like putting a laptop into sleep mode)
+- Saves time compared to a full reboot or stop/start.
+
+What happens in Hibernate 
+
+Resource - Behaviour 
+
+RAM - Saved to the root EBS volume (must be encrupted). Restored on restart. 
+Instance ID - Same after resume.
+Private IPV4 - Remains the same 
+Public IPv4 - Lost if auto-assigned, retained if using Elastic IP.
+Elastic IP - still attached 
+EBS Volumes - Data Persists (RAM image stored in root volume)
+Instance Store - Data lost (not preserved)
+Billing - Compute charges stop, storage charges continues (EBS + RAM snapshot).
+
+Requirements for Hibernate:
+1, Instance type must support hibernation (most general-purpose + some memory-optimized).
+2, Root volume must be EBS, encrupted, and large enough to hold RAM contents.
+3, Instance RAM size <= 150 GB.
+4, Available only for On-Demand and Reserved instacnes (not Spot).
+5, Suppose OS: Amazon Linux 2, Ubuntu, Windows (some versions)
+
+Key Differences: Stop vs Hibernate 
+
+Action: Stop
+RAM : Lost 
+Public IP: Lost (unless Elastic IP)
+Instance Store: Lost 
+Restart Speed: Cold boot (OS + apps restart)
+
+Action: Hibernate
+RAM : Perserved (saved to EBS)
+Public IP : Lost (unlese Elastic IP)
+Instance Store : Lost 
+Restart Speed: Fast boot (resumes apps)
+
+Commont Exam Traps:
+1, Does Hibernate save processes?
+- Yes, because RAM contents are saved.
+
+2, Can I hibernate Spot instance?
+- No, only on-Demand and Reserved. 
+
+3, Do I pay while hibernated?
+- No compute charges, EBS storage charges.
+
+4, What if RAM > 150 GB?
+- No supported 
+
+- Exam Keyword to Remember:
+  Hibernate = Stop + Save RAM 
+  Best for long-running apps that need to resume quickly.
+
+********************************************************************************************************  
+
+Amazon EC2 Security Group 
+
+1, What is a Security Group?
+A, 
+- A virtual firewall that controls inbound and outbound traffic to your EC2 instances.
+- Applied at the instance level (not subnet level -> that's NACL)
+- Works only for IPv4, IPv6, and port-based rules. 
+
+2. Key Properties 
+Property - Explanation
+1, Stateful - if inbound traffic is allowed , the response is automatically allowed (no need to add outbound rule).
+2, Default Rules - By default -> All inbound traffic denied, All outbound traffic allowed.
+3, Instance Association - Can attach multiple security groups to 1 EC2.
+4, Rule limits - Each Security Group can have up to 60 inbound + 60 outbound rules (soft limit,exam may test)
+5, Region/VPC Scoped - Security Groups exist inside a VPC, not globally. 
+
+3, Rule Types 
+- Rules are allow only (no deny rules - unlie NACLs) 
+- you define:
+         - Protocol (TCP, UDP, ICMP, etc.)
+		 - Port Range(e.g, 22 for SSH, 80 for HTTP, 443 for HTTPS)
+		 - Source (CIDR block, another Security Group or IP range) 
+		 
+4, Common examples 
+Use Case  - Inbound Rule 
+
+1, Linux SSH - Allow TCP 22 from your IP.
+2, Windows RDP - Allow TCP 3389 from your IP 
+3, Web Server = Allow TCP 80 (HTTP) + 443 (HTTPS) from 0.0.0.0/0 
+4, App Server = Allow TCP 3306 (MySQL) from APP Server's security Group 
+
+5, Security Groups vs NACLs (Exam Favorite)
+
+Feature : Level
+Security Groups : Instance-level 
+NACLs - Subnet-level 
+
+Feature : Rules 
+Security Gruups: Allow only 
+NACLs - Allow + Deny 
+
+Feature : Stateful 
+Security Group : Yes 
+NACLs : No (stateless, need inbound + outbound rules)
+
+Feature : Default  
+Security Group : All inbound denied, all outbound allowed. 
+NACLs : All inbound/outbound allowed  
+
+Feature : Typical Use 
+Security Group : Control access to EC2 
+NACLs : Control subnet traffic 
+
+6, Developers Exam Pitfalls
+1, can you block an IP in security Group?
+A, No, use NACL for denies 
+
+2, Do Security Groups affect outbound traffic?
+A, Yes, but by default all outbound is allowed. 
+
+3, Can I attach 1 EC2 to multiple Security Groups?
+A, Yes, Rules are unioned. 
+
+4, Do Changes apply immediately?
+A, Yes, changes are live, no reboot required.
+
+5, What is default inbound?
+A, All traffic denied until you add rules.
+
+Exam Keywords:
+- Stateful firewall, allow-only, instance-level, live changes, inbound denied by default, outbound allowed by default. 
+
+***********************************************************************************************************************
+
+Amazon EC2 User Data Scripts  
+
+1, What is User Data?
+A, 
+- User Data -> Startup script that runs when the EC2 instance launches for the first time (or every boot if configured).
+- Used for bootstrapping -> install software, apply configs, run commands automatically.
+
+2, How it Works 
+A,
+- When launching EC2, you can paste a script under "User data" (in "Advanced Details")
+- At boot:
+   1, Cloud-init (on Linux) or EC2Config/EC2Launch (onWindows) runs the script.
+   2, Script executes as root user.
+   3, Runs only once by default (first boot).
+   
+3, Example (Linux) 
+A,
+#!/bin/bash 
+#Update packages 
+yum update -y
+#Install Apache 
+yum install -y httpd 
+#start Apache 
+systemctl start httpd 
+systemclt enable httpd 
+#Add welcome page 
+echo "<h1>Hello from EC2 User Data</h1>" > /var/www/html/index.html 
+
+Result: As soon as EC2 reboots, Apache is installed and a webpage is ready. 
+
+4, Example (Windows Powershell)
+<powershell>
+Install-WindowsFeature -name Web-Server -IncludeManagementTools
+New-Item -Path "C:\inetpub\wwwroot\index.html" -ItemType File -Value "Hello from Windows EC2 User Data" 
+</powershell>
+
+5, Key Exam Notes 
+- Runs as root -> no need for sudo 
+- Default behaviour -> runs only at first boot. 
+- To make it run at every restart, you must add logic to scripts or configure cloud-init 
+- Stored in plain text -> Do not put secrets/Credentials in UserData 
+- Maximum script size : 16 KB (when entered in Console)
+- Use Systems Manager Parameter Store/Secrets Manager for sensitive configs. 
+
+6, Real Exam Traps 
+
+1, Do user data scritps run every time instance starts?
+A, No, only on first boot by default.
+
+2, Do I need sudo in UserData?
+A, No, runs as root 
+
+3, Can User Data be modified after launch?
+A, Yes, but must stop -> edit -> sart instacne to reapply 
+
+4, Can I pass user data using CLI/SDK?
+A, Yes, via --user-data parameter (base64 encoded). 
+
+7, AWS CLI example 
+aws ec2 run-instances \ 
+        --image-id ami-12345678 \
+		--instance-type t2.micro \
+		--key-name mykey \
+		--security-group-ids sg-12345678 \
+		--subnet-id subnet-123456678 \
+		--user-data file://myscript.sh 
+		
+Exam Keywords:
+- Bootstrapping, first boot, root user, clould-init, not for secrets, Apache example.
+
+*****************************************************************************************************************************
+
+Amazon EC2 Key Pairs 
+
+1, What is a Key Pair?
+A, 
+- A Key Pair = Public Key + Private Key used to securely connect (SSH) to Linux EC2 instances (or RDP for Windows)
+- AWS stores the public key; you download the private key (.pem) when creating the pair.
+- Without the private key, you cannot SSH into EC2 (unless you create a new one and update). 
+
+2. How it works 
+1, You create/download a Key Pair in AWS 
+2, AWS injects  the public key into the EC2 instance at launch (into ~/.ssh/authorized_keys file).
+3, you connect using the private key:
+   ssh -i mykey.pem ec2-user@<Public-IP> 
+4, The instance authenticates you by matching your private key with its stored public key. 
+
+3, Key Pair Formats 
+- PEM (.pem) -> Used by Linux & Mac for SSH.
+- PPK (.ppk) -> Used by PuTTY(Windows) 
+- Exam Tip : AWS gives you only one chance to download the private key file (.pem) when creating a key pair.
+  If you lost it -> you cannot download again. 
+  
+4, Where to Create Key Pairs 
+   - AWS Console -> EC2 -> Key Pairs -> Create Key Pair.
+   - AWS CLI:
+     aws ec2 create-key-pair --key-name MyKey --query 'KeyMaterial' --output text > MyKey.pm 
+	 - Must set correct permissions:
+	   chmod 400 MyKey.pm 
+	   
+5, Connecting to Linux EC2 
+   ssh -i MyKey.pem ec2-user@<Public-IP>
+   - Default usernames:
+     - Amazon Linux -> ec2-user 
+     - Ubuntu -> ubuntu 
+     - RHEL -> ec2-user or root 
+     - CentOS -> centos 
+
+6, KeyPair and Windows EC2 
+   - For Windows instances, key pairs are used to decrupt the Administrator password.
+   Steps:
+   1, Launch Windows EC2 with Key Pair.
+   2, Get Administrator password via Console -> Decrypt with .pem key.
+   3, Connect using RDP with username Administrator 
+
+7, Exam Traps 
+1, What if lost the .pem file?
+A, You cannot download again. You must create a new key Pair and update the instance's ~/.ssh/authorized_keys    
+
+2, Can I reuse a Key Pair across instances?
+A, Yes 
+
+3, Can multiple instances share one key pair?
+A, Yes, but not recommended for security.
+
+4, Are Key Pairs global?
+A, No, Key Pairs are Region-Specific 
+
+5, Where is the public key stored?
+A, On the EC2 instance, inside ~/.ssh/authorized_keys 
+
+Exam KeyWords: SSH, PEM file, root login, injected at launch, region-specific, can't re-downloaded, private key, Windows password decruption 
+
+*************************************************************************************************************************************
+
+Amazon EC2 Elastic IP 
+
+1, What is an Elastic IP (EIP)?
+A, 
+- A static, public IPv4 address that you allocate to your AWS account.
+- You can attach/detach it to/from an EC2 instance as needed.
+- Unlike auto-assigned public IPs, Elastic IPs do not change when you stop/start the instance. 
+
+2, Why Use Elastic IP?
+A,
+- By default, EC2 instances in a public subnet get an auto-assigned public IPv4.
+  - This changes every time you stop/start the instance.
+- Elastic IP solves this:
+  - Keeps the same IP address even after reboots or stop/start cycles.
+  - Useful for stable DNS mappings, production apps, or whitelisted IPs. 
+  
+3, Key Properities 
+Feature - Behaviour 
+1, Static - The IP does not change unless you release it. 
+2, Region-specific - You can only use it in the Region where it was allocated.
+3, Limit - By default, 5 Elastic IPs per Region (soft limit). 
+4, Free vs Charged - Free if attached to a running instance. AWS charges if allocated but not used.
+5, Re-assignment - you can remap it from one EC2 to another intantly (useful in failover) 
+
+4, Typical Workflow 
+1, Allocate an Elastic IP in AWS Console or CLI:
+   aws ec2 allocate-address 
+2, Associate it with an instance:
+   aws ec2 associate-address --instance-id i-1234564679adfadf --allocation-id eipalloc-123456789 
+3, If needed, reassign to another instance 
+   aws ec2 disassociate-address --association-id eipassoc-12345678
+   aws ec2 associate-address --instance-id i-abcdef123456479 -allocation-id eipalloc-123456789 
+
+5, Exam Traps:
+1, What happens to auto-assigned Public IP if instance stops/starts?
+A, It changes. Only Elastic IP stays the same.
+
+2, Are Elastic IPs free?
+A, Free if attached to a running instance. 
+   Charged if allocated but not attached. 
+   
+3, Can Elastic IPs be moved across Regions?
+A, No, Region-specific 
+
+4, Can mutliple instances share one Elastic IP?
+A, No, 1:1 mapping at a time, but you can remap quickly.
+
+5, Do Elastic IPs work with IPv6?
+A, No, Elastic IPs are IPv4 only.
+
+6, Real-world Use Case 
+- you run a web app EC2 instance and map myapp.com -> IP address 
+- If you use the auto-assigned IP, every reboot changes the address -> downtime 
+- With an Elastic IP, the IP stays the same -> no DNS updates needed. 
+
+Exam Keywords:  Static IPv, Region=specific, free only if in use, survives stop/start, remap for failiver, IPv4Only.
+
+
+*******************************************************************************************************************************************
+   
+Amazon EC2 Network ACLs (NACLs) : 
+
+1, What is a NACL?
+A,
+- Network Access Control List (NACL) = Firewall at the subnet level.
+- Controls inbound and outbound traffic for all resources inside a subnet.
+= Think of it a security filter around the subnet, while security Groups filter traffic at the instance level. 
+
+2, Key Properties 
+
+Feature - NACL 
+
+Scope - Works at subnet level (applies to all instances in that subnet)
+
+Stateless - Responses to allowed traffic are not automatically allowed. you must define rules for both inbound and outbound. 
+
+Rules - Numbered (lowest number has priority) 
+
+Default - Default VPC has a default NACL that allows all inbound/outbound traffic. 
+
+Custom - Custom NACLs start with deny all (block everying) until rules are added. 
+
+Explicit Deny - Supported (unlike Security Groups) 
+
+Rule Action - Allow or Deny 
+
+3, Rule Evaluation 
+
+- Each NACL's rule has:
+     - Rule Number ( processed in order: lowest -> highest)
+     - Protocal ( TCP, UDP, ICMP, etc)
+     - Port range 
+     - Source/Destinction CIDR 
+     - ALLOW / DENY 
+- The first matching rules wins, rest are ignored. 
+- if no rule matches -> traffic is denied. 
+
+Example:
+
+Image an inbound NACL with rules:
+
+Rule#  -   Type  - Source  - Action 
+100 -  SSH(22) - 0.0.0.0/0  -  ALLOW 
+110 - HTTP(80) - 0.0.0.0/0  - ALLOW 
+* - ALL - ALL - DENY 
+
+5, NACL vs Security Group  
+
+Feature -  Security Group - NACL 
+Scope - Instance-level - Subnet level 
+
+Stateful? - Yes (return traffic auto allowed) - No(must allow return explicitly) 
+
+Rules - Only Allow - ALLOW + DENY 
+
+Default - All rules applied - Rules evaluated by order ( lowest -> highest) 
+
+Use Case - Fine-grained control per instance - Broad control at subnet boundary 
+
+Exam Tip :
+- if they ask: "You want to block an IP range from accessing an entire subnet?"  - NACL 
+- if they ask: "You wan to allow inbound traffic only to one instance? " -> Security Group 
+
+6. Examp Traps 
+
+1. Stateless nature -> Always mention both inbound + outbound rules.
+2, Order matters -> Rule numbers processed lowest first 
+3, Explcit Deny Supported (SGs don't support it)
+4, Default vs Custom NACL 
+   - Default NACL -> Allows everything 
+   - Custom NACL -> Denies everything until you add rules.
+5, One subnet -> One NACL (but can re-associate) 
+
+
+Keywords for Exam:
+- Subnet level firewall, stateless, ordered rules, ALLOW + DENY, explicit deny, both inbound and outbound required. 
+
+
+**************************************************************************************************************************************************
+
+Amazon EC2 Elastic Network Interface (ENI) - 
+
+1, What is an ENI?
+A, 
+- An Elastic Network interface (ENI) is a virtual network card that you can attach to an EC2 instance.
+- Every EC2 instance mut have at least one primary ENI to communicate in the VPC.
+- You can also create and attach additional ENIs for advanced networking setups.
+
+2, What is inside an ENI?
+A, 
+- An ENI can include:
+  - Primary private IPv4 (required)
+  - One or more secondary privates IPv4s.
+  - One Elastic IP (EIP) per private IPv4.
+  - One public IPv4 (if auto-assigned)
+  - One or more IPv6 addresses.
+  - Security Groups (like a virtual firewall).
+  - MAC address 
+  
+3, Types of ENIs 
+
+1, Primary ENI 
+   - Automatically created when an instance launches.
+   - Cannot be detached.
+   - stays with the instance until termination. 
+   
+2, Secondary ENIs 
+   - Manually created and attached/detached.
+   - Can be moved between instances in the same AZ. 
+   
+
+4. Use Cases (Exam Focus)
+  - High availability -> Move ENI from one instance to another during failover.
+  - Dual-home instances -> One ENI in a public subnet + one in a private subnet.
+  - Separate management network -> One ENI for app traffic, aonther for admin/monitoring. 
+  - BYO MAC address licensing -> ENIs have fixed MACs, useful for software licenses tied to MAC. 
+  
+5, Life Cycle:
+  - Attach ENI to an instance (hot attach/detach for secondary ENIs).
+  - Detach ENI from an instance (while instance is running or stopped).
+  - Delete ENI (if no longer needed) 
+  
+6, ENI vs. Public/Private IP 
+
+Feature - ENI - Public/Private IP 
+
+Scope - Virtual NIC (network card)  - Address bound to ENI 
+
+Move between instances -  Yes (secondary ENIs) - No, tied to ENI 
+
+Has Security groups -  Yes -  No (IP only)
+
+MAC address  - Unique per ENI -  not applicable 
+
+7. Exam Traps 
+
+1, Each ENI belongs to one subnet (one AZ only) -> can't span multiple AZs 
+2, Primary ENI cannot be detached, only secondary ENIs can.
+3, ENIs survive instance stop/start (they keep their IPs)
+4, Secondary ENIs can be hot-attached/detached.
+5, Security groups are attached to ENIs, not directly to instances.
+
+Keywords for Exam:
+
+- Virtual NIC, subnet-level, attach/detach, primary vs secondary, hot attach, move across instances in same AZ,
+- Security groups bound to ENI, fixed MAC address.
+
+******************************************************************************************************************************
+
+1, Private IP 
+- Assigned from the VPC subnet range (e.g., 10.0.0.0/16)
+- Used for internal communication between resources inside the VPC.
+- Not routable on the internet.
+- Persists with the ENI (Elastic Network Interface)
+- Every instance must have at least one private IP.
+- You can add secondary private IPs to the same ENI.
+
+Example: EC2 in private subnet -> 10.0.1.25 (oly reachable within VPC or via VPN/Direct Connect)
+
+2, Public IP 
+- Mapped 1:1 to a private IP using NAT (Network Address Translation)
+- Used for internet communincation
+- Auto assigned if the subnet setting "Auto-assigned Public IPv4" is enabled.
+- Dynamic :
+    - if you stop/start the instnace -> public IP changes.
+	- if you need a premanent IP, use an Elastic IP 
+- Always paired with a private IP on the ENI 
+
+Example:
+EC2 in public subnet -> 52.95.124.3 (mapped to private IP 10.0.1.25) 
+
+3, How they work together?
+Public IP <-> Private IP binding via the Internet GateWay (IGW)
+Inside VPC -> Other instances use private IP 
+Outside (interent) ->  Use public IP / Elastic IP 
+
+4, Exam Tip - Elastic IP 
+
+- An Elastic IP (EIP) -> static public IP.
+- Attached to a private IP on an ENI.
+- Does not change if the instance is stopped/startd. 
+- Use case: Long-lived servers that need a fixed public address. 
+
+
+5, Key Differences 
+Feature  -   Private IP -  Public IP 
+Scope - Internal (VPC only) - Internet 
+
+Default - Always assigned  - Optional (subnet setting) 
+
+Persistance -  Persists with ENI - Changes on Stop/start (unless Elastic IP)
+
+Communincation - Instance <-> Instance in VPC  - Instance <-> Internet 
+
+Elastic Option -  Secondary private IPs - Elastic IP (static) 
+
+
+Exam Traps:
+1, Public IP is always mapped to a private IP.
+2, Public IP changes when instance is stopped/started (unless EIP).
+3, Elastic IPs are the only way to keep a fixed public IP.
+4, Inside VPC, instances always talk to each other using private IPs, even if they also have public IPs. 
+
+*****************************************************************************************************************************************
+ 
+What is AWS Lambda?
+- Serverless compute service in AWS.
+- Runs code without provisioning or managing servers.
+- You upload your code, configure triggers, and lambda executes it.
+- Pay only for the compute time your code consumes (per request + per GB second).
+
+2, Key Lamba concepts (Exam Focus)
+- Event driven -> Lamba is invoked by events (API Gateway, S3, DynamoDB, SNS, SQS, etc.).
+- Runtime support -> Python, Node.js, Java, C#, Go, Ruby, custom runtime(via container images).
+
+a, Memory & Timeout 
+- You configure memory (128 MB - 10 GB) , timeout (max 15 minutes).
+
+b, Scaling -> Auto scales based on number of events.Each request runs in its won isolated environment. 
+   
+c, Concurrency ->
+     . Default concurrency = 1000 per account (can request increase).
+	 . Reserved concurrency = guarantees capacity for critical functions.
+d, Cold start vs Warm start:
+   Cold Start - First invocation takes longer due to container initialization.
+   Warm Start - Subsequent requests resue container -> faster 
+   
+e. IAM role: Each lambad function has an exeuction role defining what AWS resources it can access.
+
+3. Pricing 
+- Requests: First 1M request/month free, then $0.20 per 1M requests.
+- Duration: Charged per GB second (memory x execution time)
+- Example: Function uses 512 MB and runs for 1 sec -> billed as 0.5 GB-second. 
+
+4, Common Lambda Triggers:
+
+a, API Gateway -> Run Lambda as backend for REST/HTTP APIs.
+b, S3 Events -> Process files when uploaded/modified.
+c, DynamoDB Streams -> React to database changes.  
+d, SNS/SQS -> Consume message from queues or topics.
+e, EventBridge (ClouldWatch Events) -> Scheduled tasks (e.g., cron jobs)
+
+5, Deployment & Management 
+
+- Package size limit:
+  . 50 MB (direct zip uload).
+  . 250 MB (when deployed from S3).
+  
+- Environment variables -> Store config without hardcoding. 
+
+- Versions & Aliases:
+  . Version = immutable snapshot of function code/config.
+  . Alias = pointer to a version (useful for prod/test traffic shifting).
+  
+6, Exam Tips & Gotchas 
+1. choose Lambda when:
+   - You need event-driven, short-running tasks.
+   - You want auto-scaling, pay-per-use compute.
+   - Example: Resize images on S3 upload.
+   
+2. Not suitable when:
+   - Long-running processes (max 15 min timeout).
+   - Heavy, stateful workloads.
+  
+3. Permissions:
+   - Exeuction role defines whta Lambda can access.
+   - Resource policies define what can invoke the Lambda.
+   
+4, Networking:
+   - By default, Lamdba runs in AWS-managed VPC.
+   - To access RDS in a private subnet, attach lambda to your VPC(via ENI)
+   
+7. Sample Exam Questions:
+
+1, your lambda function needs to acces an RDS dabase in a private subnet. What must your configure?
+A, Attach the Lambda to the VPC and subnets + configure security groups.
+
+2, Lamba execution role vs resource policy - What's the difference?
+A, 
+Execution rols -> Permission Lambda has to access AWS resources.
+Resource policy - Defines which services/identities can invoke the Lambda.
+
+3, What's the max execution time for a Lambda functin?
+A, 15 minutes 
+
+4, How does Lamdba scale with s3 event triggers?
+A, Each object upload -> new lamdba instance. Scaling is automatic. 
+
+5, you need to process millions of images daily when uploaded to S3, ensure scalability and avoid managing servers. What do you use?
+A, S3 Event + Lamdba 
+
+**************************************************************************************************************************************
+
+1, What is AWS Lamdba?
+A,
+- Serverless compute service -> You can code without provisioning EC2 servers.
+- You pay only for execution time (not idle).
+- Supports multiple runtimes (Python, Node.js, Java, Go, .NET, Ruby, Custom runtimes).
+
+2, Ways to Create a Lamdba Function 
+- You can create Lambda function using:
+1, AWS Management Console(easy,exam-demo style).
+2, AWS CLI 
+3, AWS SDKs (Boto3, etc)
+4, Infrastructure as Code (Cloud Formation, SAM, CDK, Terraform)
+
+3, Lamdda Creation Via Console (step-by-step)
+
+Step 1: Go to Lambda Console 
+  - AWS Console -> Lambda -> Create function 
+  
+Step 2: Choose "Author from scratch"
+   - Function name : MyFirstLamdba 
+   - Runtime: Python 3.9 (for example) 
+   
+Step 3: Set Execution Role 
+   - Lambda needs an IAM Role with permissions.
+   - Options:
+     - Create a new role with basic Lamdba permission (CloudWatch logs).
+	 - Or attach an existing role.
+
+Step 4: Add Code 
+Example:
+   - def lamba_handler(event,context):
+         return {
+		    'statusCode' : 200,
+			'body': 'Hello from Lamdba!' 
+		 }
+		 
+Step 5: Configure Triggers (Optional)
+Example: Trigger Lamdba from API Gateway, S3 event, or CloudWatch Event 
+
+step 6: Deploy 
+- click deploy 
+
+Step 7: Test 
+- Click Test -> Configuration test event -> Run -> See output 
+
+4, Lambda Creation via AWS CLI 
+
+aws lambda create-function \
+    --function-name MyFirstLamdba \
+	--runtime python3.9 \
+	--role arn:aws:iam::123456789012:role/MyLambdaRole \
+	--handler lamdba_function.lamdba_handler \
+	--zip-file fileb://function.zip 
+
+Where:
+-- handler = file name + function name (file.function)
+-- role = IAM role ARN with execution permissions.
+--zip-file = Deployemnt package with your code 
+
+5. Key Exam Notes:
+- Handler = entry point (e.g., lambda_function.lambda_handler)
+- Execution Role (IAM role) is required -> give Lambda permission to access other AWS services.
+- Timeout default = 3 seconds, can increase up to 15 minutes.
+- Memory = 128 MB to 10 GB. CPU is proportional to memory.
+- Stateless = Lambda does not keep state between invocations (unlesss you use DynamoDB, S3, etc).
+- Environment variables supported.
+- ColdStart vs WarmStart: first execution may take longer.
+
+Exam Traps:
+1, Lambda is stateless -> can't rely on local file system (only /tmp 512 MB is available)
+2, Max execution time = 15 mintues 
+3, Lambda pricing is based on #Invocations + exectution time (ms) x memory.
+4, Concurrency limit (default = 1000 concurrent exectutions per Region)
+5, Event sources mapping (e.g, DynamoDB streams, SQS, Kinesis -> trigger Lambda automatically) 
+
+*********************************************************************************************************************************************
+	
+AWS Lambda Triggers (Event Sources)
+
+1, What is a Trigger?
+- A Trigger = event source that automtically invokes a Lambda Function.
+- Instead of calling Lambda manually, AWS services (like s3,API Gateway,DynamoDB) can fire events that Lambda listens to.
+
+Think of it as: "When X happens, run my Lamdba"
+
+2, Types of Lambda Triggers
+- Lambda can be triggered by many AWS services.
+- The most common categories:
+A, Data Storage Events
+   - Amazon S3 : 
+     - Example: File uploaded -> Trigger Lambda -> Process image, resize, index metadata. 
+	 - Event Example : s3:ObjectCreated:* 
+   - DynamoDB Streams:
+     - Example: New record inserted -> Trigger Lambda -> Update Cache, nofity users.
+	 
+B, Messaging/Streaming 
+   - Amazon SQS (Simple Queue Service) 
+     - Lamdba polls SQS -> processes messages.
+   - Amazon Kinesis 
+     - Lambda consumes real-time stream data. 
+   - Amazon SNS (Simple Notificaiton Service)
+     - SNS topic publishes message -> Lambda is subscriber.
+	 
+C, API / User Interaction 
+   - Amazon API Gateway 
+     Example: HTTP request -> Trigger Lambda -> Return API response 
+	 Classic Serverless backend pattern.
+   - Amazon Cognito 
+     Triggers for authenticaion flows (Pre-sign-up, Post-confirmation, etc.) 
+	 
+D, Scheduled / Automated 
+   Amazon EventBridge (CloudWatch Events)
+   Example: Run Lambda every day at 1 AM.
+   Cron-Style scheduling 
+   
+E, Infrastructure 
+   - AWS CloudFormation (custom resources)
+   - AWS Config (compilance checks)
+   - Amazon CloudWatch Logs (log subscription -> Lambad for processing). 
+   
+3, Common Exam Scenerios 
+
+-> Process files uploaded to S3 -> Lamdba runs automatically.
+   -Example: Upload an image -> Lambda resizes it.
+   
+-> Serverless REST API -> API Gateway + Lamdba 
+   - Example: User sends HTTP request -> API Gateway triggers Lamdba -> Returns JSON response. 
+
+-> Stream processing -> DynamoDB Streams / Kinesis.
+   - Example: Every DB change -> Lambda updates Elaticsearch 
+   
+-> Message queue processing -> SQS 
+   - Example: Orders pushed to SQS -> Lamdba processes orders asynchronously. 
+   
+-> Scheduled tasks -> EventBridge/CloudWatch Events 
+   - Example: Run Lambda every 5 minutes to clean logs.
+   
+4, Exam Notes 
+- Lamdba can ba asynchronous (S3, SNS, EventBridge) or synchronous (API Gateway)
+- Lamba polls internall for stream-based sources (Kinesis, DynamoDB streams, SQS)
+- Each trigger has event JSON format -> passed into event parameter of Lambda handler. 
+
+5. Example: S3 Triggger 
+1, Create S3 bucket.
+2, Create Lambda function with this code (Python):
+
+   def lambda_handler(event, context):
+       print("Event received:", event)
+	   bucket = event['Records'][0]['s3']['bucket']['name'] 
+	   key = event['Records'][0]['s3']['object']['key']
+	   print(f"File uploaded: {bucket}/{key}")
+	   
+3, Add S3 Event Notification -> "Object Created" => Trigger Lambda 
+4, Upload file -> Lambda executes automatically.
+
+Keywords for Exam:
+- Triggers = event sources.
+- S3, API Gateway, DynamoDB, SQS, Kinesis, EventBridge -> core triggers.
+- Synchoronous (API Gateway) vs Asynchornousf(S3/SNS/EventBridge).
+- Polling sources (SQS, Kinesis, DynamoDB Streams) -> Lambda handles polling automatically.
+
+************************************************************************************************************************************************
+
+testing AWS Lamba Functions :
+
+1, Console-Based Testing 
+
+- Create test events in the AWS Lambda Console.
+- Use JSON payloads to simulate triggers like API Gateway, S3, DynamoDB.
+- Example ( S3 trigger test event):
+  {
+     "Records": [
+	 {
+      "eventSource:":"aws:s3",
+      "s3": {
+         "bucket": {"name":"anjani-bucket"},
+         "object": {"key":"sample.txt"}		 
+      }
+	 ]
+    ]
+  }
+Exam Tip: Know how to simulate event sources directly in the console. 
+
+2, Local Testing with SAM CLI 
+- Use AWS SAM (Serverless Application Mode) to test lambda locally.
+- Example:
+     
+	sam local invoke MyLambaFunction -e event.json 
+- This lets you test with Docker containers simulating the Lambda runtime.
+
+Exam Tip: Understand SAM vs LocalStack for local testing.
+
+3, Integrating Testing 
+- Trigger Lambda through actual services in a dev/staging enviroment.
+    - Upload file to S3 -> Lambda processes it.
+	- Insert item in DynamoDB -> Lambda cosumes via stream.
+	- Call API Gateway endpoint -> Lambda runs 
+Exam Tip : You should know how lambda integrates with event sources and how to test those fiows.
+
+4, Automated Testing (CI/CD)
+- Use codePipeline, CodeBuild, CodeDeploy for automated Lambda testing.
+- Example in CodeBuild buildspec 
+  phases:
+   build:
+     commands:
+	    - pytest tests/
+		
+Exam Tip: Expect questions on how CI/CD pipelines deploy/test Lambda functions.
+
+5, Monitoring & Debugging 
+- CloudWatch Logs -> to view execution logs.
+- CloudWatch Metrics -> to check invocations, errors, duration.
+- AWS X-Ray -> for tracing requests across microservices.
+
+How Exam Question Frame This:
+
+1, A developer wants to test a lamdba function that processes files uploaded to S3 before moving to production.
+  Which approach is MOST appropriate?
+A, Use AWS Lambda Console test with a sample s3 event.
+B, Deploy to production and test with real users.
+C, Use SAM CLI to invoke the function locally with an event.json.
+D, Wait for CloudWatch Logs to generate events.
+
+Correct : A or C (depending on the context) - console for quick tst , SAM CLI for local dev. 
+
+*************************************************************************************************************************************************
+
+AWS Lamdba API Gateway 
+
+What is API Gateway?
+A,
+- A fully manages service that lets you create,publish,secure,and monitor REST, HTTP, and WebSocket APIs.
+- A fully managed service to create, publish, and manages APIs at scale.
+= Works as the front door for your applications - HTTP(S) requests -> your backend (Lambda, EC2, etc).
+- With Lamdba integration, you get a serverless REST or HTTP API with no servers to manage. 
+
+2. How it Works (High Level)
+
+Client (brower/mobile)
+      : HTTP Request 
+API Gateway (REST/HTTP/WebSocket API) 
+      : Invokes synchronously 
+AWS Lambda function 
+      : 
+    Returns JSON back to API Gateway 
+API Gateway returns HTTP response to client.
+
+3, Types of APIs 
+- REST API (classic) - full features, caching, throttling, authorizers.
+- HTTP API (newer, cheaper) - simpler and faster, still integrates with Lambda.
+- WebSocket API - for real-time bidirectional communication.
+
+4, Creating a Lambda + API Gateway Endpoint (Console Step-by-Step)
+
+Step 1 - Create a Lambda Function 
+- runtime: Python, Node.js, etc
+- Code (Python example) 
+def lambda_handler(event, context):
+    name = event.get('queryStringParameters', {}).get ('name','World')
+	return {
+	   "statusCode": 200,
+	   "headers": {"Context-Type":|application/json"},
+	   "body":f"Hello, {name} from Lamdba!
+	}
+	
+Step 2 - Create an API in API Gateway 
+- Choose HTTP API or REST API 
+- Create a new resource (e.g., /hello)
+- Create a GET method.
+- Integration type: Lamdba Function -> select your Lamdba 
+
+Step 3 - Deploy API 
+- For REST API -> Deploy to a stage (e.g., dev)
+- Copy the invoke URL 
+
+Step 4 - Test 
+- Open browser or use curl:
+  
+  curl "https://abc123.execute-api.us-east-1.amazonaws.com/dev/hello?name=John"
+  
+- You'll get:
+  Hello, John from Lambda 
+  
+5, Key Exam Concepts 
+Feature - Explanation 
+1, Integration - API Gateway can directly invoke Lambda synchornously.
+2, Event Format - API Gateway sends an event JSON with HTTP info -> Lambda.
+3, Stages - Named environments (dev, test, prod) with different URLs.
+4, Authorizers - Use Cognito User Pools or Lamdba authorizes to secure API.
+5, Throttling - Default 10,000 rps per Region, can configure burst & rate limits.
+6, Mapping Templates - Transform request/response payloads before/after Lambda.
+7, Caching - Enable at API Gateway level to reduce Lambda invocations.
+
+6, Event JSON Example (Lambda Input)
+Lambda receives:
+{
+  "resource": "/hello",
+  "path": "/hello",
+  "httpMethod":"GET",
+  "headers": {...},
+  "queryStringParameters": {"name": "John"},
+  "body": null
+}
+
+This is why in our code we read event['queryStringParameters'].
+
+7, Security
+- IAM Authorization - calls signed with AWS credentials.
+- Cognito User Pools - user sign-in and tokens 
+- Custom (Lamdba) Authorizer - run your own auth logic before the main Lambda. 
+
+8, Exam traps 
+1, Integration Response vs Method Response -> Know that API Gateway can transform payloads before and after Lambda. 
+2, Timeout - Lamdba max 15 min; API Gateway timeout = 29 seconds for REST, 30 sec for HTTP API.
+3, Synchronous Invocation - API Gateway always invokes Lamdba synchronoulsy.
+4, Cold starts - first request to Lamdba may be slower.
+5, CORS - must configure if called from browser front-ends.
+
+************************************************************************************************************************************
+
+AWS Lambda Event Source: Amazon S3
+
+1, Concept 
+- When something happens in an S3 bucket (like uploading or deleting an object), you can automatically trigger a Lambda function to run.
+- Example use case:
+  - Resize images after upload.
+  - Log metadata to DynamoDB
+  - Send SNS notifications.
+  - Run ETL(Extract-Transform-Load) jobs.
+  
+2, How It works 
+- Flow:
+  
+  user uploads file to s3 -> s3 Event Notification -> Lambda invoked -> Lambda processes file. 
+
+3, Supported Event Types 
+
+   Event Type                      Description                 Example 
+s3:ObjectCreated:*               Any object upload            new image uploaded 
+
+s3:ObjectCreated:Put             PUT operation                upload via console or SDK 
+
+s3:ObjectCreated:Post            POST upload(HTML forms)      web form upload 
+
+s3:ObjectRemoved:*               Object deleted               deletion event 
+
+s3:ObjectRestor:*                Restored from Glacier        object retrived 
+
+Exam Tip:
+- Only PUT, POST, COPY, and DELETE operations can trigger Lambda.
+
+4. Example Lamdba Function 
+
+import json
+def lambda_handler(event, context):
+    for record in event['Records']:
+	    bucket = record['s3']['bucket']['name'] 
+		key = record['s3']['object']['key']
+		print(f"New file: {key} in bucket: {bucket}|)
+	return {"statusCode": 200, "body": json.dumps("File processed!")}
+
+Event JSON Example:
+
+{
+   "Records": [
+    {
+         "eventName": "ObjectCreated:Put",
+         s3: {
+           "bucket": {"name": "my-photo-bucket"},
+           "Object": {"key": "uploads/image1.jpg"}		   
+         }		 
+	}
+   ]
+}   
+
+5, Configuration Steps (Console)
+
+Step1: Create Lambda Function 
+- Runtime Python, Node.js etc 
+- Give it an IAM Role with:
+   - AWSLambdaBasicExecutionRole 
+   - AmazonS3ReadOnlyAccess 
+   
+Step2 : Add S3 Trigger 
+- Go to S3 bucket -> Properities tab. 
+- Scroll to Event Notification.
+- Add event notification:
+  - Event Type: ObjectCreated(AII)
+  - Destination: Lambda Function 
+  - Function name: Select your Lambda 
+
+- Important: Lambda must be in the same Region as the S3 bucket.
+
+6, IAM Permissions 
+
+S3 needs permission to invoke Lambda.
+When you add the trigger, AWS automatically adds this policy to the Lambda resource-based policy.
+
+{
+  "Effect": "Allow",
+  "Principal": {"Service": "s3.amazonaws.com"},
+  "Action": "lambda:InvokeFunction",
+  "Resource": "arn:aws:lambda:us-eat-1:123456789012:function:MyLambda",
+  "Condition": {
+     "ArnLike":{"AWS:SourceArn":"arn:aws:s3::my-photo-bucket"}
+  }
+}
+
+7, Exam-Focused Q & A 
+
+1, What AWS service can directly trigger a Lambda function when an object is uploaded?
+A, Amazon S3 
+
+2, What kind of trigger is S3-> Lamdba?
+A, Asynchronous invocation 
+
+3, Can Lamdba and S3 be in different regions?
+A, No- must be in the same region 
+
+4, Does S3 retry if lambda fails?
+A, yes-automatically retries twice (asynchronous retry)
+
+5, How long can lambda take to process S3 events?
+A, Upto 15 minutes.
+
+6, What Permissions does Lamdba need?
+A, Read access to S3 + CloudWatch logs 
+
+7, Can one S3 bucket trigger multiple lambdas?
+A, Yes 
+
+8, Can one lambda be triggered by multiple s3 buckets?
+A, Yes 
+
+9, What if versioning is enabled on the S3 bucket?
+A, Each version upload can trigger separate events.
+
+10, what happens if lamdba is throttled or fails?
+A, Event goes to DLQ (SNS or SQS) if configured.
+
+8, Common Exam Traps 
+
+S3 invokes Lamdba synchronouly  - False - S3 triggers lambda asynchronously 
+Lamdba can access any S3 bucket automatically - False - needs explicit IAM permission 
+S3 trigger works across regions - False - same region only 
+S3 event triggers immediately even if object is deleted quickly - True - evnet still sent 
+Lambda can process multiple events in one call - True - event['Records'] list contains multiple s3 objects.
+
+9, Key Concepts to Memorize 
+Asynchronous invocation - S3-> Lambda doesn't wait for response.
+Event JSON - Contains bucket, object.key, eventName 
+Retires - 2 automatic retries on failure 
+DLQ (Dead Letter Queue) -  Optional fallback (SNS or SQS)
+IAM roles - Grant permissions to read/write S3 
+
+10, Example Use Case for Real projects:
+- When a user upload an image to S3, Lambda automatically resizes it and stores the resized version in another bucket.
+
+Question 1:
+Your configure an S3 bucket to trigger a Lambda function every time a file is uploaded.
+What type of invocation does S3 use when invoking the Lamdba function?
+
+A, Synchronous
+B, Asynchronous ==> correct Answer
+C, Event-driven and synchronous 
+D, Poll based 
+
+Question 2:
+An AWS Lambda function and an S3 bucket are located in different regions.
+You want S3 to trigger the Lambda function on every file upload. What will happen?
+
+A, Lambda will be triggered normally.
+B, The trigger will fail - both must be in the same region. --> Correct Answer 
+C, it will work only for PUT requests.
+D, You can fix it by enabling cross-region invocation. 
+
+Question 3:
+Your Lamdba function processes file uploaded to S3.
+if the Lamdba function fails during execution, what will S3 do?
+
+A, Retry the event twice automatically. --> Correct Answer 
+B, Retry infinitely until success.
+C, immediately delete the object.
+D, Log the failure but won't retry.
+
+Question 4:
+ When you configure an S3 bucket notification to trigger lambda, what kind of permission must exist?
+ A, Lamdba mut allow s3.amazonaws.com to invoke it.  ---> Correct Answer 
+ B, S3 bucket must allow lambda to access it.
+ C, IAM user must allow lambda:InvokeFunction.
+ D, No Permissoins are needed if in same account. 
+ 
+Queston 5:
+What part of the lamdba event payload helps identify which object triggered the function?
+A, event.source 
+B, event.Records[].s3.object.key --> Correct Answer 
+C, event.objectName 
+D, event.metdata.key 
+
+Question 6:
+You've configured an S3 bucket to trigger a Lamdba function every time an image is uploaded.
+However, the Lambda function is not getting invoked.
+Which of the following could be a reason?
+
+A, The S3 bucket and Lambda fucntion are in different regions. --> Correct Answer 
+B, The Lambda fuction timeout is set too short.
+C, The S3 bucket name contains capital letters.
+D, The lambda function's IAM role lacks AmazonS3ReadOnlyAccess. 
+
+Question 7:
+Your Lambda function reads data from an uploaded file in S3.
+What minimum permissions does the Lamdba execution role need?
+
+A, S3:ListBucket and S3:GetObject.--> Correct Answer 
+B, S3:PutObject only.
+C, S3:DeleteObject and S3:GetBucketAcl
+D, No Permissions needed; S3 triggers provide access automatically.
+
+Questin 8:
+An S3 event trigger your lambda function twice for the same file upload.
+What is the best way to make your fucntion handle this safely?
+A, Add retry logic in S3 
+B, Make your Lambda idempotent. ---> Correct Answer 
+C, Use EC2 instead of Lamdba.
+D, Disable S3 event notifications.
+
+Question 9:
+A Lambda function processes files from multiple S3 buckets.
+You want to restrict which buckets can invoke it.
+How can you achieve this?
+
+A, Use IAM inline policy in Lambda's role.
+B, Use a resource-based policy on the Lambda function specifyiing allowed bucket ARNs. ---> Correct Answer 
+C, Restrict bucket names in Lambda enviroment variables.
+D, Use a VPC endpoint policy.
+
+Question 10 
+You need to process large file uploads (>100 MB) in S3 with Lambda.
+which statement is true?
+
+A, S3 directly sends file content to Lambda.
+B, Lambda automatically streams the full file data.
+C, S3 event JSON contains metadata and object key, but not the actual file. - correct answer 
+D, Lambda can only handle files smaller thatn 50 MB. Ans
+
+********************************************************************************************************************
+  
+AWS Lamdba Event Source: DynamoDB Streams
+
+1, what is dynamoDB streams?
+- DynamoDB Streams captures a time-ordered sequence of item-level changes (insert, update, delete) in a DynamoDB table.
+- Each stream record shows what happened and optionally before-and-after images of the changed item.
+- Stream data can automatically trigger a Lambda function.
+Think of it like: "A change log for DynamoDB".
+
+2, How it works
+
+App -> writes data -> DynamoDB table 
+           |
+	   DynamoDB streams records the change 
+	       |
+	   AWS Lambda polls the stream (asynchronously)
+	       |
+	   Lambda processes the record (insert/update/delete)
+	   
+	   
+3, Stream View Types 
+
+StreamViewType    -     What It captures   -   Example 
+KEYS_ONLY               Only primary key attribute         {"id": 101}
+NEW_IMAGE               Entire item after change           updated record 
+OLD_IMAGE               Entire item before change          Deleted record 
+NEW_AND_OLD_IMAGES      Both old and new                   Before & after snapshot 
+
+Exam Tip: Choose NEW_AND_OLD_IMAGES if you need to compare before vs after values.
+
+4, Lambda Integration Setup 
+
+Step 1 : Enable Streams
+    - Go to DynamoDB table -> Exports and streams tab
+	- Enable DynamoDB stream.
+	- Choose a StreamViewType 
+	
+Step 2 : Create Lambda Function 
+     - Add an event source mapping -> DynamoDB Stream ARN.
+	 - Lambda starts polling the stream for new records.
+	 
+Step 3 : IAM Permissions 
+     - Lambda's execution role needs:
+	   {
+	      "Effect": "Allow",
+		  "Action": [
+		    "dynamoDB:DescribeStream",
+			"dynamoDB:GetRecords",
+			"dynamoDB:GetSharedIterator",
+			"dynamodb:ListStreams"
+		  ],
+		  "Resource":"*"
+	   }
+
+5, Example Lambda Function 
+
+import json 
+def lambda_handler(event, context):
+    for record in event['Records']:
+        event_name = record['eventName']  # INSERT, MODIFY, REMOVE 
+        new_image = record['dynamodb'].get('NewImage',{})
+        old_image = record['dynamodb'].get('OldImage',{})
+
+        print(f"Event: {event_name}")
+        print(f"New Image: {new_image})
+        print(f"Old Image: {old_image})
+    return {"StatusCode": 200}
+
+Example Event JSON:
+   {
+    "Records": [
+	 {
+       "eventID":"1",
+       "eventName":"INSERT",
+       "dynamodb": {
+	       "Keys": {"id": {"S":"101|)),
+		   "NewImage:": {"id": {"S":"101"}, "name":{"S":"John"}},
+		   "StreamViewType": "NEW_IMAGE"
+	 } 	   
+	 }
+	]
+   }   
+
+6, Invocation Type 
+- DynamoDB Streams -> Lamdba = Poll-based (synchronous)
+- Lamdba polls the stream automatically (AWS manages the polling).
+- Lambda processes batches of records from the stream.
+Exam Keyword: Poll-based stream event source.
+
+7, Important Configurations
+Setting - Description 
+Batch size - Number of records Lambda reads per batch(1-1000).
+Parallelism - One Lambda per stream shard (can process in parallel.)
+Retry behaviour - If Lambda falls, AWS retries until successful (no data loss).
+Event order - Guaranteed within the same shard.
+
+8, Common Use Cases 
+- Real-time analytics - capture data changes immediately.
+- Audit logging - store before/after snapshot in S3.
+- Cross-table sync - replicate DynamoDB updates to another table.
+- Notfications - trigger SNS or SQS from Lamdba when changes occur.
+
+9, Common Exam Types 
+- "DynamoDB pushes events to Lambda" - False - Lambda polls the stream.
+- "Lambda triggers immediately when an item changes." -  Not instantly - near real-time(polled).
+- "Stream records deleted after read." - True - streams are kept for 24 hours max.
+- Lambda can lose data if it fails. - False - AWS retries until processed successfully.
+- Ordering is always preserved - True - Within the same shard.
+
+10, Exam Keywords to Memorize 
+- Poll-based event source - Lambda polls DynamoDB Streams.
+- Batch Processing - Multiple records per invoke.
+- Shard iterator - Used internally to read stream records.
+- 24-hour retention - Streams available for 24 hours.
+- StreamViewType - Controls what data appears in stream.
+- Ordered processing per shard -  Always preserved.
+
+11, Quick Recap Summary 
+TriggerType - Pollbased (managed by AWS)
+Delvery Type - Synchronous batch
+Data Retention - 24 hours 
+Order Guarantee - yes, per shard 
+Failure Handling - Retries automatically 
+Use Cases - Real-time sync, auditing, analytics
+View Options - KEYS_ONLY, NEW_IMAGE, OLD_IMAGE, NEW_AND_OLD_IMAGES 
+
+Question 1:
+A DynamoDB table is configured with a stream view type of NEW_IMAGE.
+What will the event data sent to Lambda contain when an item is updated?
+
+A, Only the item's key
+B, Only the old version of the item.
+C, Only the new version of the item after the update.
+D, Both the old and new versions of the item.
+
+Question 2:
+Which statement best describes how AWS Lambda processes records from a DynamoDB Stream?
+A, Lambda is invoked asynchronously by DynamoDB.
+B, Lambda polls the steram for new records and processes them in batches.
+C, Lambda uses an API Gateway endpoint to pull data.
+D, DynamoDB pushes records directly into the Lambda function.
+
+Question 3:
+How long are DynamoDB stream recors available for Lambda to process?
+A, 1 hour
+B, 12 hours 
+C, 24 hours 
+D, 7 days 
+
+Qustion 4: 
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+	
+
+   
+	 
+	 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+

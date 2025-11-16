@@ -172,9 +172,272 @@ Clean up Docker:
 - docker image prune # Remove unused images.
 
 
+ ****************************************************************************************************************************************** 
+Docker - What it is?
+
+- purpose : Used to create, package, and run containers (isolated environments that include your app + dependencies)
+- Main focus : Developement and deployment of single-container appliations.
+- Usage:
+  - Building container images ( Dockerfile )
+  - Running containers (docker run, docker-compose)
+  - Sharing images (vis Docker Hub)
+- Example :
+   - You package a Python Flask app into a Docker image and run it anywhere - on your laptop, in AWS, etc.
+- Mostly used by:
+  - Developers
+  - Small to medium sized applications.
+  - Local testing environments.
+  
+Kubernetes - What it is 
+
+- Purpose : Used to orchestrate (manage) many containers across multiple machines (nodes).
+- Main  Focus : Deployment, scaling, load balancing and self-healing of containerized applications.
+- Usage:
+  - Automates container deployment.
+  - Handling scaling (add/remoe containers based on load)
+  - Restrats failed containers automatically.
+  - Manages rolling updates.
+- Example:
+  - You have 10 microservices (each in a Docker container) that need to run across 3 servers - Kubernetes automatcally manages and keeps them rnning smoothly.
+- Mostly used by:
+  - DevOps & Cloud teams.
+  - Large-scale production systems.
+  - Microservices-based architectures.
+  
+Who's used More?
+
+Context - Mostly Used Tool 
+
+1, Local developement - Docker 
+2, Production at small scale - Docker compose 
+3, Production at large scale - Kubernetes 
+4, Cloud native / Micro services - Kubernetes 
+
+In Real-World Use:
+- Docker is used inside kubernetes - meaning kubernetes runs docker containers.
+- So it's not Docker vs Kubernetes - they actually work together:
+  Docker = contianer runtime 
+  Kubernetes = container orchestrator 
+  
+Simple Analogy:
+Concept - Example 
+Docker - Like packing one dish in a lunchbox 
+Kubernetes - Like managing 100 lunchboxes across different delivery routes.
+
+from Docker -> Kubernetes, using a simple Python microservices example.
+
+Step 1 : Create a Simple Python Web App 
+Let's build tiny Flask API that returns "Hello from Docker + Kubernetes."
+
+Project structure:
+
+myapp/
+    - app.py 
+	- requirements.py
+	- Dockerfile 
+	
+app.py 
+
+
+   from flask import Flask 
+   app = Flask(__name__)
+   @app.route('/')
+   def home():
+       return "Hello from Docker + Kubernetes!"
+    
+    if __name__ == "__main__":
+	    app.run(host='0.0.0.0',port=5000)
+		
+requirements.txt 
+
+flask
+
+Step2 : create Docker Image 
+
+Dockerfile 
+
+# Step 1 : Use Python base image 
+FROM python:3.10-slim 
+
+#step 2 : Set working directory inside container 
+WORKDIR /app 
+
+#step 3 : Copy file into container 
+COPY requirements.txt . 
+RUN pip install -r requirements.txt 
+
+COPY . . 
+
+#step 4 : Start the Flask app 
+CMD ["Python", "app.py"] 
+
+Build & Run locally:
+
+docker build -t myapp:v1 . 
+docker run -p 5000:5000 myapp:v1 
+
+-> Open http://localhost:5000 -> You'll see 
+   "Hello from Docker + Kubernetes!"
+   
+-> Docker portion complete - your app is now containerized!
+
+Step 3 : Deploy the Same App to kubernetes 
+
+You need: 
+   - kubectl ( Kubernetes CLI)
+   - minikube (local Kubernetes cluster)
+Start your local cluster:
+minikube start 
+
+Step 4 : Create Deployment YAML 
+
+deployment.yaml 
+
+apiVersion: apps/v1 
+- What it is: The API group and version for this resource.
+- Why it matters: Deployement lives under apps/v1 in current kubernetes versions. if this is wrong kubectl will reject the file. 
+kind: Deployment 
+- What it is: The resource type. A deployment manages a ReplicaSet which manages Pods.
+              Use it when you want controlled rolling updates, scaling, self-healing, etc.
+metadata:
+- Container for resource metadata(name,labels,annotations)
+   name: myapp-deployment 
+   - What it is: The unique name of this Deployment in the Kubernete namespace.
+   - Tip: Pick a meaningful name. You'll use this with kubectl commands.
+     e.g., kubectl get deployment myapp-deployment    
+   
+spec:
+- What it is: The desired state specification for the Deployment ( what you want Kubernetes to create/manage).
+   replicas: 3 # 3 pods (containers)
+   - What it is: Number of Pod replicas to run.
+   - Effect: Kubernetes ensures 3 Pods are running for this Deployment.
+             Changeable later by kubectl scale or editing the yaml.
+   selector:
+   - What it is: How the Deployment finds which Pods it manages. This must match Pod template labels exactly.
+   - Important: if selector and template labels don't manage created Pods.
+      matchLabels:
+	  - What it is: A simple label selector based on key/value pairs.    
+          app: myapp 
+		  - What it is: Label key app with value myapp.
+		  - The deployment will manage Pods that have this label. 
+   template:
+   - what it is: The Pod template - defines the Pods the deployment should create. 
+	  metadata: 
+	  - Metadata for the Pods created from this template. 
+	    labels:
+		- Labels that will be attached to Pods created by this template.
+		- These must match the selector.matchLabels above 
+		   apps: myapp 
+		   - why:  This makes the Pod selectable by the Deployment and by Services that use the same label selector.
+	  spec:
+	  - What it is: Pod-specific spec(containers, volumes, node selectors, etc)
+      	containers:
+		- Defines the containers that run inside each Pod. 
+		- name: myapp 
+		  - What it is: A friendly name for the container. Used in Kubectl output and logs.
+		  image: myapp:v1 
+		  - What it is: The container image to run. Could be 
+		    /registry/path/myapp:tag (e.g., io/username/myapp:1.0).
+		  imagePullPolicy: Never # Use local image
+		  -What it is: controls when kubelet pulls the image from a registry.
+		  -Options & When to use:
+		   - Always - always pull (useful if you tag :lates or want newest image).
+		   - IfNotPresent - pull only if not present on node (default for tagged images).
+		   - Never - never pull; use only when image already exists on node (useful for minikube local images)
+		   - Common pitfall: Never will fail in cloud clusters unless image is preloaded on nodes.
+		                     In most real deployements use IfNotPresent or Always.
+		  ports:
+		  - Declars container ports (informational for kubernetes and used by services) 
+		  - containerPort: 5000 
+		    - what it is: The port the application listens on inside the container(Flask default from earlier example).
+			- Note: This does not expose the prot outside the cluster - a service or ingress is needed for external access.
+		  
+Step 5 : Create Service YAML 
+
+service.yaml 
+
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: myapp-service 
+spec:
+  selector:
+    app: myapp 
+  ports:
+    -protocol: TCP
+     port: 80 
+     targetPort: 5000 
+  type: NodePort # exposes service to your machine.
+
+step 6 : Apply to Kubernetes 
+
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml 
+  
+Check running pods:
+
+kubectl get pods 
+
+Get the service URL:
+minikube service myapp-service 
+- it opens your browser showing
+  "Hello from Docker + Kubernetes!" again - but now managed by kubernetes.
+  
+What's happening behing the Scenes:
+
+Components - Role 
+Dockerfile - Packages your app into a portable container 
+Kubernetes Deployment - Ensures 3 containers (pods) always run 
+Kubernetes Service - Exposes your app to the outside world. 
+Kubernetes - Restarts crashed pods, balance traffic, scales replicas 
+
+Summary 
+Task - Tool 
+Build and run app container - Docker 
+Manage, scale, heal multiple containers - Kubernetes
+Local orchestration - Docker Compose/MiniKube 
+Production orchestration - Kubernetes on AWS, Azure, GCP, etc. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+		  
+		   
+		   
+
+
+
+
+
+
+   
+
+
+   
+
+
+
+
+
+		
+
+
+
+
+  
+  
+  
   
 
-- 
 
 
 

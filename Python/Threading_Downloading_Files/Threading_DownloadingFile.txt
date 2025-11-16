@@ -1,0 +1,615 @@
+Plan for Threading Mini Project 
+
+Project Idea: Download Simulation System - Multiple threads simulate downloading files in parallel.
+
+Thread Concepts We'll cover:
+
+Concept - What it Means 
+
+threading.Thread - Create and run threads 
+
+start() vs run() - Difference explained clearly 
+
+join() - Wait for thread to finish 
+
+lock() - Prevent data corruption when threads access shared resources 
+
+current_thread() - Identify the thread currently running 
+
+daemon() - Background threads that close when main ends 
+
+
+Step by Step Approach:
+
+We'll build it in small parts:
+
+1, Step1 : Build thread creation using threading.Thread 
+2, Step2 : Simulate downloading with sleep() (like real-world delay)
+3, Step3 : Add shared counter ( explained need for Lock)
+4, Step4 : Use join() to wait for threads 
+5, Step5 : Use daemon threads 
+6, Step6 : Final mini project - multiple file downloads with log tracking 
+
+
+Step 1: Basic Thread Creation  
+
+Create a single Python program where one thread prints something while the main program continues.
+
+Step 1 Code: Minimal Thread Example 
+
+import threading
+// imports the threading module - gives us tools to run code in parallel (in background).
+import time 
+// we'll use this pause execution (simulate work using sleep()) 
+
+
+def greet():
+    print("Hello from a thread!")
+	time.sleep(2)
+	print("Thread finished!") 
+// Defines a function called greet() - this will run in a separate thread.
+- First, it prints a message.
+- Then it sleeps(waits) for 2 seconds.
+- Then prints another message.
+- This simulates some work done in the background 
+	
+print("Main program started") 
+// This runs in the main thread - just prints that main has started. 
+
+#Create a Thread object 
+t = threading.Thread(target=greet)
+// This creates a thread object 
+- threading.Thread(...) creates a new thread.
+- target-greet means this thread will run the greet() function.
+- t is now a thread ready to run, but it hasn't started yet! 
+
+#Start the thread 
+t.start() 
+// This starts the thread!
+- t.start() tells python: Run greet() in the background 
+- it does not block the main program - both now run in parallel. 
+
+print("Main program continues...") 
+// This show that main keeps running while the thread is also working 
+
+Output:
+Main program started 
+Hello from a thread!
+Main program continues...
+Thread finished!
+
+What you just learned 
+
+Concept - Explanation 
+threading.Thread - Used to create a new thread 
+target=function - Assigns which function will run in the thread 
+start() - Begins execution in parallel 
+main thread - The normal flow of your Python program 
+
+Task for you (Optional) 
+
+Try changing greet() to print3 line with a pause between each - then watch
+how main and thread behave at the same time. 
+
+import threading 
+import time 
+
+def greeting():
+    print("Hello from a thread")
+    time.sleep(2)
+    print("I am thread, waiting to complete")
+    time.sleep(2) 
+    print("I am thread, done")
+ 
+print("Main program starts...")   
+t = threading.Thread(target=greeting)
+t.start()
+
+print("Main program continues")
+
+Output:
+Main program starts...
+Hello from a thread
+Main program continues
+I am thread, waiting to complete
+I am thread, done
+
+Step 2 : Simualte multiple downloads using multiple threads
+
+Objective : Run multiple threads at the same time, each simulating a file download with a sleep delay.
+
+Code: Simulate Paralled Downloads 
+
+import threading 
+import time
+// Standard Python modules - threading for concurrency, time to simulate delay 
+
+def download_file(file_name):
+    print(f"Starting download : {file_name}")
+	time.sleep(2) 
+	print(f"Finished download: {file_name}") 
+//A function that pretends to "download a file".
+- file_name is passed as an argument.
+- It sleeps for 2 seconds (simulates download time).
+- Then prints that the download is done. 
+
+	
+print("Main program started")
+// Normal print from the main program (just to show flow). 
+
+#Create threads for 3 different files
+t1 = threading.Thread(target=download_file, args=("file1.txt",)) 
+t2 = threading.Thread(target=download_file, args=("file2.txt",))
+t3 = threading.Thread(target=download_file, args=("file3.txt",))
+// These lines create threee threads, each to download a diffeerent file.
+- target=download_file: run this functin in the thread 
+- arg=(...): pass the file name as a tuple 
+- t1,t2, and t3 are three different thread objects.
+- Why comma in ("file1.txt",)?
+- Because args must be a tuple, even for one item
+
+
+#Start all threads
+t1.start()
+t2.start()
+t3.start() 
+// Starts all 3 threads - they now run concurrently.
+- Python creates 3 "worker" to run download_file in parallel.
+- No need to wait - it keeps going 
+
+print("All downloads started (in paralled)") 
+// This prints even before downloads finish - because the downloads are running in threads 
+
+Sample Output:
+The exact output may vary in order since threads run in parallel. 
+
+Main program started 
+Starting donwload : file1.txt 
+Starting download : file2.txt 
+Starting download : file3.txt 
+All downloads started (in parallel)
+Finished download : file1.txt 
+Finished download : file2.txt 
+Finished download : file3.txt 
+
+What you just Learned :
+
+Concept Description
+
+Multiple Threads - Each thread does a separate task (parallelism) 
+args= - Used to pass arguments to target function 
+Sleep Simulation - Simulates real-world delay (downloads, tasks)
+Parallel Output - Order of print can change due to concurrency
+
+Optional Task for you:
+- Try adding a 4th file
+- Change time.sleep() to random.randint(1,4) to simulate variable download times. 
+
+Step 3: Shared Counter + Lock - this step teaches you why thread safey matters and how to fix it using a Lock. 
+
+Objective:
+- Create multiple threads that increment a shared counter.
+- Show what goes wrong without a Lock 
+- Then fix it with a Lock 
+
+Real World Concept: Race Condition 
+- A race condition happens when two threads access and modified shared data at the same time - causing unpredicable bugs. 
+
+Step 3A : without Lock (unsafe version)
+
+import threading 
+// used for multithreading 
+import time 
+// Not needed here, but often used for delay (just habitually imported).
+
+counter = 0 
+// A shared variable that all threads will modify 
+
+def increment():
+    global counter
+	for _ in range(100000);
+	   counter += 1 
+// This function adds 1 to counter 100,000 times.
+- global counter means we modify the global counter variable.
+- 5 threads will run this function at the same time.	   
+	   
+	   
+threads = []
+// To store thread references so we can join() them later 
+
+#Create 5 threads 
+for _ in range(5):
+   t = threading.Thread(target=increment)
+   threads.append(t)
+   t.start 
+// Creates 5 threads to run increment() 
+- All threads run in parallel.
+- They all touch the same counter, which causes trouble. 
+   
+# Wait for all threads to finish 
+for t in threads:
+   t.join() 
+// join() means: Wait for this thread to finish before going one
+- Ensures print() only runs after all threads are done 
+   
+print("Final Counter (no lock):", counter) 
+// We print the final counter 
+Excepted: 5 x 100,000 = 500,000 
+Actual: You'll often get less (like 478232, 492874, etc.)
+Why? Race condition.
+Multiple threads try to counter+=1 at the same time, which causes loss of updates.
+
+Step 3D: Add Lock to fix the Race 
+
+Let's fix it by using threading.Lock 
+
+import threading 
+
+counter = 0 
+lock = threading.Lock() #Create a Lock 
+// Create a Lock object. 
+
+def increment():
+    global counter
+	for _ in range(100000):
+	    with lock:
+		    counter+ = 1 
+// This is the fix:
+- with lock: ensures only one thread can access this code at a time.
+- Prevents overlapping write to counter 
+			
+threads = [] 
+
+for _ in range(5):
+    t = threading.Thread(target=increment)
+	threads.append(t) 
+	t.start() 
+
+for t in threads:
+    t.join() 
+	
+print("Final Counter (with lock):", counter) 
+
+Output:
+Final Counter (with Lock): 500000 
+Consistent and correct every time!
+
+Key Learnings:
+Concept - Explanation 
+Shared Variable - One variblae accessed by many threads 
+Race condition - Two threads modify data at the same time -> bugs 
+Lock - Prevents multiple threads from updating at the same time
+with Lock - The saftest way to lock and release automatically.
+
+Step 4: Understanding join()  
+
+Goal of Step 4:
+- Learn what join() does 
+- Understand when you must use it 
+- See what happens without it 
+
+Concept: What is join()?
+In Simple words:
+  thread.join() means: Main program, please wait until this thread finishes.
+
+Without join(), the main program may exit too early, before threads complete. 
+
+We'll try both:
+1, without join()
+2, with join() 
+
+Case !: No .join() (Main exits before threads finish) 
+
+import threading 
+import time 
+
+def say_hello(name):
+    print(f"{Hello from {name}")
+	time.sleep(2) 
+	print(f"{name} finished") 
+	
+#Create 2 threads 
+t1 = threading.Thread(target=say_hello,args=("Thread-1",))
+t2 = threading.Thread(target=say_hello,args=("Thread-2",))
+
+#start threads
+t1.start() 
+t2.start() 
+
+print(" Main program done (Without join)")
+
+Spoon-Fed Explanation:
+Line - Explanation
+say_hello() - Function that waits 2 seconds
+t1.start() / t2.start() -  Start both threads 
+print("Main done") - Main thread finishes before the threads do! 
+
+Problem:
+
+You may see only this output:
+
+Hello from Thread-1
+Hello from Thread-2 
+Main program done (without join) 
+
+BUT you might miss: 
+
+Thread-1 finished 
+Thread-2 finished 
+
+Because the main program exited before they printed!
+
+Case B: Add .join() ( Main waits for threads)
+
+import threading
+import time 
+
+def say_hello(name):
+   print(f"{Hello from {name}")
+   time.sleep(2) 
+   print(f"{name} finished") 
+   
+t1 = threading.Thread(target=say_hello,args=("Thread-1",));
+t2 = threading.Thread(target=say_hello,args=("Thread-2",)); 
+
+t1.start()
+t2. start() 
+
+#wait unit both threads finish 
+t1.join()
+t2.join() 
+
+print("Main program done (wiht join)")
+
+Output:
+
+Hello from Thread-1 
+Hello from Thread-2 
+Thread-1 finished 
+Thread-2 finished 
+Main program done (with join)
+
+Now the main program waits until both threads finish their job.
+
+What you learned
+Concept  What it Means 
+join() - Wait until thread is done 
+No join() - Threads may not finish - main may exit early 
+Thread Sync - Use join() to safely combine results from threads 
+
+Task for you 
+- Run both verisons: with and without join()
+- Add more threads (like 4 or 5) and test it. 
+
+Step 5 : Daemon Threads 
+
+Objective:
+
+- Understand what a daemon thread is 
+- Learn when to use it 
+- See that happens with and without daemon mode 
+
+Real-World Analogy: 
+
+Think of:
+- Main thread = You 
+- Daemon thread = Wi-Fi at a coffee shop 
+
+If you leave the shop, The Wi-Fi turns off too. 
+-> Same for daemon threads: If the main thread finishes, daemon threads are auto-killed. 
+
+When to Use Deamon Threads?
+Use daemon threads when:
+Daemon Thread use case - Example 
+Background work   - Logging, monitoring, health checks 
+Not critical to finish before shutdown - File Sync, UI animation, timers 
+
+
+Example: Compare Normal vs Daemon Thread 
+
+A. Normal Thread (Non-daemon) 
+
+import threading
+import time 
+
+def background_job():
+    print("Background job started") 
+	time.sleep(5) 
+	print("Background job completed")
+	
+t = threading.Thread(target=background_job)
+t.start() 
+
+print("Main program finished") 
+
+Explanation:
+- Thread starts
+- sleep(5) simulates long-running work
+- Main finishes, but waits for thread to finish too (not a daemon) 
+
+Output:
+Background job started 
+Main program finished 
+Background job completed 
+
+B. Daemon Thread: t.daemon = True 
+
+import threading
+import time 
+
+def background_job():
+    print("Background job startd")
+	time.sleep(5)
+	print("Background job completed")
+	
+t = threading.Thread(target=background_job)
+t.daemon = True # Mark as daemon thread 
+t.start() 
+
+print("Main program finished") 
+
+Just one line:
+t.daemon = True 
+
+This makes the thread a background(daemon) thread. 
+
+Output:
+
+Background job started 
+Main program finished 
+
+No final message from thread 
+Because the main thread ends early, and the daemon thread gets killed.
+
+What you learned 
+Term -  Meaning 
+daemon=True - Thread will auto-terminate when main exits 
+
+Non-daemon - Thread must finish completely before main ends 
+
+Use case - Background tasks that don't need to finish 
+
+
+Gotcha: Set daemon=True before starting the thread!
+t  = threading.Thread(target=...)
+t.daemon = True // OK 
+t.start() 
+
+If you try to set daemon = True after start(), it will raise an error. 
+
+Task for you:
+
+Try this:
+1, Remove time.sleep(5) -> the thread may not even start!
+2, Try with join() - see how it forces even daemon to wait 
+
+
+Step 6 : Mini Project : File Downloader Simulator 
+
+We'll simulate multiple threads downloading files. Each thread will:
+1, Represent one download 
+2, Log process safetly (using lock)
+3, Run in parallelism
+4, Use join() to wait 
+5, Optionally test with daemon 
+
+Features covered: 
+
+Concept  - Used in Project 
+threading.Thread - Yes 
+start()/run() - Yes 
+join() - Yes 
+Lock - Yes 
+current_thread - Yes 
+daemon - Optional to experiment 
+
+
+Code: File Downloader Simulator 
+
+import threading 
+import time 
+import random 
+
+#Create a lock for thread-safe logging 
+print_lock = threading.Lock() 
+
+#Simulated download function 
+def download_file(file_name):
+    with print_lock:
+	   print(f"[{threading.current_thread().name}] Starting download : {file_name}") 
+	
+	# Simulate variable download time 
+	time_to_download = random.randint(1,5) 
+	time.sleep(time_to_download) 
+	
+	with print_lock:
+	   print(f"[{threading.current_thread().name()] Finished download : {filename}") 
+	   
+# List of filenames to download 
+file_list = ["file1.mp4","file2.pdf","file3.jpg","file4.zip","file5.csv"] 
+
+#Store all threads here 
+threads = [] 
+
+for file in file_list:
+    t = threading.Thread(target=download_file, args=(file,)) 
+	#Optional: Uncomment the next line to try daemon mode 
+	#t.daemon = True 
+	t.start()
+	threads.append(t) 
+	
+# Wait for all downloads to complete 
+for t in threads:
+   t.join() 
+   
+print("All downloads complete.") 
+
+Spoon-Fed Explanation 
+
+Line - Explanation 
+
+print_lock = threading.Lock() - Prevents output overlap when multiple threads print together 
+with print_lock() - Ensures only one thread prints at a time 
+random.randint(1,5) - Simulates download time of 1-5 seconds 
+t = threading.Thread(...) - Each thread downloads one file 
+t.start() - Starts the download thread 
+threads.append(t) - keep track of all threads 
+t.join() - Main waits until this download finishes 
+
+Sample Output(Every time will vary) 
+
+What you just used:
+
+Topic - Real world usage 
+Threads - Handle curcurrent downloads 
+Lock - Prevent output clash when printing 
+Join - Ensure all download complete 
+Random + Sleep - Simulate network delay realistically 
+
+
+******************************************************************************************* 10-08-2025 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,710 @@
+What We'll Build : Student Management Microserives System 
+
+We'll create 3 microservices: 
+
+Service                  Role                Example API 
+
+Student Service -  Stores student data -  GET/students, POST/students 
+
+
+Course Service -  Stores courses data -  GET/courses, POST/coures 
+
+Enrollment Service -  Manages student course enrollment -  POST/enroll, GET/enrollments 
+
+Each service is 
+
+- A separate C++ process 
+- Communicates via HTTP using a lightweight C++ web framework. 
+
+Tools We'll use 
+
+Tool -  Why 
+
+C++ 17 or later   -  Modern features 
+
+Crow C++ micro web frame work -  Lightweight, easy REST API 
+
+JSON (nlohmann/json)  -  For request/response 
+
+cURL/HTTP client  -  For service-to-service calls 
+
+Step to Step Roadmap :
+
+Phase-Description-Concepts 
+
+step1 - Setup Crow + JSON libs  -  Basics 
+
+step2 - Build Student Service - REST, JSON, POST/GET 
+
+step3 - Build Course Serive - Another REST service 
+
+step4 - Build Enrollment Service - One service calling another 
+
+Step 5 - Simulate interaction = Real microservice flow 
+
+
+Step1 : Environment Setup 
+
+Required libraries (Header-only) 
+You need two open source headers:
+
+1, Crow (web framework) - Download crow_all.h 
+2. JSON for Modern C++ (nlohmanm) - Download json.hpp 
+
+Place them in your project folder.
+
+/microservices_cpp/
+|- student_service.cpp
+|- crow_all.h 
+|- json.hpp 
+
+
+Compile Test Crow App 
+
+Create a test app: student_service.cpp 
+
+#include "crow_all.h"
+
+int main() {
+   crow::SimpleApp app;
+   
+   CROW_ROUTE(app,"/")([]() {
+       return "Student Service Running!"; 
+   }); 
+   
+   app.port(18080).multithread().run(); 
+}
+
+Compile and Run: 
+g++ -std=c++17 student_service.cpp -o student_service ./student_service 
+
+Go to browser and open http://localhost:18080 
+
+you should see:
+
+Student Service Running!
+
+Step 1 Complete!
+
+You've 
+
+- Set up a micro HTTP service in C++
+- Built the first step of a microservice 
+
+Step2: Building the Student Service 
+This is your first real C++ microservice - we'll make it simple, RESTFUL, and spoon fed.
+
+Step2: Goals 
+
+Task     What you'll Learn 
+
+POST/students   Receive JSON, add a student 
+
+GET/students    Return all students as JSON 
+
+Store Students in memory  Use std::unordered_map and nlohmann::json 
+
+Step 2.1 : Student Data Model 
+
+We'll store:
+
+- id (auto-incremented)
+- name 
+- age 
+
+Student_service.cpp (complete code below) 
+
+#include "crow_all.h"
+#include "json.hpp"
+#include <unordered_map>
+#include <atomic> 
+
+using json = nlohmann::json;
+
+//In-memory student DB 
+std::unordered_map<int, json> students;
+std::atomic<int> nextId{1};
+
+
+int main() {
+    crow::SimpleApp app;
+	
+	// POST/students 
+	CROW_ROUTE(app,"/students").methods(crow::HTTPMethod::POST)([]const crow::request& req) {
+	    auto body = json::parser(req.body);
+		//Create student object 
+		int id = nextId++;
+		json student = {
+		    {"id",id},
+			{"name",body["name]},
+			{"age",body["age"]}
+		}; 
+		students[id] = student;
+		
+		return crow::reponse{student.dump()};
+	});
+	
+	// GET/students
+	CROW_ROUTE(app,"/students").methods(corw::HTTPMethod::GET)([]() {
+         json result = json::array();
+		 for(const auto& [id,student] : students) {
+		     result.push_back(student); 
+		 }
+		 return crow::response{result.dump(4)};  // Pretty JSON 
+    )};	
+	
+	app.port(18080).multithreaded().run() 
+}
+
+Example Usage:
+
+Add Student(POST) 
+
+curl -X POST http://localhost:18080/students \
+     -H "Content-Type: application/json" \ 
+     -d '{"name":"Alice","age":22}'
+
+List Students(GET)
+
+curl http://localhost:18080/students 
+
+
+What you've Learned: 
+
+Concept - Use 
+
+std::unordered_map -  Store key value students 
+nlohmann::json - Serialize/parse JSON 
+crow::SimpleApp - Define REST endpoints 
+std::atomic - Thead safe ID Counter 
+curl - Simulate API call 
+
+Step 4 : Enrollment Microservice
+
+This is the most exciting step - it shows hwo microservices talk to each other.
+We'll build a new service that:
+
+- Accept enroll requests ( student_id, course_id)
+- Stores a list of enrollments 
+- Calls the Student and Course services to validate if IDs exist 
+
+What This Teaches 
+
+Concept  -   Used for 	 
+Service-to-Service HTTP calls   - Microservice communcation 
+std::vector of JSON -   Store enrollments 
+curl from C++ - calling external REST APIs 
+Crow again - To handle Enrollment service routes 
+
+Step 4.1: File Setup 
+
+Create a new file:
+
+/microservices_cpp/
+|- enrollment_service.cpp  - new file 
+|- crow_all.h 
+|- json.hpp 
+
+Make sure student_service is running on port 18080 
+(We'll assume course_service is already there; we'll simulate it if needed.) 
+
+Step 4.2: Complete enrollment_service.cpp 
+
+#include "crow_all.h"
+//The include the entire Crow web framework in a single header.
+//It gives you crow::SimpleAPP, route handling, HTTP verbs, etc 
+
+#include "json.hpp"
+// This includes the nlohmann JSON library -  a very popular, easy-to-use C++ JSON parser.
+// Allows you to use JSON as if it were a C++ map or vector 
+
+#include<vector>
+#include<string>
+#include<iostream>
+#include<curl/curl.h>
+// These are standard C++ headers and libcurl:
+- vector -> for dynmanic list of enrollments.
+- string -> for URLs and JSON strings
+- iostream -> print to console 
+- curl/curl.h -> for making HTTP requests to other services 
+
+using json = nlohmann::json;
+// Makes json an alias for nlohmann::json, so you an write json x = ... instead of the long name every time.
+
+//Store enrollments in memory 
+std::vector<json> enrollements;
+// A dynamic list to store each enrollment as a JSON object.
+// We use json for flexibility(instead of a custom struct) 
+
+
+
+//Helper for curl HTTP GET request 
+// HTTP Client Helper: Receive response data into a string 
+size_t writeCallback(void* contents, size_t size,size_t nmemb, std::string* out) {
+    // contents is the data, size * nmemb is the actual number of bytes.
+   
+    size_t totalSize = size * nmemb; 
+	// Calculates how many bytes were recived 
+	out->append((char *)contents,totalSize);
+	// Appends the received data to the output string(std::string* out). 
+	return totalSize; 
+	// Returns how many bytes were handled - required by curl 
+}
+// This is a callback function that libcurl calls whenever it receives part of the HTTP response.
+
+
+
+// Helper Function to Make HTTP GET Request and Get JSON 
+
+json httpGetJson(cont std::string& url) {
+// This funciton takes a URL, makes a GET request to it, and returns the JSON response. 
+    CURL* curl = curl_easy_init();
+	// Initialize a new cURL session.
+	std::string response;
+	// We'll store the response from the HTTP server in this string. 
+	if(curl) {
+	// Check if initialization succeeded 
+       curl_easy_setup(curl, CURLOPT_URL, url.c_str());
+	   // Set the URL to request
+	   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+	   // Set our earlier function to handle the incoming data. 
+       curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);	
+       // Pass the response string into the callback so data is saved into it. 	   
+	}
+	
+	CURLcode res = curl_easy_perform(curl);
+	// Perform the request store the result.
+	curl_easy_cleanup(curl); 
+	// Clean up the curl session 
+	
+	return json::parse(response,nullptr,false); 
+	// Parse the raw response string as JSON 
+	// if invalid, returns a null JSON object(because of false). 
+}
+
+int main() {
+// Ths starting point of our service.
+   crow::SimpleApp app;
+   // Create a web application instance using Crow 
+   
+   //POST /enroll 
+   CROW_ROUTE(app,"/enroll").method(crow::HTTPMethod::POST)([](const crow::request& req) {
+   // Define a POST route as /enroll.
+   // The handler is a lambda function that receives the request object. 
+       auto body = json::parse(req.body)
+	   // Parse the JSON body of the request 
+	   int sid = body["student_id"]
+	   int cid = body["course_id] 
+	   // Extract student ID and course ID from the JSON. 
+	   
+	   //Call student & course services 
+	   // Microservice Calls to Validate Student and Course 
+	   json student = httpGetJson("http://localhost:18080/students")
+	   json course = httpGetJson("http://localhost:18081/courses")
+	   // These lines call the student and course services to get their full lists.
+	   // Later, we'll replace this wtiht an optimized lookup endpoint. 
+	   
+	   //Check existence (very basic validation) 
+	   bool studentFound = false, courseFound = false;
+	   // These flags will check if the IDs exist in their respective services.
+	   for(auto& s : student) {
+	      if(s["id"] == sid) {
+		    studentFound = true;
+			break;
+		  }
+	   }
+	   // Search for the student ID in the JSON list from the Student Service. 
+	   for(auto& c : course) { 
+	       if(c["id"] == cid) {
+		     courseFound = true;
+			 break;
+		   }
+	    }
+		// Search for the course ID in the Course service 
+	   
+	   if(!studentFound || !courseFound) 
+	     return crow::response(400,"Invalid student or Course ID")
+	   // If either is missing, return HTTP 400(Bad Request) with an error message. 
+   } // Post /enroll 
+ } // int main 
+
+
+If valid - Store the Enrollment 
+
+json enrollment = {
+    {"student_id",sid},
+	{"course_id",cid} 
+}; 
+// Create a JSON object representing the enrollement 
+
+enrollments.push_back(enrollment); 
+// Save it n the in-memory vector. 
+
+return crow::response{response{enrollement.dump()}; 
+}); 
+// Return the newly created enrollment as the response 
+
+GET/enrollments
+
+CROW_ROUTE(app,"/enrollments").methods(crow::HTTPMethod::GET)([]() {
+   return crow::response{json(enrollments).dump(4)};
+// When /enrollments is called, return all save enrollments in pretty-printed JSON(.dump(4)).
+
+
+Start the Server 
+
+curl_global_init(CURL_GLOBAL_ALL);
+// Intialize cURL globally (needed by libcurl for multi-threaded apps). 
+
+app.port(18082).multithreaded().run();
+// start the Crow web server on port 18082. 
+
+curl_global_cleanup(); 
+// Clean up cURL resources after shutdown(optional cleanup); 
+}
+// End of main() 
+
+
+
+course_service.cpp (C++ Microservice) 
+This services manages all course data. 
+
+#include "crow_all.h"
+// Loads the entire Crow web framework - this gives us HTTP route support 
+
+#include "json.hpp" 
+// includes nlohmanm JSON library to work with JSON data in C++ as if it's python dictionaries 
+
+#include<vector>
+#include<string> 
+// standard C++ headers 
+- vector: to hold all courses. 
+- string: used inside the JSON fields like "title"
+
+using json = nlohmannn::json;
+// This makes our life easier - we can use json instead of writing the long nolhmann::json everytime. 
+
+Declare Some Sample Courses 
+
+std::vector<json> courses = {
+ {{"id",1},{"title","Modern C++"},"Dr. Bjarne"}},
+ {{"id",2|,{"title","Systems Programming"},{"instructor","Linus T."}},
+ {{"id",3},{"title","Concurrent programming"},{"instructor","Grace H."}) 
+};
+
+//Predefined list of courses, stored as JSON objects in a vector.
+//Each course has: id: unique courseID, title: name of the course, instructor - who teaches it 
+
+Main Application Begins 
+
+int main() {
+  crow::SimpleApp app;
+  // Standard main() function 
+  // crow::SimpleApp is the Crow app object used to register routes and run the web server. 
+  
+//Get/courses -> Get all courses 
+CROW_ROUTE(app,"/courses").methods(crow::HTTPMethod::GET)([]() {
+   return crow::response{json(courses).dump(4)}; 
+}
+// This defines a GET API at /courses.
+// Returns the list of all available courses in pretty JSON format (.dump(4)).
+
+Example output:
+{
+	{
+	  "id":1,
+	  "instructor":"Dr. Bjarne",
+	  "title":"Modern C++"
+	},
+}
+
+POST/courses ---> Add new course 
+
+CROW_ROUTE(app,"/courses").methods(crow::HTTPMethod::POST)([](const crow::request& req) {
+// This defines a POST endpoint at /courses 
+   auto body = json::parse(req.body);
+   // Parses the body of the HTTP request as a JSON object.
+   // Expected format:
+   {
+     "id":4,
+	 "title":"Microservices in C++",
+	 "instructor":"Ada L."
+   }
+   courses.push_back(body);
+   // Adds the new course to the internal vector.
+   
+   return crow::response{body.dump()};
+}
+// Returns the same course that was added(for confirmation) 
+
+Start the Web Server 
+app.port(18081).multithread().run(); 
+
+// Start the Crow web serve on port 18081 
+// multithread() allows it to handle multiple clients. 
+
+
+Summary of What This Service Does:
+
+Route -  Method - Function 
+
+/courses - Get - Returns all course data 
+/courses - POST - Accepts new course (JSON body) 
+
+
+Tech Stack We'll Use:
+
+Layer - Tool - Why 
+Frontend - HTML+JavaScript(vanilla or React) - Simple,works in browser 
+
+Backend - Your existing C++ microservices - Already built 
+
+Data Flow - REST API via HTTP - Already exposed via Crow 
+
+What This UI Will Do:
+- View all students 
+- Add a new student 
+- View available courses 
+- Enroll a student in a course 
+- See enrollment details 
+
+Step Plan (Frontend Only) 
+
+We'll build the frontend in stages:
+
+1 - Basic HTML layout 
+2 - Fetch and deaplay data from microservices 
+3 - Forms to POST new data (student/courses)
+4 - JavaScript logic to handle API requests 
+5 - Style with CSS (optional) 
+
+<!DOCTYPE html>
+// Declares this file is an HTML 5 document. Every HTML file starts with this.
+<html lang="en">
+// Begins the HTML document and sets the language to English 
+<head>
+// The <head> section holds metadata - things like the title,CSS,fonts. 
+  <meta charset="UTF-8">
+  //Sets the character encoding to UTF-8, so special characters (like right symbol, etc.) are displayed properly. 
+  <title>Microservices Dashboard</title>
+  // Sets the title shown in the browser tab. 
+  <style> 
+  // Starts a CSS section inside the HTML to style the page.
+	  body { font-family: Arial; padding: 20px; }
+	  // Applies font and padding to the whole page. 
+	  .section{ margin-bottom: 40px; }
+	  // Adds spacing between each UI section using a reusable CSS class 
+	  table, th, td { border: 1px soild black; border-collapse: collape: padding: 5px; }
+	  // Adds borders to tables and cells, and makes the table look like a clean grid. 
+  </style>
+  </head> 
+  //Ends the styling and closes the <head>.
+  
+  <body>
+  //Starts the visible part of the web page.
+      <h1> C++ Microservices Dashboard</h1> 
+	  // A heading at the top of the page. Emoji adds a visual icon. 
+	  <div class="section">
+		  // Starts a section (styled with .section class). 
+		  <h2> Students </h2> 
+		  // Sub-heading for the students area.
+		  <button onclick="loadStudents()">Load Students</button>
+		  // A button. When clicked, it will run the JavaScript function loadStudents() (defined later). 
+		  <table id="StudentsTable"></table> 
+		  // An empty table where we'll insert student rows using JavaScript. It has an id so we can find it easily.
+	  </div> 
+      // Closes the Students section. 
+	  
+	  <div class="section">
+	    <h2> Courses </h2>
+		<button onclick="loadCourses()">Load Courses</button>
+		<table id="coursesTable"></table>
+	  </div> 
+	  // Another section - same idea, but for coureses. 
+	  - Click the button -> runs loadCourses()
+	  - Table is initially empty 
+	  
+	  <div class="section">
+	    <h2> Add New Student </h2>
+		<input type="text" id="StudentName" placeholder="Student Name" />
+		<button onclick="addStudent()">Add</button> 
+	 </div> 
+	 // This section is for adding a new student.
+	    - Text input box (id=studentName) for name 
+		- Button calls addStudent() (which will send a POST request to backend) 
+		
+	 <div class="section">
+	   <h2> Enroll Students </h2>
+	   <input type="number" id="enrollStudentId" placeholder="Student ID" />
+	   <input type="nunber" id="enrollCourseId" placeholder="Course ID" />
+	   <button onclick="enrollStudent()">Enroll</button> 
+	 </div>
+	 // This section is for enrollment.
+	 - Enter a studentId and courseID
+	 - Button calls enrollStudent() JavaScript function. 
+	 
+	 <script src="main.js"></script>
+	 // Links to the JavaScript file that holds the logic.
+	 // This is what handles the button clicks and fetches data from your C++ microservies.
+	 
+	 </body>
+	 </html>
+	 // Closes the visible body and HTML document.
+	 
+Summary of What We Built:
+We've created a fully structured HTML layout that:
+- Has buttons and inputs for all major features.
+- Can fetch from and send to your backend
+- Can be easily styled and extended. 
+
+
+Step 2: Create main.js to handle these buttons.
+
+- Writing main.js - the JavaScript file that makes our frontend interactive and talks to the C++ microservices.
+
+File: main.js 
+
+// URL base for API requests - assumes backend runs on localhost 
+const API_BASE = "http://localhost:8080"; 
+
+- We define the base URL for our microservices API. 
+- All fetch calls will use this as the beginning of the URL. 
+
+Load Students Function 
+
+function loadStudents() {
+ // A function triggered when you click "Load Students".
+ // It will fetch student data from the backend and display it.
+ 
+ fetch('${API_BASE}/students') 
+ // We send an HTTP GET request to /students on the backend.  
+ 
+ .then(response => response.json()) 
+ // When the server replies, we convert the response to JSON(JavaScript Object) 
+ 
+ .then(data => {
+ //Now that we have the data, we use it to update the table on the page. 
+ 
+ let table = document.getElementById("StudentsTable');
+ // We get a reference to the empty <table> element with ID studentsTable. 
+  
+ table.innerHTML = "<tr><th>ID</th><th>Name</th></tr>; 
+ // This sets the header row for the table with column titles. 
+ 
+ data.forEach(student => {
+ // We loop over each student record from the server.
+ 
+ table.innerHTML += '<tr><td>${student.id}</td><td>${student.name}</td></tr>'; 
+ // For each student, we add a new row to the table showing their ID and Name 
+ 
+ });
+ });
+ }
+ //Done loading students. Entire function builds the student table dynamically. 
+ 
+Load Courses Function(Similar to Students)
+
+function loadCourses() {
+     fetch('${API_BASE}/courses')
+	   .then(response => response.json())
+	   .then(data => {
+	       let table = document.getElementById("coursesTable");
+		   table.innerHTML = "<tr><th>ID</th><th>Title</th></tr>";
+		   data.forEach(course => {
+		      table.innerHTML += '<tr><td>${course.id}</td><td>${course.title}</td></tr>;
+		   });
+		});
+}
+// Does the exact same logic as loadStudent(), but for courses.
+// It fills th coureseTable with course data from the backgroud. 
+
+
+Add New Student:
+
+function addStudent() {
+// This function runs when you click "Add" after typing a student Name. 
+const name = document.getElementById("studentName").value; 
+
+fetch('$API_BASE}/students', {
+method = "POST",
+headers: { "Content-Type": "application/json"},
+body: JSON.stringify({name: name })
+})
+// Sends a POST request to create a new student.
+The body of the request is JSON, like: {"name": "John"}.
+
+.then(response => response.json()) 
+.then(data => {
+  alert("Student added:" + data.id);
+  loadStudent(); //Refresh student table 
+})
+}
+
+// Once added, we:
+- Show an alert with the new Student's ID 
+- Refresh the students table to reflect the new data.
+
+Enroll Student in Course:
+
+function enrollStudent() {
+   const studentId = parseInt(document.getElementById("enrollStudentId").value);
+   const courseId = parseInt(document.getElementById("enrollStudentId").value);
+   // Gets the entered StudentID and CourseID from the input boxes.
+   // Converts the values from string to number using parseInt(). 
+   
+   fetch('${API_BASE}/enroll'. {
+       method: "POST",
+	   headers: {"Content-Type":"application/json"},
+	   body: JSON.stringify({studentId: studentId, courseId: courseId })
+   })
+   // Sends a POST to the /enroll endpoint with both IDs in the request body. 
+   
+   .then(response => {
+    if(response.ok) {
+	   alert("Enrollment successful");
+    } else {
+       alert("Enrollment failed.");
+    }
+   }); 
+
+// If server replies with SUCCESS (200 OK), we show a success message. Otherwise, we show an error. 
+
+
+*****************************************************************************************************************************   
+
+
+
+
+
+	   
+
+ 
+ 
+ 
+ 
+
+
+	 
+	  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,716 @@
+Project Title : Employee Directory & Department Manager 
+
+Objective: Build a mini command-line app to manage employees, group them by departements, and perform CRUD operations with persisent data.
+
+CRUD Meaning:
+C - Create: Add new data to the system.
+R - Read: Retrieve or view existing data.
+U - Update: Modifying existing data.
+D - Delete: Remove data from the system 
+
+Concepts Covered (Real World) :
+1, Dictionary - Data Mapping (employee info, department-wise)
+2, List Comprehension - Filtering/Searching 
+3, Functions - Code reuse and organization 
+4, File I/O (JSON)  - Persistent Storage 
+5, Error Handling - Robustness 
+6, Classes & OOP - Realistic design 
+7, Modular code - Separate of logic (like real-world projects)
+8, SOLID principle (basic) - SRP, OCP applied lightly 
+7, Data Validation - input checks
+8, Logging - Debugging traceability (optional but common) 
+
+employee_manager/
+|
+|_ main.py   # Entry Point 
+|
+|_ employee.py  # Employee class 
+|
+|_ department.py # Department manager logic 
+|
+|_ storage.py  # File read/write (JSON)
+|
+|_ data.json # Persistant data 
+
+
+How it works
+
+- Add, delete, update employee
+- Group employees by department 
+- Save/load data from a file
+- Basic search/filter by role, department, etc 
+
+Sample Interaction (Command Line)
+
+1, Add Employee 
+2, Remove Employee
+3, List All Employees
+4, Group by Department 
+5, Search by Name 
+6, Exit 
+
+Step by Step Plan : 
+
+Step 1 : Project Setup & Data Structure 
+
+- Define how we'll store employee data 
+- Learn Dictionary, list and basic data structure 
+
+Step 2 : Create Employee class 
+
+- Learn classes, __init__(), and attributes 
+
+Step 3 : File I/O with JSON 
+
+- Save/load data using json module (real-world persistance ) 
+
+Step 4 : Employee Operations 
+
+- Add, delete, list employees (functions + disctionary usage)
+
+
+Step 5: Department Grouping 
+
+- Grouping logic using list comprehension and dictionary 
+
+Step 6: Search & Filter 
+
+- Search by name or role with list comprehension.
+
+Step 7: Exception Handling & Validation 
+
+- Add input checks and error handling 
+
+Step 8: Modular Code 
+
+- Break into multiple files (clean real-world style) 
+
+
+Step 1: Project Setup & Data structure 
+
+- Let's define how we'll store each employee. Each employee will have: 
+
+ID, Name, Department, Role, Email 
+
+In Python, we can store this as a dictionary. 
+
+employee= {
+    "Id": 101,
+    "name": "Alice Johnson",
+    "deparment": "HR",
+    "role": "Recuriotor",
+    "email": "alice.j@example.com",
+}  # storing single values in the dicitionary 
+
+To store multiple employees:
+
+employees = [
+    {
+        "id": 101,
+        "name": "Alice Johnson",
+        "department": "HR",
+        "role": "Recruitor",
+        "email": "alice.k@exampe.com"
+    },
+    {
+        "id": 201,
+        "name": "Bob Smith",
+        "department" : "IT",
+        "role":"Developer",
+        "email":"bob.s@example.com"
+    }
+]
+
+Step 2: Create Employee Class 
+
+Why use a class?
+- Group relate data (name,department,email...) into one unit.
+- Easy to create multiple employees
+- Can add methods (functions inside class) to operate on data.
+
+Basic structure of a class:
+
+class Employee:
+    def __init__(self, emp_id,name,department,role,email):
+	    self.emp_id = emp_id
+		self.name = name 
+		self.department = department 
+		self.role = role 
+		self.email = email 
+		
+class Employee:      Defines a blueprint called Employee 
+
+__init__             Special function that runs when you create a new object 
+
+self                 Refers to the current object being create
+
+self.name            Stores input value into the object 
+
+Example:
+
+emp1 = Employee(101,"Alice Johnson","HR","Recuritor","alice.j@example.com") 
+
+Now emp1 is a fully formed employee object. 
+
+Add a print Method ( __str__ )
+
+Let's add a method to print employee nicely:
+
+def __str__(self):
+   return f"{self.empid} - {self.name} | {self.role} ({self.department}) - {self.email}" 
+   
+
+Try it Out:
+
+emp1 = Employee(101,"Alice Johnson","HR","Recruitor","alice.j@example.com) 
+print(emp1) 
+
+Output:
+
+101 - Alice Johnson | Recruiter (HR) - alice.j@example.com 
+
+Step 3: Flle I/O with JSON 
+
+In real-world apps, we don't want data to vanish when we close the program. 
+We save it to a file (usally in formats like JSON, CSV, or DB).
+
+Here, we'll use JSON 
+- Human-readable 
+- Easy to use with Python
+- Works well with dict and list 
+
+Python modules used 
+
+import json 
+
+We'll do Two things:
+- Save a list of employee objects to a file.
+- Load the list from that file.
+
+Problem: We can't save class objects directly to JSON 
+
+JSON doesn't understand Python class objects. So, we must:
+- convert the Employee object -> dictinoary before saving 
+- Convert dictionary -> Employee object while loading. 
+
+Modify Employee Class 
+
+Add to_dict() and from_dict() methods:
+
+class Employee:
+    def __init__(self, emp_id, name, department, role, email):
+        self.emp_id = emp_id 
+        self.name = name 
+        self.department = department 
+        self.role = role 
+        self.email = email 
+		
+    def __str__(self):
+        return f"{self.emp_id} - {self.name} | {self.role} ({self.department}) - {self.email}"
+		
+    def to_dict(self):
+        return {
+           "id": self.emp_id,
+           "name": self.name,
+           "department": self.department,
+           "role": self.role,
+           "email": self.email 
+      }
+	
+    @staticmethod 
+    def from_dict(data):
+        return Employee(
+        data["id"],
+        data["name"],
+        data["department"],
+        data["role"],
+        data["email"]
+        )
+	
+Save Employees to File 
+
+def save_employees_to_file(employee_list, filename="data.json"):
+    with open(filename,"w") as f:
+        json.dump([emp.to_dict() for emp in employee_list], f, indent=4)
+
+
+Load Employees from File 
+
+def save_employees_from_file(filename="data.json"):
+    try:
+        with open(filename,"r") as f:
+            data = json.load(f)
+        return [Employee.from_dict(emp) for emp in data]
+    except FileNotFoundError:
+        return []  
+		
+#Create sample employees 
+emp1 = Employee(101,"Alice Johnson","HR","Recruitor","alice.j@example.com")
+emp2 = Employee(201,"Bob Smith","IT","Developer","bob.s@example.com")
+
+#Save 
+save_employees_to_file([emp1,emp2]) 
+#Load 
+loaded = save_employees_from_file()
+for emp is loaded:
+  print(emp) 
+  
+
+Step 4 : Add, Delete, List Employees Using Functions - the core operations of any CRUD system (Create, Read, Update, Delete) 
+
+Core Operations(Function Based)
+
+You now have:
+
+- Employee class 
+- save_employees_to_file()
+- load_employees_from_file() 
+
+Now we'll 
+
+1. Show a command line menu 
+2. Let the user add, delete, list employees using input
+3, Save/load data automatically
+
+Goal: Interactive Menu 
+
+1. Function to Add Employee 
+
+def add_employee(employee_list):
+    try:
+	   emp_id = int(input("Enter ID: "))
+	   name = input("Enter Name: ")
+	   department = input("Enter Department: ")
+	   role = input("Enter Role: ")
+	   email = input("Enter Email: ")
+	   
+	   employee = Employee(emp_id, name, department, role, email)
+	   employee_list.append(employee)
+	   print("Employee added successfully.\n")
+	except Exception as e:
+	   print(f"Error adding employee: {e}")
+	   
+2. Function to Delete Employee 
+ 
+    def delete_employee(employee_list):
+	    emp_id = int(input("Enter ID to delete: "))
+		for emp in employee_list:
+		    if emp.emp_id == emp.id:
+			   employee_list.remove(emp) 
+			   print("Employee deleted. \n")
+			   return 
+		print("Employee not found.\n"
+		
+3. Function to List Employees 
+
+    def list_employees(employee_list):
+	    if not employee_list:
+		   print("No employees found\n");
+		   return 
+		for emp in employee_list:
+		   print(emp) 
+		   
+4. Main Menu Loop 
+
+   def main():
+       employees = load_employees_from_file() 
+	   
+	   while True:
+	       print("\n1. Add Employee:")
+		   print("2. Delete Employee")
+		   print("3. List All Employees")
+		   print("4. Exit")
+		   
+		   choice = input("Choose an option: ")
+		   
+		   if choice == "1":
+               add_employee(employees)
+               save_employee_to_file(employees) 
+           elif choice == "2":
+		       delete_employee(employees)
+			   save_employee_to_file(employees)
+		   elif choice == "3":
+		       list_employee(employees)
+		   elif choice == "4":
+		       print("Exiting. Goodbye!)
+		       break 
+		   else 
+		       print("Invalid option.Try again.")
+	
+Final main.py (Quick Summary)
+
+from employee import Employee 
+import json 
+
+def save_employees_to_file(employee_list, file="data.json"):
+     with open(file,"w") as f:
+	     json.dump([emp.to_dict() for emp in employee_list], f, indent=4) 
+		 
+load_employees_from_file(file="data.json"):
+try:
+    with open(file,"r") as f:
+	     data = json.load(f)
+		 return [Employee.from_dict(emp) fro emp in data]
+except FileNotFoundError:
+    return [] 
+	
+# Add, delete, list functions as above...
+
+#Menu function here.
+if __name__ == "__main__":
+   main() 
+   
+ 
+Real World concepts Applied 
+
+Functions - Encapsulated logic 
+File I/O - Persistent storage 
+Input validation - Basic checks 
+Class-Object mapping - Python OOP practice 
+Menu-driven app - Simulates console tools 
+
+
+Step 5 : Group Employees by Department Using List Comprehension? 
+
+- This introduces dictionary grouping + list comprehenision, a real-world data handling technique.
+
+Goal:
+Print employees grouped like this:
+
+HR 
+- Alice Johnson(Recruiter)
+IT
+- Bob Smith (Developer)
+
+Real-World Concept Used 
+
+- Dicitionary - key-Department, Value=List of employees 
+- List Comprehension - Clean filtering logic 
+- Loops & Conditions - Data transformation 
+
+Function: group_by_department(employee_list)
+
+def group_by_department(employee_list):
+    if not employee_list:
+	    print("No employees to group.\n"
+		return 
+		
+	department_map = {}
+	
+	for emp in employee_list:
+	    if emp.department not in department_map:
+		    department_map[emp.department] = []
+		department_map[emp.department].append(emp) 
+	
+	for dept,emp_list in department_map.items():
+	    print(f"\n {dept}")
+	    for emp in emp_list:
+		    print(f"- {emp.name} ({emp.role})") 
+			
+
+Step 6: Search by Name or Role 
+We'll let the user:
+1. Enter a keyword 
+2. Search all employees whose name or role contains that keyword(case-insensitive)
+
+Real-World Concepts used:
+
+1, List comprehension - Elegant, fast filtering 
+2, String Handling - Case insenstivie match(.lower() + in)
+3, User input - Tasks and use keyword from user 
+
+Function: Search_employees(employee_list)
+
+def search_employees(employee_list):
+    keyword = input("Enter name or role to search:").lower()
+	
+	results = [
+	   emp for emp in employee_list
+	   if keyword in emp.name.lower() or keyword in emp.role.lower()
+	]
+	
+	if results:
+	   print(f"\n Found {len(results)} results(s):"
+	   for emp in results:
+	       print(f" - {emp}")
+	else:
+	   print("No mathcing employees found.") 
+	   
+
+Step 7: Input validation and Error Handling 
+- essential in real-world software to make the program robust, foolproof and user friendly 
+
+Goal of Step 7 
+- Avoid app crashes due to bad input 
+- Validate:
+  ID must be a number, Email must have @, No duplicate IDs
+- Handle:
+  File not found, Invalid menu choices, Safe exit on bad inputs 
+  
+Real World concepts Used 
+
+try-except - Catch user errors (invalid int, missing file)
+Input Validation : Prevent adding invalid data 
+Graceful Exit : App doesn't crash -- it explains what's wrong 
+
+1, Validate Employee ID and Email in add_employee() 
+
+def add_employee(employee_list):
+    try:
+	    emp_id = int(input("Enter ID:")) 
+		if any(emp.emp_id == emp_id for emp in employee_list):
+		    print("Employee with this ID already exists.\n")
+			return 
+			
+	    name = input("Etner Name: ").strip()
+		department = input("Enter Department: ").strip()
+		role = input("Enter Role: ").strip()
+		email = input("Enter Email: ").strip()
+		
+		if "@" not in email:
+		   print("Invalid email format.\n")
+		   return 
+		   
+		employee = Employee(emp_id, name, department, role. email)
+		employee_list.append(employee) 
+		print("Employee added succesfull]n")
+	except ValueError:
+	    print("ID must be a number.\n") 
+		
+2, Protect delete_employee() from invalid input 
+
+def delete_employee(employee_list):
+    try:
+	   emp_id = int(input("Enter ID to delete: ")) 
+	   for emp in employee_list:
+	       if emp.emp_id == emp_id:
+		      employee_list.remove(emp)
+			  print("\nEmployee deleted.\n"
+			  return 
+	   print("Employee not found.\n")
+	except ValueError:
+	   print("ID must be a number.\n") 
+	   
+
+Step 8: Modularize Code into Files 
+- Split employee.py, storage.py, menu.py, main.py 
+- Real-world project folder structure 
+
+Modular Project Structure 
+
+Why Modularization?
+Separation of concerns  - One file = one purpose 
+Maintainability - Easier to read, update, reuse 
+Scalability - Easy to add features later 
+
+employee_manager/
+|
+|- main.py   #Starts the app, shows menu 
+|- employee.py # Employee class 
+|- storage.py # Save/load JSON
+|- operation.py # Add, delete, list, group, search 
+|- data.json # Stores employee records 
+
+employee.py - The Employee Class 
+
+class Employee:
+   def __init__(self,emp_id,name,department,role,email):
+       self.emp_id = emp_id
+	   self.name = name 
+	   self.role = role 
+	   self.email = email 
+	   
+   def __str__(self):
+       return f"{self.emp_id} - {self.name} | {self.role} ({self.department}) - {self.email}}"
+   
+   def to_dict(self):
+       return {
+            "id": self.emp_id,
+            "name":self.name,
+            "department":self.department,
+            "role":self.role,
+            "email":self.email 
+       } 
+ 
+    @static_method 
+	def from_dict(data):
+	     return Employee(
+		     data["id"],
+			 data["name"],
+			 data["department"],
+			 data["role"],
+			 data["email"]
+		)
+		
+storage.py - Save & Load Functions 
+
+import json 
+from employee import Employee 
+
+def save_employee_to_file(employee_list, filename="data.json"):
+   with open(filename,"w") as f:
+       json.dump([emp.to_dict() for emp in employee_list], f, indent=4) 
+	   
+def load_employees_from_file(filename="data.json"):
+    try:
+	   with open(filename,"r") as f:
+	       data = json.load(f)
+		   return [Employee.from_dict(emp) from emp in data] 
+	except FileNotFoundError:
+       return [] 
+
+operations.py -- All logic Functions 
+
+from employee import Employee 
+
+def add_employee(employee_list):
+    try:
+        emp_id = int(input("Enter ID:"))
+        if any(emp.emp_id == emp_id for emp in employee_list):
+           print("Employee with this ID already exists.\n"
+           return 
+
+        name = input("Enter Name:").strip()
+        department = input("Enter department:" ).strip()
+        role = input("Enter Role:" ).strip()
+        email = input("Enter Email: ").strip() 
+
+        if "@" not in email:
+            print("Invalie email format.\n"
+            return 
+         
+		employee = Employee(emp_id,name,department,role,email);
+		employee_list.append(employee) 
+		print("Employee added successfully.\n")
+	except ValueError:
+	    print("ID must be a number.\n";
+		
+
+def delete_employee(employee_list):
+    try:
+	   emp_id = int(input("Enter ID to delete: ")) 
+	   for emp in employee_list:
+	       if emp.emp_id == emp_id:
+		      employee_list.remove(emp)
+			  print("Employee deleted.\n")
+			  return 
+	    print("Employee not found.\n")
+	except ValueError:
+	    print("ID must be a number.\n")
+		
+def list_employees(employee_list):
+    if not employee_list:
+	    print("No employees found.\n")
+		return 
+	for emp in employee_list:
+	   print(emp) 
+	   
+def group_by_department(employee_list):
+    if not employee_list:
+	   print("No employees to group.\n");
+	   return 
+	   
+	department_map = {}
+	for emp in employee_list:
+	    department_map.setdefault(emp.department, []).append(emp) 
+		
+	for dept, emp_list in department_map.items():
+	    print(f"\n {dept}")
+	    for emp in emp_list:
+		    print(f" - {emp.name} ({emp.role})") 
+
+def search_employees(employee_list):
+    keyword = input("Enter name or role to search: ").lower()
+	results = [
+	    emp for emp in employee_list
+		if keyword in emp.name.lower() or keyword in emp.role.lower()
+	]
+    if results:
+       print(f"\n Found {len(results)} result(s):")
+       for emp in results:
+           print(f" - {emp}")
+    else:
+        print("No matching employees found.") 
+
+
+main.py -- Starts the App 
+
+from storage import save_employees_to_file, load_employees_from_file 
+from operations import (
+     add_employee,
+     delete_employee,
+     list_employees,
+     group_by_department,
+     search_employees
+) 
+
+def main():
+    employees = load_employees_from_file()
+
+    while True:
+        try:
+            print("\n Employee Management System ")
+            print("1. Add Employee")
+            print("2. Delete Employee")
+            print("3. List All Employees")
+            print("4. Group by Department"")
+            print("5. Search by Name or Role")
+            print("6. Exit");
+
+            choice = input("Choose an option: ")
+   
+            if choice == "1":
+                add_employee(employees)
+                save_employees_to_file(employees)
+            elif choice = "2":
+                delete_employee(employees)
+                save_employees_to_file(employees)
+            elif choice == "3":
+                list_employees(employees)
+            elif choice == "4":
+                group_by_department(employees)
+            elif choice == "5":
+                search_employees(employees)
+            elif choice == "6":
+                 print("Existing. Good bye!")
+            else:
+                 print("Invalid option. Try again.\n")
+            except Exception as e:
+                 print("Unexcepted erro: {e}")
+     
+if __name__ == "__main__":
+    main() 
+
+*******************************************************************************************************************	
+				
+
+		
+		
+           			
+		 
+	   
+
+
+   
+ 
+
+
+			
+
+
+
+           			   
+         
+
+
+
+
+
+
+
+
+
+
+
+
+

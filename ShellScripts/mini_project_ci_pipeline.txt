@@ -1,0 +1,254 @@
+C++ Project for CI/CD step-by-step:
+
+Step 1: Mini Real-Time C++ Project - "Ticket System"
+
+We'll create a very simple command-line app called ticket_app that allows:
+- Creating a ticket 
+- Displaying all tickets 
+
+We'll also write unit tests for it --- useful for CI! 
+
+FolderStructure:
+
+ticket_system/
+| - src/
+        ticket_app.cpp 
+| - include/
+        ticket.hpp 
+|-  tests/
+        ticket_test.cpp 
+|- CMakeLists.txt 
+|- .github/
+   |_ workflows/
+      |_ ci.yml  <- We'll to this letter 
+	  
+
+Step 2: Write Ticket Class - include/ticket.hpp 
+
+#ifndef TICKET_HPP 
+#define TICKET_HPP 
+
+class Ticket {
+public:
+      Ticket(const std::string& title);
+	  std::string getTitle() const;
+private:
+     std::string title;
+}; 
+
+class TicketManager {
+public:
+     void createTicket(const std::string& title);
+	 std::vector<Ticket> getTicket() const;
+private:
+     std::vector<Ticket> tickets; 
+};
+
+
+Step 3: Define Ticket Logic - src/ticket_app.cpp 
+
+#include "../include/ticket.hpp"
+#include<iostream>
+
+Ticket::Ticket(const std::string & t): title(t) { }
+
+std::string Ticket::getTitle() const {
+    return title; 
+}
+
+void TicketManager::createTicket(const std::string& title) {
+   tickets.emplace_back(title); 
+}
+
+std::vector<Ticket> TicketManager::getTickets() const {
+   return tickets; 
+}
+
+int main() {
+    TicketManager manager;
+	manager.createTicket("Bug: App crash on login")
+	manager.createTicket("Feature: Add dark mode");
+	
+	std::cout << "All Tickets:\n";
+	for (const auto& ticket : manager.getTickets()) {
+	    std::cout << "_ " << ticket.getTitle() << "\n";
+	}
+
+    return 0;
+}
+
+Step4 : Unit Test - tests/ticket_test.cpp 
+
+We'll write basic testing using assert() 
+
+#include "../include/ticket.hpp"
+#include<cassert>
+
+int main() {
+    TicketManager manager;
+	manager.createTicket("Test Ticket");
+	
+	auto tickets = manager.getTickets();
+	assert(tickets.size() == 1)
+	assert(tickets[0].getTitle() == "Test Tickets");
+	
+	return 0;
+}
+
+Step 5 : Build configuration -- CMakeLists.txt 
+
+cmake_minimum_required(VERSION 3.10)
+project(ticket_system) 
+
+set(CMAKE_CXX_STANDARD 17)
+
+include_directories(include) 
+
+add_executable(ticket_app src/ticket_app.cpp)
+add_executable(ticket_test tests/ticket_test.cpp src/ticket_app.cpp) 
+
+So far, you've built a real mini C++ project ready for CI/CD 
+
+What is GitHub Actions?
+
+- GitHub Actions help you automate tasks like:
+1, Compile your code 
+2, Run unit tests 
+3, Show results 
+4, Automatically tell you if something broke 
+
+Thinks of it like a robot helper that builds and tests your code every time you push.
+
+Step 1: Where Do We Write GitHub Actions?
+Create a folder named .github/workflows and inside that, create a file:
+
+ticket_system/
+ |____ .github/
+       |____workflows/
+	        |________ci.yml  <--  This is your CI script 
+			
+Step 2: Create ci.yml 
+
+name: C++ CI
+
+on:
+  push:
+     branches: [ main ] # Run CI when some one pushes to main branch 
+  pull_request:
+     branches: [ main ] # Also run for pull request 
+	 
+jobs:
+   build-and-test:
+      runs-on: ubuntu-latest # GitHub will use a Linux VM to run our job 
+	  
+   steps:
+   - name: Checkout code 
+     uses: actions/checkout@v3 # Step 1: GitHub downloads your code 
+	 
+   - name: Install Cmake and g++ 
+     run: sudo apt-get update && sudo apt-get install -y make g++ 
+	
+   - name: Create Build Direcory 
+     run: mkdir build 
+	
+   - name: Run CMake 
+     run: cmake -S . -B build 
+	 
+   - name: Build Project 
+     run: cmake --build build 
+	 
+   - name: Run Unit Tests 
+     run: ./build/ticket_test 
+	 
+	 
+Explanation (in layman terms)
+
+Step - What it does 
+
+on: push/puhll_request - Run this pipeline when someone pushes or opens PR 
+jobs: - Defines a job (like a task list)
+runs-on: ubuntu-latest - Use a Linux VM in the cloud 
+actions/checkout - Clone your code into GitHub's runner 
+install cmake/g++ - Tools to compile C++ 
+mkdir build - Create folder for CMake to build into 
+cmake - configure and generate build system 
+cmake --build - Compile the project 
+./build/ticket_test- Run the unit test and show result
+
+Once This is Done 
+1, Push your project to GitHub
+2, GitHub will automatically detect .github/workflows/ci.yml 
+3. It will start building and testing your code every time you push. 
+
+
+What is CD (Continous Delivery)?
+
+CD means "After my code builds and passes tests (CI), now automatically deliver it somewhere - like 
+
+- create  a release 
+- upload the binary to GitHub 
+- Send it to a server, etc 
+
+Think of it like:
+CI = Make sure your car works 
+CD = Send the car to the customer 
+
+What can CD do in our C++ mini project?
+
+Let's say 
+- After testing, we want to delever the compiled binary (ticket_app) to GitHub as a downloadable file.
+- That's what we'll do now - upload the built app as GitHub Release artifact 
+
+Final Folder Structure Recap (for context):
+
+ticket_app/
+| - src/ 
+|- include/
+|- tests/ 
+|- CMakeLists.txt 
+|- .github/ 
+   |- workflows/
+       |- ci.yml -> CI + CD lives here 
+	   
+- Updated ci.yml with CD (Step-by-Step + Spoon fed) 
+  Add this after the "Run Unit Tests" step:
+  
+  - name: Package Binary 
+    run: |
+	    mkdir artifacts 
+		cp build/ticket_ap artifacts/
+		
+  - name: Upload Release Artifact 
+    uses: actions/uplolad-artifact@v3 
+	with:
+	   name: ticket_app_binary
+	   path: artifacts/ticket_app 
+	   
+Step - Purpose 
+mkdir artifacts - Create a folder to keep packaged files 
+cp build/ticket_app artifacts/  - Copy the compiled app into that folder 
+actions/upload-artifact@v3  - GitHub's tool to upload a file 
+name: - What to call it in GitHub Actions UI
+path: - Which file to upload (our binary)
+
+What will Happen?
+when someone pushes code:
+1. CI compiles and runs tests/
+2, CO uploads ticket_app as a downloadable file under the GitHub Action run like this:
+GitHub -> Actions -> latest run -> Artifacts -> download your app!
+
+What you just Built:
+
+A mini CI/CD pipelines in GitHubAction for a C++ app:
+- CI: compile, test with assert 
+- CD: Deliver your app binary for download 
+
+
+
+
+
+
+
+
+
+

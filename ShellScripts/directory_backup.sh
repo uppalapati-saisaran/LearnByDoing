@@ -23,4 +23,6 @@ if [ $? -eq 0 ]; then
 else
     echo "[$DATA] Backup failed" >> "$BACKUP_DIR/backup.log" 
 
-	
+
+#!/bin/bash - This is called a shebeng line, and it tells the system which interpreter to use to run script. 
+

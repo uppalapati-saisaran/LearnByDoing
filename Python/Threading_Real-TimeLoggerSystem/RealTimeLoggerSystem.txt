@@ -1,0 +1,242 @@
+
+Real-World Threading Project: Real-Time Logger System 
+
+Use Case:
+
+Mutliple sensors (simulated) generate data at random intervals.
+Each sensor runs in its own thread, and the data is logged concurrently to a shared location. 
+
+This mimics:
+
+- Real time log aggreation 
+- Server monitoring 
+- Hardware device data capture 
+- Application telemetry 
+
+What We'll Cover:
+
+Concept - Why It's Important 
+
+Thread - Each Sensor runs independently 
+Lock - Prevent log collisions 
+current_thread() - See which sensor is active 
+sleep - Simulate real-time arrival 
+join() - Main waits until all sensors finish logging 
+
+import threading
+// threading: to create and manage threads 
+import time 
+// time: to use sleep() (simulate delay) 
+import random 
+// random: to add variability in delay (like real-world devices) 
+
+# Shared log file 
+log_file = [] 
+// Acts like a file where all sensors write their data. Shared among all threads. 
+
+#Lock to protect shared log 
+log_lock = threading.Lock() 
+// Ensures only one sensor thread writes to log_file at a time, avoiding corruption 
+
+#Each sensor writes 3 data points with delayy 
+def sensor_logger(sensor_id):
+// Function that each sensor thread runs. sensor_id tells which sensor it is. 
+    for i in range(3):
+	// Each sensor logs 3 readings (loop runs 3 times). 
+	    data_point =  f"Sensor-{sensor_id} - Reading {i+1}" 
+		// Creates the actual reading data like "Sensor-2 = Reading 1"
+		time.sleep(random.uniform(0.5,2)) # Simulate sensor reading delay 
+		// Random delay between 0.5 and 2 seconds
+		// Simulates a sensor waiting for the next reading 
+		
+		#Lock the log file for safe write 
+		with log_lock:
+		// Begins safe zone where only one thread can enter 
+		     log_file.append(f"[{threading.current_thread().name}] {data_point}")
+			 // Appends the log with the name of thread writing it. 
+			 print(f"[{threading.current_thread().name}] Logged: {data_point}") 
+			 // Prints what was logged to terminal for visibility.
+		
+#Create 5 Sensor threads 
+threads = [] 
+// To store all sensor threads so we can join them later. 
+
+for sensor in range(1,6):
+// Loop to create 5 sensors (Sensor-1 to Sensor-5)
+    t = threading.Thread(target=sensor_logger, args=(sensor,), name=f"Sensor Thread-{sensor}") 
+	// Create a thread that runs sensor_logger(sensor_id)
+    // name = assigns readable thread names 	
+	t.start()
+	// Starts the sensor thread - runs in background 
+	threads.append(t) 
+	// Save the thread to wait on it later 
+	
+#Wait for all sensors to finish 
+for t in threads:
+  t.join() 
+// Ensures main thread waits until all sensors finish logging. 
+  
+print("\n Final Log:")
+for entry in log_file:
+    print(entry) 
+// After all threads are done, the full shared log is printed. 
+
+Real-World Mapping 
+
+Threading Concept - Real Software Example 
+Thread per sensor   IoT device logs 
+Locking logs         Server writing logs from multiple users 
+Sleep + random       Netowrk or sensor delays 
+join                 Ensuring all logs captured before sending or ssving 
+
+
+************************************************************************************************************************
+
+Real-Time Logger project into a class-based design: 
+
+Why Use Classes?
+
+Encapsulation - Keep sensor behaviour inside a class 
+
+Reusability - Easy to create many sensors 
+
+Readability - Organized code structure 
+
+Read-world Style - Industry grade software uses OOP a lot 
+
+
+Goal 
+- We'll mkae a SensorLogger class.
+- Each object will represent one sensor running in its own thread. 
+
+Final Output(Preview):
+
+[SensorThread-1] Logged: Sensor-1 - Reading 1
+...
+Final Log:
+[SensorThread-1] Sensor-1 - Reading 1
+
+Step by Step Code:
+
+import threading 
+import time 
+import random 
+
+Shared Log + Lock (Global)
+
+log_file = []
+log_lock = threading.Lock() 
+
+- All sensor objects will share this log and lock 
+
+SensorLogger Class:
+
+class SensorLogger:
+   def __init_(self, sensor_id):
+       self.sensor_id = sensor_id 
+       self.thread = threading.Thread(target=self.run, name=f{"SensorThread-{sensor_id}"1)
+// Explanition:
+- __init__ - Constructor that sets sensor ID
+- self.thread = ... - Each object owns its own thread
+
+   def start(self):
+       self.thread.start()
+// starts the threads (call run in background) 
+
+   def join(self):
+       self.thread.join() 
+// Allows main program to wait for this sensor to finish 
+
+- Run Method (Thread Target) 
+ 
+  def run(Self):
+      for i in range(3):
+	      data_point = f"Sensor-{self.sensor_id}- Reading {i+1}"
+		  time.sleep(random.uniform(0.5,2)) 
+		  
+	  with log_lock:
+	       log_file.apppend(f"[{threading.current_thread().name}] {data_point}")
+		   print(f"[{threading.current_thread_name}] Logged: {data_point}") 
+		   
+      // Every thing same as before - row wrapped in a method 
+	  
+- Main Program 
+
+sensors = []
+for sid in range(1,6):
+    sensor = SensorLogger(sid)
+	sensor.start() 
+	sensors.append(sensor)
+	
+#Wait for all sensors to complete 
+for sensor in sensors:
+    sensor.join() 
+	
+Clean loop:
+- sensor.start() starts the thread 
+- sensor.join() waits for it. 
+
+Final Log Output:
+print("\n Final log:")
+for entry in log_file:
+    print(entry) 
+	
+Full Code (Class Based)
+
+import threading
+import time 
+import random 
+
+log_file = []
+log_lock = threading.Lock()
+
+class SensorLogger:
+     def __init__(self, sensor_id):
+	     self.sensor_id = sensor_id
+		 self.thread = threading.Thread(target=self.run, name=f"SensorThread-{sensor_id}")
+		 
+	 def start(self):
+	     self.thread.start() 
+		 
+	 def join(self):
+	     self.thread.join() 
+		 
+	 def run(self):
+	     for i in range(3):
+		     data_point = f{"Sensor-{self.sensor_id} - Reading {i+1}"
+			 time.sleep(random.uniform(0,5,2))
+			 
+		 with log_lock:
+		     log_file.append(f"[{threading.current_thread().name}] {data_point}")
+			 print(f"[{threading.current_thread().name}] Logged: {data_point}") 
+			 
+			 
+#Main 
+sensors = []
+for sid in range(1,6):
+    sensor = SensorLogger(sid)
+	sensor.start() 
+	sensors.append(sensor) 
+	
+for sensor in sensors:
+    sensor.join() 
+	
+print("\n Final Log:")
+for entry in log_file:
+    print(entry) 
+	
+	
+Real-World Relevance:
+
+Real Feature  - Where This Maps 
+
+Sensor class - Each sensor or device in an IoT system 
+Thread per device - Concurrent monitoring/logging 
+Locking - Avoid race constions in shared logs 
+class reuse - Plug-and-Play design for any number of devices 
+
+
+	   
+
+
+

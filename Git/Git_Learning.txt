@@ -1,0 +1,1134 @@
+1, What is Git, and how is it different from SVN (or other VCS)?
+A. 
+- Git is distributed version control system. Every developer has a full copy of the repository on every developer's machine, so they can work offline and commit locally. 
+- Git is distributed verions control system that tracks code changes, allows collaboration, and enables branching/merging. 
+- SVN is centralized, so developers depend on a central server.
+- Git is faster, works offline, and supports branching/merging more efficiently. 
+
+* Distributed - every clone is a full repository.
+* Branching - lightweight and fast. 
+* Staging area - allows selective commits.
+* Performance - optimized for speed and large projects.
+
+Real world use: Multiple developes working on different features can branch off, work independendly, and merge later.This avoids overwriting each other's work. 
+
+**************************************************************************************************************************************************************************
+
+2, What is the difference between Git and GitHub?
+A,
+- Git -> Version control tool (local and distributed)
+      -> version control tool installed locally. 
+- GitHub -> Cloud-based hosting service for Git repositories, with collaboration (issues, pull requests, actions) , features (PRs, Issues, CI/CD) .
+  GitHub/GitLab/BitBucket : Hosting serivces that provide cloud storage and collaboration features.
+  
+Real world: Developers use Git on their machine but push/pull code from GitHub to share with the team.   
+
+**************************************************************************************************************************************************************************
+  
+3, Explain git clone, git pull, and git fetch.
+A, 
+- git clone -> Copy a repository (with full history) to your machine.
+  git clone -b <branch_name> <repo_rul> -> clone a specific branch in Git. 
+- git pull -> Fetches + merges changes from remote to local branch.
+           -> perform git fetch + git merge (or git rebase, depending on config)  
+- git fetch -> Only downloads change from remote but doesn't merge 
+            -> downloads changes from the remote repository but does not merge into local branches. 
+			
+git fetch origin main # gets changes but doesn't merge. 
+git pull origin main # gets changes and merges into your local branch. 
+			
+* Use fetch when you want to review changes first, and pull when you want to update your branch immediately. 
+
+Scenerio: You're in the middle of a hotfix, but your teammate pushed changes to main. Use git fetch first to review differences(git diff origin/main) before merging. 
+
+**************************************************************************************************************************************************************************
+
+4, How do you check the current branch and commit history?
+A,
+- Current branch:
+   git branch 
+   
+- Commit history:
+   git log 
+   git log -- <filename>  -> see the history of the file in Git. 
+   
+5, What is the difference between git reset, git revert, and git checkout?
+A,
+
+- git reset -> Moves HEAD to a specific commit (can modify history) 
+
+- git revert -> Creates a new commit that undoes changes from a previous commit (safe for shared branches).
+
+- get checkout -> Swiches branches or restore files. 
+
+
+*****************************************************************************************************************************
+
+6, What is the difference between git merge and git rebase?
+A,
+- merge -> Combines history, creates a new merge commit, preserves commit history.
+        -> Creates a new merge commit, preserving history (non-linear) 
+		-> When to use? Safe for collboration.
+  git checkout main 
+  git merge feature   
+		
+- rebase -> Moves commits on top of another branch, rewriting hisotry (linear) 
+         -> when to use? Keeps history clean but should be used carefully(avoid rebasing shared branches).  
+- Use merge for collaboration, rebase for clean history. 
+
+  git checkout main 
+  git rebase main 
+
+Scenerio:
+
+Merge: Good for team projects where perserving history is important.
+Rebase: Useful when preparing a clean pull request by squahing multiple commits. 
+
+**************************************************************************************************************************
+
+
+7, What are Git hooks?
+A,
+- Scripts that run automatically at certian Git lifecycle events (e.g., before commit, after push).
+Example: Running tests before allowing a commit (pre-commit hook).
+
+***************************************************************************************************************************
+
+8, What is the different between git stash and git commit?
+A,
+- git stash -> Temporarily saves uncommitted changes, cleans working directory.
+  git stash apply -> (01) To apply stashed changes later (02) restores but keeps stash 
+  git stash list -> Shows stashed items 
+  git stash pop ->  restores latest stash and removes it.
+Scenerio: 
+- You're working on a new feature but suddently need to switch branches to fix a production bug.
+- Stash your work, fix the bug, then pop back your stashed changes. 
+  
+- git commit -> Records changes permantley in repo history.
+
+***************************************************************************************************************************
+
+9, How do you resolve merge conflicts?
+A,
+1, Git marks conflicts in files with <<<<<<. =====. >>>>>>>>>
+2, Manually edit to keep the correct version.
+3, Stage the resolved files:
+git add <file>
+4, Complete merge: 
+git commit 
+
+Scenario : Two developers edit the same function in utils.py. Git asks you to decide which version (or a combination) to keep. 
+
+**************************************************************************************************************************
+
+10, What is .gitignore?
+A, 
+A file listing patterns of files/folders to exclude from version control.
+Example:
+*.log 
+node_modules/
+.env 
+
+
+*****************************************************************************************************************************************************
+
+11, What is Git cherry-pick?
+A, Applies a specific commit from one branch onto another.
+   git cherry-pick <commit-hash>
+   
+Scenerio: A bug fix was committed on dev, but you also need it on main immediately. Instead of merging the whole branch, cherry-pick just that commit. 
+
+******************************************************************************************************************************************************
+   
+   
+12, How do you undo the last commit but keep change?
+A,
+- Keep changes, remove commit:
+git reset --soft HEAD~1
+- HEAD moves back but working directory keeps changes.
+- This removes the last commit but keeps changes in the staging area.
+* HEAD~1 -> one commit before the latest commit. 
+* --soft -> removes the commit but keeps your changes staged (ready for recommit). 
+
+-Remove commit + change 
+git reset --hard HEAD~1 
+- HEAD -> the commit you are currently on.
+- HEAD~1 -> the commit one step before HEAD.
+         -> HEAD~2 = two commits before, and so on
+- git reset -> Moves your branch pointer (HEAD) to another commit.
+            -> Think:"rewind the branch to this commit". 
+- --hard -> Move branch pointer (like normal reset)
+         -> Reset staging area (index)
+         -> Reset working directory (files)
+         -> In short: make everything look exactly like that commit.		 
+
+Scenerio : You accidently commited debug logs. Use reset --soft to uncommit but keep changes so you can fix and recommit ( git commit -m "Correct message". ) .
+
+****************************************************************************************************************************
+
+
+13, What is the difference between git rebase -i and git commit --amend?
+A, 
+git commit --amend -> Modifies the most recent commit.
+                   -> lets you edit the most recent commit instead of creating a brand new one.
+				   -> you can use it to:
+				   1, Change the commit changes.
+				   2, Add/remove fiels in the last commit
+				   How it works in practice:
+				   1, Change the last commit message.
+				      git commit --amend
+					  - Opens your editor.
+					  - your can rewrite the last commit message.
+					  - saves it as if that was always the message.
+				   2, Add a forgotten file to the last commit.
+                      Let's say you just command.
+                      git commit -m "Add feature"
+                      But you forget config.yml,
+                      Steps:
+                        - git add config.yml # stage the missing file.
+                        - git commit --amend # add it to the last commit.
+                   -> Now the last commit contiain both your original changes + config.yml 
+Warning:
+  - Amending rewrites history.
+  - if you already pushed the commit to a shared branch -> amending will cause problmes for others.
+  - Safe if you haven't pushed yet.   
+				
+git rebase -i -> interactive rebase; lets you squash, reorder, or edit multiple commits.
+              -> -i = interactive rebase
+			  -> it lets you edit common history: reorder, squah, edit, or delete commits.
+			  -> Think of it as: "I want to go back in time and clean up my commits before sharing them".
+			  -> Typical use case 
+			     You've made several small or messy commits:
+				   commit 1 : Add login feature 
+				   commit 2 : Fix typo 
+				   commit 3 : update README 
+				   commit 4 : Another bugfix.
+				 But before pushing, you want a cleaner history, like:
+				   commit 1 : Add login feature 
+				   commit 2 : Update README 
+			   -> How to do it (step by step)
+			      Step 1: Run interactive rebase 
+				          git rebase -i HEAD~4 
+				          // Means "open a interactive rebase for the last 4 commits".
+				  Step 2: You'll see something like this in your editor.
+				          pick a1b2c3 Add login feature 
+						  pick defad Fix typo 
+						  pick dfafda Update README 
+						  pick jldkad Another bugfix 
+						  - Each line = one commit (newest at bottom)
+						  - pick = Keep commit as is 
+				  Step 3: Change the commands 
+				          You can replace pick with other actions:
+						  - pick -> keep command 
+						  - reword -> change commit message.
+						  - edit -> stop and edit the commit contents
+						  - squash -> merge this commit into the previous one.
+						  - drop -> delete the commit.
+						  Example: To squash small fixes into the main commit.
+						  pick a1b2c3 Add login feature 
+						  squash defad Fix typo 
+						  pick dfafda Update README 
+						  squash jldkad Another bugfix 
+				  Step 4: Git asks for new messages 
+				          If you squash, Git will show messages and let you edit them into one.
+						  #This is a combination of 2 commits.
+						  Add login feature 
+						  Fix typo 
+						  You can rewiret into 
+						  Add login feature (with typo fix) 
+				  Step 5: Done 
+				          After saving, Git rewrites history.
+						  You branch is now clear.
+						  commit 1: Add login feature (with typo fix)
+						  commit 2: Update README (with bugfix)
+			     -> Import Warning 
+				    - Just like commit -amend, rebase rewrites history.
+					- Safe for local branches.
+					- Avoid rebasing commits that are already pushed/shared, unless you coordinate with our team.
+
+*************************************************************************************************************************** 
+
+14, What is Git submodule?
+A, A repository inside another repository. Useful when using third-party libraries.
+
+***************************************************************************************************************************
+
+15, How do you find which commit introduced a bug?
+A, 
+Use git bisect:
+
+git bisect start -> git bisect start 
+git bisect bad -> Tell Git a bad commit (bug exists) - Usually HEAD (latest commit)  
+git bisect good <commit-hash> -> Tell Git a good commit (no bug) - Some older commit 
+- Git now knows, Bug introduced somewhere between good and bad. 
+
+- Git will binary search through commits to find the one that introduced the bug. 
+
+***************************************************************************************************************************
+
+16, Explain detached HEAD state in Git?
+A, Happens when you checkout a specific commit instead of a branch.
+- Any new commits are not on a branch (they may be lost unless a branch is created).
+
+Scenario: 
+- You check out an old commit (git checkout <commit_hash>) to test a bug fix. 
+- if you commit here, it won't belong to any branch unless you create one. 
+
+*****************************************************************************************************************************
+
+17, How to you clean untracked files?
+A, git clean -f 
+   - Sometimes your working directory has extra files that are not tracked by Git.
+   - Examples: Compiled binaries (a.out, .class, .o) , Temporary logs (debug.log ), Editor files (.swap, ~).
+   - If you want to wipe thos untraced files quickly -> use git clean 
+   git clean -fd # also removes directories 
+   
+Real-Word Scenerios : 
+
+1, Code Review - Before raising PR, you might use git rebase -i to squash small commits. 
+2, Production Hotfix - Use git cherry-pick to apply a fix from main into release.
+3, Team collaboration - Use git merge to preserve full history, or git reabse for a clean linear history.
+4, Accident Recovery - Use git reflag to restore accidently deleted commits. 
+
+*******************************************************************************************************************************
+
+18, What is a detached HEAD state in Git?
+- When HEAD points to a specific commit instead of a branch, you are in a detached HEAD state.
+
+  git checkout <commit_hash>
+  
+  Any new commits here are not attached to a branch unless you create one.
+  
+******************************************************************************************************************************
+  
+19, How do you squash commits in Git?
+A, Interactive rebase:
+
+git rebase -i HEAD~3 
+- Mark older commits as squash to merge them into one commit. 
+
+Scenerio: You have 5 "WPIP" commits for a single bug fx. Before creating a PR, you squash them into 1 clean commit. 
+
+*****************************************************************************************************************************
+
+20, You pushed sensitive info (like a password) to GitHub. How do you remove it?
+A,
+
+- Use git filter-branch (deprecated) or git filter-repo to rewrite history and remove the secret. 
+- Then force-push:
+  git push origin ---force 
+- Also rotate the exposed credential immediately. 
+- It's an official Git tool (replacement for the older git filter-branch).
+- Used to rewrite history of a repository.
+- You can remove files, directories, authors, or even rewrite commit messages across the entire history.
+- Think of it as: Surgery on your Git history.
+- Why use it? (common cases)
+  1, Remove large files accidentally committed.
+  2, Remove senstive info (like password, API keys)
+  3, Spiit a repo -> take one folder and make it its own repo.
+  4, Change author info across commits (e.g., fix email address)
+  5, Clean up history before making repo public. 
+- Basic usage examples:
+  1, Remove a file from entire history.
+     git filter-repo --path secret.txt --invert-paths 
+	 - Deletes secree.txt from all commits.
+  2, Remove a directory from history 
+     git filter-repo --path build/ --invert-paths 
+	 - Deletes everything inside build/ from all commits.
+  3, Keep only one directory (split repo)
+     git filter-repo --path src/ --path-rename src/:,
+	 - Creates a repo with only the src/ folders as root.
+  4, Replace author info 
+     git filter-repo --mailmap my-mailmap.txt 
+	 where my-mailmap.txt contians:
+	 Old Name <old@emmil.com> New Name <new@email.com>
+  5, Change commit message
+     git filter-repo --message-callback '
+	    return message.replace(b"TODO",b"FIXED")
+     - Rewrites all commit messages, replacing "TODO" with "FIXED"
+- Important notes 
+  - git filter-repo rewrites history (like git rebase -i but much bigger).
+  - Old commits get new hashes -> history is changed permanently.
+  - After running, you usally need to force push:
+    git push origin main --force 
+  - Others who cloned the repo will need to re-clone (history is incompatible)
+- git filter-repo = "Tool for editing Git history (remove files, rewrite authors, change messages, split repo).
+- It's the modern, fast, safe replacement for git filter-branch. 
+
+
+*****************************************************************************************************************************
+
+21, You committed secrets (API keys, passwords) to the repo by mistake and already pushed them.
+    How do you fix it?
+A, 
+1, Remove the secret from code.
+2, Revoke/rotate the key immediately (security first).
+3, Use git filter-repo (recommanded) or BFG Repo Cleaner to purge history:
+  
+  git filter-repo --invert-paths --path <filename> 
+  
+4, Force-push changes:
+ 
+ git push origin --force 
+ 
+5, Notify team to relocate repo because history was rewritten.
+
+
+******************************************************************************************************************************
+
+22, You're working on a feature branch and want to keep history clean berfore merging into main. What do you do?
+A,
+- Use interactive rebase to squash commits:
+
+  git rebase -i main 
+  
+- Squash "WIP" commits into meaningful commits. 
+- Rebase ensures linear history -> cleaner git log.
+
+******************************************************************************************************************************
+
+23, You pushed the wrong code to the main branch. How do you undo it safetly?
+A,
+- If others already pulled:
+  git revert <bad_commit_hash>
+  git push origin main
+  - Creates a new commit that undoes changes, safe for shared branches. 
+  
+- If no one pulled yet:
+  git reset --hard HEAD~1 
+  git push origin main --force 
+  
+****************************************************************************************************************************
+
+24, Two developers worked on the same file, and now merge conflicts appear frequently. How to you handle it?
+A,
+- Communicate and divide ownership of file sections.
+- Use git fetch + git rebase regularly to stay up to date.
+- For recurring conflicts, consider feature flags or modularizing code so changes are isolated.
+
+*********************************************************************************************************************
+
+25, You accidently committed a large file (like 2GB log) to Git. 
+    Now the repo is slow. How do you fix it?
+A. 
+- Remove file form future commits:
+  .gitignore -> add *.log.
+- Remove it from history 
+  git filter-repo --invert-paths --path <largefile>
+  git push origin --force 
+  - if large files are needed -> use Git LFS (Large File Storage)
+  
+Scenerio: A teammate pushes a 2GB video. Repo slows down. You migrate that file to Git LFS and clean history. 
+
+********************************************************************************************************************  
+ 
+  
+26, You're reviewing a pull request. How do you see only the changes introduced compared to the main branch?
+A,
+   git fetch origin 
+   git diff origin/main...feature_branch 
+   
+   This shows only the difference between feature branch and main.
+   
+********************************************************************************************************************
+   
+27, You need to apply a commit from another branch without merging the entire branch.
+A,
+    Use cherry-pick:
+    git cherry-pick <commit_hash>
+
+    This copies a commit into your branch without merging everything. 
+	
+**********************************************************************************************************************
+
+28, Your branch history is messy with many merge commits. How do you make it linear?
+A,
+   Rebase your branch on main:
+
+   git fetch origin 
+   git rebase origin/main 
+   - This reapplies your commits on top of the latest main branch.
+   
+***********************************************************************************************************************
+
+29, You force-pushed and overwrote someone else's work by mistake. How do you recover?
+A, 
+- First, check reflog:
+
+  git reflog 
+
+- Find the last commit hash.
+- Create a new branch from it:
+  
+  git checkout -b recovery <commit_hash>
+
+- Merge recovery branch back into main.
+
+****************************************************************************************************************************************************
+
+30, How to you investigate who introduced a bug in Git history?
+A,
+  Use git bisect:
+
+  git bisect start 
+  git bisect bad <last_commit>
+  git bisect good <old_commit>
+  Git will binary search commits until it finds the buggy one.
+  
+Scenerio: A bug appeared lask week. With hundreds of commits, instead of checking manually, you use bisect to quickly find the faulty commit.  
+
+*************************************************************************************************************************************************** 
+  
+
+31,You want to test a hotfix on a past commit without affecting history. 
+A, 
+  git checkout <commit_hash>
+  git checkout -b hotfix_branch 
+
+  Make changes, test and merge if needed. 
+  
+**************************************************************************************************************************************************************
+
+32, How do you keep your forked repo up to date with the upstream repo?
+A, 
+1, Add upstream:
+   git remote add upstream <upstream_repo_url> 
+   
+2, Fetch upstream changes: 
+   git fetch upstream 
+   
+3, Merge or rebase 
+   git merge upstream/main 
+   or
+   git rebase upstream/main 
+
+**************************************************************************************************************************************************************   
+   
+33, What's the difference between git reset, git revert, and git checkout?
+A, 
+reset : Moves HEAD pointer, changes history.
+revert : Create new commit to undo changes (safe for shared branches). 
+checkout : Switches branches or restores files.
+
+Scenerio:
+- If you pused into wrong commit to main, use git revert (safe).
+- If it's only local, use git reset.
+
+*************************************************************************************************************************************************************
+
+
+34, How do you handle a force-push mistake?
+A, 
+- Use git reflog to recover last commits.
+- Create a new branch from the reflog commit.
+
+Scenerio: A teammate force-pusehd and removed commits. Instead of panicking, you check git reflog, recover the commit, and restore the branch.
+
+
+**************************************************************************************************************************************************************
+
+35, How do you keep a fork updated with upstream?
+A, 
+
+git remote add upstream <url>
+git fetch upstream 
+git merge upstream/main 
+
+Scenerio: Your forked an open-source repo. A month later, the upstream repo has updates, You merge upstream changes into your fork. 
+
+**************************************************************************************************************************************************************
+
+Git Architecture:
+
+1, Local Repository (Your Laptop) 
+When you clone a repo, you get your own copy of the project.
+- you can commit, create branches, stash , revert -> all offline. 
+- Stored inside the hidden .git folder.
+
+Important pieces inside your local Git repo:
+1, Working Directory -> Your actual files (code, docs).
+2, Staging Area (Index) -> Temporary area where you prepare changes before commit.
+3, Local Repository -> Where commits are stored permantely on your machine. 
+
+Command Example:
+git add file.cpp # Moves file.cpp to staging area
+git commit -m "Fix bug" # move changes to local respository. 
+
+2, Remote Repository (GitHub, GitLab, Bitbucket)
+- Cenratl place where everyone shares code.
+- Multiple people push and pull changes.
+
+Example:
+
+git push origin main  # send your commit to remote 
+git pull origin main  # get other's commit from remote. 
+
+3, Git Objects 
+(Backbone of Git) 
+- Git is not just saving files. It stores objects in .git/objects/:
+  (01) Blob (Binary large object) -> File contents (your code).
+  (02) Tree -> Directory structure (like folders + file names).
+  (03) Commit -> A snapshot pointing to a tree, plus metadata (author, message, timestamp)
+  (04) Tag -> A label for a specific commit (like V1.0)
+  
+Think of it as:
+   - Blob = Book content 
+   - Tree = Shelf holding books 
+   - Commit = Catalog entry describing shelf + book version 
+   - Tag = Sticker saying "This is the release edition"
+   
+4, Branches (Pointers)
+- A branch is just a pointer to a commit.
+- main, dev, feature-xyz are just names pointing to different commits.
+- HEAD -> a special pointer showing where you currently are.
+
+git branch feature-login
+git checkout feature-login 
+
+5, Workflow in Git (Step by Step)
+
+1. Edit files -> In working directory 
+2, Stage changes -> with git add 
+3, Commit snapshot -> with git commit 
+4, Push to remot -> git push 
+5, Others pull your changes -> with git pull 
+
+6, Real-World Scenario: 
+
+Image 3 developers working on a project:
+- you (Local Repo) : create a feature and commit.
+- Teammate A : Also commits another feature.
+- Remot Repo (Git Hub) : Acts as the source of truth.
+
+Flow:
+- you both git push to remote -> history grows.
+- you git pull to get teammate's changees.
+- if Conflicts -> Git tells you where to fix.
+
+      Remote Repository (Git Hub ) 
+          ^        ^
+          |        | 
+          Local Repo 
+Workign Dir -> Staging Area -> Local Commits 
+
+In short: 
+
+- Git = a time machine + collaboration tool 
+- Everything happens first in your local repo.
+- You sync with remote to share with others.
+- Under the hood -> Git stores everything as object (blob, tree, commit, tag). 
+
+*******************************************************************************************************************************************
+
+1, Setup 
+
+Before using Git, you telll it who you are so your commits have your name and email.
+
+git config --global user.name "Your Name" 
+- This sets your name.
+- Example : "John Doe" 
+
+git config --global user.email "your@email.com"
+- This sets your email 
+- it shows up in commit history 
+
+git config --list 
+- Shows your Git Settings (name, emai, editor, etc).
+
+- When to use? -> Firt time on a new computer, or if you want to change your name/email. 
+
+2. Start a Repository 
+git init 
+- Creates a new Git repo in your current folder.
+- Example: You make a folder mmyproject, run git init, now Git starts tracking files there.
+
+git clone <url>
+- Copies an existing repo (from GitHub, GitLab, etc) to your computer.
+- Example: git clone https://github.com/user/repo.git 
+
+- When to use - init -> starting fresh project.
+              - clone -> working on an existing project.
+			  
+3. Basic Workflow 
+Think of Git like a 3-step process:
+1, you changes files -> (working area)
+2, you stage them -> (staging area)
+3, you commit -> (local history) 
+
+git status 
+- Shows what changed, what's staged, what's not. 
+- your daily ommand (like checking your pockets before leaving).
+
+git add file.txt 
+- Moves file.txt into the staging area (ready for commit).
+
+git add .
+- Stages everything in the folder. 
+
+git commit -m "msg"
+- Saves staged files into Git history.
+- Example: git commit -m "Added login feature"
+When to use?
+- Every time you finish a small logical change. 
+
+4, Branches 
+Branches = parallel timelines 
+They let you work on features without breaking main. 
+
+git branch 
+- Lists branches.
+- Shows where you are 
+
+git branch new-feature 
+- Creates a new branch called new-feature 
+
+git checkout new-feature 
+- Switches to branch new-feature 
+
+git switch new-feature 
+- Neweer version of checkout (cleaner).
+
+git checkout -b new-feature 
+- Create + switches in one step.
+
+When to use? 
+- Always create a branch for new work instead of working directly on main.
+
+5. Merging & Rebasing 
+
+git merge branch-name 
+- Combines another branch into your current one.
+- Example: You finisehd new-feature now merge into main. 
+
+git rebase branch-name 
+- Moves you commits on top of another branch.
+- Cleaner history, but trickier. 
+When to use?
+- merge -> safe, keeps full history.
+- rebase -> clean, but can rewrite history.
+
+6. Remote Repositories 
+Remote = GitHub or GitLab copy of your repo 
+
+git remote -v 
+- shows remotes (usually called origin) 
+
+git remote add origin <url>
+- Connects your local repo to GitHub 
+
+git push origin main 
+- Uploads your commits to GitHub's main branch. 
+
+git pull origin main 
+- Downloads + merges changes from GitHub 
+
+git fetch 
+- Downloads changes, but does not merge automatically.
+
+When to use?
+- Push -> share your work 
+- Pull -> get others' work 
+- Fetch -> peek at changes before merging 
+
+7, Undo & Fix :
+
+Sometimes mistakes happen 
+git restore file.txt 
+- Throw away changes in a file (before staging) 
+
+git reset file.txt 
+- Unstage a file (but keep changes in working area) 
+
+git reset --hard HEAD 
+- Discards all local changes(dangerous) 
+
+git commit --amend -m "new msg"
+- Fix the last commit messages or add missed files. 
+
+When to use?
+- Restore -> cancel local files.
+- Reset -> unstage 
+- Amend -> oops, fixed commit. 
+
+8, Logs & History 
+git log  
+- Shows commit history 
+
+git log --oneline --graph 
+- Compact, pretty branch history.
+
+git diff 
+- Shows what changed (line by line)
+
+When to use?
+- Debugging, reviewing your work before committing. 
+
+9, Stash (Save Work Temporarily)
+- Imagine you're in the middle of work but need to switch branches.
+
+git stash save "msg"
+- Hies your changes temporarily 
+
+git stash list 
+- shows stashes 
+
+git stash pop 
+- Brings stash back + deletes it. 
+
+git stash apply 
+- Brings stash back but keeps it in stash list. 
+
+When to use?
+- You want to quickly switch tasks but don't want to commit messy changes.
+
+10, Common mistakes 
+
+git checkout HEAD~1
+- Go back 1 commit (detached mode) 
+
+git revert <commit>
+- creates a new commit that undoes an old one (safe). 
+
+git cherry-pick <commit>
+- copy a specific commit into your branch. 
+
+When to use?
+- Revert = undo safely 
+- Cherry-pick = reuse a specific fix without merging whole branch. 
+
+Summary in Human Words:
+- init = Start in Human Words:
+- init = start new project 
+- clone = copy project 
+- add = select files 
+- commit - save snapshot 
+- branch - make timeline 
+- merge/rebase - combine timelines 
+- push/pull - sync with GitHub 
+- reset/restore - undo mistakes 
+- log/diff = see hisory 
+- stash - hide messy work 
+
+
+****************************************************************************************************************
+
+1. Developer Day-to=Day Git Commands 
+
+Cloning & Setup 
+
+git clone <repo_url>    # clone repo from remote 
+git checkout -b feature/login  # Create and switch to new feature branch 
+git pull origin develop # Get latest code before starting work 
+
+
+Working on Code 
+
+git status   # Seee modifed/untracke file 
+git add file.cpp  # Stage a specific file 
+git add .    # Stage all changes 
+git commit -m "Add login validation"  # Commit with message 
+
+Syncing With Remote 
+
+git fetch origin  # Fetch latest from remote 
+git pull origin develop  # Sync local with remote develop 
+git push origin feature/login # Push branch to remote 
+
+Fixing Misttakes 
+
+git reset --soft HEAD~1  # Undo last commit but keep changes staged.  
+git reset --hard HEAD~1  # Completely remove last commit 
+git stash  # Save work temporarily 
+git stash pop # Re-apply stashed changes 
+
+Code Review/Merge Request Prep 
+
+git rebase develop   #Rebase feature branch with latest develop  
+git log --oneline    # to see commit history 
+git push origin feature/login 
+# -> Then raise Merge Request / Pull Request in GitHub/GitLab/BitBucket 
+
+2, Module Lead / Team Lead Git Commands 
+
+Reviewing Developer Branches 
+
+git fetch -all  # Fetch all remote branches 
+git checkout feature/login  # Check out developer's branch 
+git diff develop..feature/login  # Compare changes with develop 
+git log --online develop..feature   # review commits 
+
+Merging & Resolving Conflicts 
+
+git checkout develop 
+git pull origin develop # Make sure branch is up-to-date 
+git merge feature/login  # Merge feature into develop 
+# if conflict: 
+git status  # Shows conflicting files 
+git mergetool  # Use tool to resolve conflicts 
+git add conflicted_file.cpp 
+git commit # Finish merge 
+
+Tagging & Release 
+
+git tag -a v1.0 -m "Release version 1.0"
+git push origin v1.0 
+
+Hotfix / Production Issues 
+
+git checkout main 
+git pull origin main 
+git checkout -b hotfix/payment-bug 
+git push origin hotfix/payment-bug 
+# Raise urgent MR to main 
+
+Cleaning & House keeping 
+
+git branch -d feature/login  # Delete local branch 
+git push origin --delete feature/login  #Delete remote branch 
+git gc --prune=now  # Cleanup unnecessary files .
+
+In short:
+
+- Developers use git mainly for branching, commiting, stashing, rebasing, and pushing their code.
+- Module leads focus more on reviewing , merging, conflict resolution, hotfixes , tagging, and release management. 
+
+*******************************************************************************************************************************
+
+Installation -> first project -> committing -> Pushing to GitHub 
+
+Step 1: Install Git 
+
+On Windows:
+1, Got to git-scm.com 
+2, Downloader the installer 
+3, Run it -> Keep defaults (just click Next until finish).
+4, After install, open Git Bash (you'll use this like a terminal. 
+
+When installing Git on Windows, you have two common options:
+
+1, Standardalone installer (Recommanded) 
+-  This is the standard Git for Window installer.
+-  It installs Git system-wide ( or just for your user).
+-  Adds Git to your PATH ( so you can run git from command prompt, PowerShwll, or Git Bash). 
+-  Comes with Git Bash, Git GUI, and integration with Windows context menu (right clock -> "Git Bash here")
+-  Easier to update later.
+-  Best if you are setting up Git for development on your computer.
+-  This is what most developers use. 
+
+2, Portable Version 
+- No installation required - you just unzip and run 
+- Doest not add Git to PATH automatically.
+- No Context menu integration 
+- Good for 
+     - Running Git from a USB Stick.
+	 - Using a machines where you don't admin rigthts. 
+	 - Keeping multiple Git versions side by side for testing. 
+- Use this only if you need Git without touching system settings. 
+
+
+On Linux (Ubuntu/Debian) 
+
+sudo apt update 
+sudo apt install git 
+
+On Mac: 
+
+brew install git 
+
+Verify Installation:
+
+git --version 
+
+You should see something like: 
+
+git version 2.45. 1 
+
+
+Step 2 : Configure Git ( only once per computer) 
+- We will Git who you are so commits have your name/email. 
+
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com" 
+
+example:
+
+git config --global user.name "Sai Saran "
+git config --global user.email "sai@example.com"
+
+Check settings:
+
+git config --list 
+
+Step 3 : Create Your First Project 
+
+1, Make a new folder for your project 
+
+mkdir my-first-git
+cd my-first-git 
+
+2, Initialize Git in it:
+
+git init 
+-> This creates a hidden .git folder -- Git starts tracking this project.
+
+You'll see:
+Initialized empty Git repository in /path/to/my-first-git/.git/
+
+Step 4: Add a File 
+
+-Let's make a file:
+    echo "Hello Git!" > hello.txt 
+	
+-check status:
+    git status 
+    -> you'll see 
+    untraced files:
+        hello.txt 
+    -> Meaning: Git sees a new file but isn't tracking it yet.
+
+Step 5: Stage the File 
+
+git add hello.txt 
+
+Check again:
+git status 
+-> Now you'll see:
+   changes to be committed:
+       new file: hello.txt 
+-> Meaning: The file is staged, ready to be saved in history.
+
+Step 6 : Commit (Save Snapshot)
+
+git commit -m "First commit: added hello.txt"
+Output:
+- [ main (root-commit) abc1234] First commit: added hello.txt 
+  1 file changed, 1 insertion(+)
+  create mode 100644 hello.txt 
+- This creates your first snapshot in Git's history.
+
+Step 7: See History 
+
+git log 
+- You'll see something like:
+  commit abc123456789...
+  Author: Sai Saran<sai@example.com>
+  Date: Tue Aug 19 20:00 2025
+     First commit: added hello.txt 
+- This shows commit history(yours has just 1 commit so far).
+
+Step 8: Make a change 
+
+Edit the file:
+echo "This is my second line." >> hello.txt  
+
+Check Status:
+git status
+Output:
+modified: hello.txt 
+
+Stage it:
+git add hello.txt 
+
+Commit it:
+git commit -m "Added second line to hello.txt"
+
+Step 9: See changes
+
+check history again:
+git log --oneline 
+
+You'll see:
+def5679 Added second line to hello.txt
+abc1234 first commit: added hello.txt 
+- You now have 2 commits ( 2 snapshots of your project)
+
+--> Up to here, everything is local only (just on your computer).
+Next step would be GitHub connection so you can push and share.
+
+Step 10: Create a Github Repository 
+
+step 10.1 - Go to GitHub 
+1, Open your browser and go to http://github.com 
+2, Log in (or create an account if you don't have one)
+
+Step 10.2 - Create a new repository
+1, On the top-right, click "+" -> New repository.
+2, Enter a name,e.g., my_first_git 
+3, Leave "Public" selected.
+4, Don't check Add README (since we already have files locally)
+5, click Create repository 
+
+git remote add origin https://github.com/YourName/my-first-git.git 
+git branch -M main 
+git push -u origin main 
+
+Step 11 : Connect your local repo to GitHub 
+
+Step 11.1 : Back to your Git Bash or terminal.
+Make sure you're inside your project folder.
+cd my-first-git 
+
+Now link your local repo to the GitHub one:
+git remote add origin https://github.com/YourName/my-first-git.git 
+- "origin" is just the nickname for your GitHub remote.
+Set your main branch name (if not already "main"):
+git branch -M main 
+
+Step 12: Push (Upload) Your Work to GitHub 
+- This is where you local commits go online:
+
+git push -u origin main 
+- push -> upload 
+- -u -> remember this connection (so next time you can just type git push)
+If prompted for login:
+- Choose your browser to authenticate GitHub access, or
+- Paste your personal access token instead of password (if it asks)
+- you'll see output like:
+  Enumerating objects: 3, done.
+  countint objects: 100% (3/3), done.
+  Writing objects: 100% (3/3), 300 bytes | 300.00 kiB/s, done.
+  To https://github.com/YourName/my-first-git.git 
+  * [new branch] main -> main 
+  
+Step 13: Verify on GitHub 
+1, Go back to your browser.
+2, Refresh your repository page.
+3, You'll see your file hello.txt and commit history visiable online.
+
+Congrats: you've now done complete Git workflow.
+- create a project.
+- Tracked files.
+- Made commits.
+- Linked to GitHub 
+pused your code online. 
+
+****************************************************************************************************************************************
+
+
+
+
+
+
+
+ 
+
+
+
+  
+
+
+
+
+
+
+
+
+   
+
+
+
+
+  
+  
+
+ 

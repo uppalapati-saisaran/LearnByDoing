@@ -1,24 +1,117 @@
 Common Uses of Linux Scripting in CI/CD Pipelines:
 
-1, Enviroment Setup 
+1, Enviroment Setup ( en -> like en in enter, vy -> rhymes with my, ruhn -> like run , ment -> like muhnt or ment ) 
 
 - Install dependencies (e.g., Python, Node.js, Docker)
 - Export environment variables.
 - Setup SSH Keys, authentication tokens, etc.
 
 # Example 
-sudo apt-get update 
+sudo apt-get update  # refresh package lists. 
+# sudo -> runs the command with superuser (root) privileges, because updating package information requires admin rights.
+# apt-get -> the package manager tool used to install, update, and remove software.
+# update -> tells apt-get to refresh the list of available packages and versions from the repositories configured in /etc/apt/sources.list. 
+What it does:
+- It does not upgrade software yet.
+- It only downloads the latest package lists (metadata: names, versions, dependencies) from the configured sources.
+- This ensures your system knows about the newest verions before you run sudo apt-get upgrade. 
+Typical usage:
+sudo apt-get upgrade # install the newest verions of installed packages.
+sudo apt-get dist-upgrade @ upgrade, handling denpencies smartly 
+
 sudo apt-get install -y python3.pip
-export ENV = production 
+# Install pip3. After this, you can use pip3 install <package> to add Python libraries.
+# sudo -> runs the command with superuser (root) privileges, because updating package information requires admin rights.
+# apt-get -> the package manager tool used to install, update, and remove software. (older but still widely used) 
+# install -> Sub-commnd that tells apt-get to install one or more packages. 
+# -y - Automatically answers "yes" to all confimrmation prompts.
+	 - without it, you'd be asked: "Do you want to continue? [Y/n]"
+	 - With -y, it just proceeds 
+# python3.pip -> This is the package name. But here there's is a small issue.
+                 - In Debian/Ubuntu the correct package is usally python3-pip (with a dash - not a dot .).
+				 - pip is the Python package manager for installing Python libraries. 
+
+export ENV=production (Spaces around = are not allowed in shell variable assignment) 
+# export -> makes the variable available to the shell and all child processes (programs you run after setting it).
+# ENV -> name of the environment variable.
+# production -> value assigned 
+# so after running this, any script or program can access the variable ENV and see that it equals "production" 
 
 2, Code Build Automation 
 
 - Compile code (for C++, Java etc)
-- Run linters or formatters.
-- Package software artifacts (e.g., JARs, Doctor images)
+
+- Run linters or formatters. (LIN -> rhymes with win, ters -> like ters in hunters, Stress is on the first syllable: LIN-ters) 
+What is a Linter?
+- A linter is a tool that automatically checks your code for:
+   - Mistakes (bugs, bad syntax, unused variables)
+   - Style violations (naming conventions, indentation, formattting). 
+   - Best pratices (security issues, deprecated features) 
+Why is it called "linter"?
+- The term comes from an old Unix tool lint, created in the 1970s to check C code for bugs.
+- Over time, "linting" became the general term for static code analysis (checking code without executing it). 
+Example of Linters:
+- Python -> pylint, flake8, black (formatter + linter).
+- C++ -> clang-tidy, cppcheck.
+- JavaScript/TypeScript -> eslint 
+- Go -> golangci-lint 
+Why use Linters?
+1, Catch bugs early before running code.
+2, Keep code consistent across tesms.
+3, Enforce coding standards (e.g,  Google style, PEP8 in Python)
+4, Improve readability and maintainability 
+What is formatter?
+- A formatter is a tool that automatically rewrites your code's layoug and style according to a predefined set of rules.
+ - It doesn't tesl you what's wrong -> It just fixes it for you.
+ - Focus is on style & consistency, not bugs 
+Feature : Checks for bugs?
+Linter : Yes (unused vars, bad patterns)
+Formatter : No 
+
+Feature : Check for style
+Linter : Yes 
+Formatter : Yes 
+
+Feature : Fixes automatically
+Linter : Usually only reports 
+Formatter : Yes, rewrites code 
+
+Feature : Example in Python 
+Linter : pylint, flake8 
+Formatter: black, autopep8 
+
+Feature : Example in JS/TS 
+Linter : eslint (can also auto-fix) 
+Formatter : prettier 
+   
+- Package software artifacts (e.g., JARs, Docker images)
 
 #Example for Java
 mvn clean install 
+// is a moven commandn used in Java projects to build and manage your project. 
+// Here's a detailed breakdown:
+1, mvn 
+   - Stands for Maven, the build automation tool.
+   - It executes the goals specified in your project's pom.xml 
+   
+2, clean
+   - This is a Moven lifecycle phase.
+   - It removes all previously compiled files (like target/directory) to ensure a fresh build.
+   - Think of it as "starting clean" before building.
+   
+3, install 
+   - Another Maven lifecycle phase.
+   - It compiles, tests, packages, and installs the built artifact (like a .jar or .war) into your local Moven respository(~/.m2/repository)
+   - This allows other projects on your machine to use this artifact as a dependency. 
+   
+Moven does:
+1, Clean -> Delete old build files.
+2, Validate -> Checks if the project is correct and all info is available.
+3, Compile -> Compiles source code 
+4, Test -> Runs unit tests
+5, Package -> Creates .jar or .war 
+6, Install -> Adds the package to our local repository. 
+
 
 3, Running Tests
 

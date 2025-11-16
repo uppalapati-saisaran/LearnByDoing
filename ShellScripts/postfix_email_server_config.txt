@@ -1,9 +1,41 @@
 Step-by-Step: Set up Postfix as a Send Only Mail server 
 
+// Postfix is a Mail Transfer Agent (MTA) - a program that sends and receives emails on a Linux system.
+// It is commonly used to:
+   1, Send system-generated emails (like cron job outputs, alerts, etc.)
+   2, How your own email server.
+   3, Forward emails to external addresses.
+
 1. Install Postfix and mail utilities 
 
 #sudo apt update
+// Stands for Super User Do
+// It allows you to run the command as an administrator(root).
+// Why? Because updating system packages needs elevated (admin permissions)
+
+// apt is packet manger tool used in Deibain/Ubuntu 
+// Manages intallation, removal, and update of software 
+
+// update tells apt to refresh the local list of available packages and their versions.
+// It does not install or upgrade anything
+// It fetches information from /etc/apt/sources.list and other sources.
+
 #sudo apt install postfix mailutils 
+// sudo 
+- Runs the command as superuser(admin)
+- Installing system software requires root privileges 
+// apt 
+- The Advantage Package Tool, used to install,upgrade,and remove software packages on Debian based sysems like Ubuntu 
+// install 
+- Tells apt that you want to install packages 
+// postfix 
+- A popular Mail Transfer Agent(MTA)
+// it sends and routes emails on your servr 
+// Needed for applications that generate email (e.g., cron, contact forms, etc.).
+- mailutils 
+// A set of mail-related command-line tools 
+// Includes the mail command for sending emails from the terminal.
+// It works with Postfix to make testing and scripting emails easier. 
 
 During installation, choose:
 - "Internet Site" when prompted.

@@ -1,0 +1,1202 @@
+Jenkins -> Configure -> General -> "Jira Site" field.
+
+Purpose:
+
+The "Jira Site" field is used to link Jenkins jobs to a JIRA instance - allowing Jenkins to:
+
+- Recognize and hyperlink JIRA issue keys in commit messages, job descriptions, console ouputs, etc. 
+- Post build status updates back to JIRA (if configured)
+- Trigger builds based on JIRA issue transitions (with the right plugins).
+- Enhance traceabiity between code changes, builds and JIRA tickets.
+
+Where do you see it?
+
+- You see the "JIRA Site" dropdown under:
+
+Job -> Configure -> General section 
+// It appears only if you have installed and configured the JIRA Plugin or JIRA integration for Jenkins. 
+
+*************************************************************************************************************************
+
+What are artifacts in Jenkins?
+
+- Artifacts are files or directories gnerated by your build that you want to save,archive, or share.
+- These can include: 
+  (01) Compiled binaries (e.g., .jar, .exe, .apk)
+  (02) Zipped packages 
+  (03) Log files 
+  (04) Test Reports 
+  (05) Configuration files 
+  (06) Scripts or deployment packages 
+  
+What Do Artifacts come from?
+
+- Artifacts are usually produced during the build state of a job:
+  
+  # Example from a build script
+  make all 
+  zip logs.zip logs/*.log 
+  
+  Then in your Jenkins job, you archive them using:
+  
+  archiveArtifcats artifacts: '**/*.zip', fingerprint: true 
+  
+How to Use artifacts in Jenkins:
+
+1, Archiving Artifacts 
+
+In a FreeStyle Job:
+    - Go to configure 
+	- Post-build Actions -> Archive the artifcats
+	- Enter a file pattern like:
+	      build/*.jar 
+		  dist/**/*.zip 
+		  logs/*.log 
+
+In short:
+- FreeStyle = quick setup, simple, GUI based. 
+- Pipeline = modern, powerful, scalable, code-as-pipeline.
+
+1. Freestyle job 
+- Oldest and simplest job type in Jenkins.
+- Configuration in click-based (GUI) -> you fill forms in the Jenkins UI.
+- Supports basic tasks:
+   * Pull code from Git.
+   * Run a Shell/Batch command.
+   * Run build tools (Maven, Ant, Gradle)
+- Not very flexible for complex workflows.
+
+Example use cases:
+- A Small project where you just need to compile code + run unit tests + deploy artifacts.
+
+Setup Steps:
+1, Go to Jenkins -> New Item -> FreeStyle Project.
+2, Configure Git Repo, build commands, post-build actions.
+3. Save & Build. 
+   
+		  
+		  
+In a Pipeline Job (Declarative):
+
+    pipeline {
+	    stage {
+		   stage('Build') {
+		      steps {
+			     sh 'make build'
+				 archiveArtifacts artifacts: 'build/*.exe' 
+			  }
+		   }
+		}
+	}
+	
+	pipeline {   -> Starting point 
+	  agent any   -> run on any Jenkins node 
+	  stage('Build') {  -> define multiple steps of the build. -> compile code from Git.  
+	     steps { 
+           sh 'mvn clean install' 		
+		}
+	  }
+	  stage('Test') {  -> Runs unit testing 
+	     steps{
+		   sh 'mvn test' 
+		 }
+	  }
+	  stage('Deploy') { -> deploy applcation 
+	     sh './deploy.sh'
+	  }
+	}
+	
+	
+2, Pipeline job 
+- More advanced and powerful.
+- Build flow is writtin as code in a Jenkins file (Groovy-based DSL).
+- Supports stages, steps, parallel execution, conditions.
+- Easier to maintain and version control (since Jenkinsfile lives in Git repo).
+- Example use case:
+  - A complex CI/CD pipeline where you want:
+    1, Checkout repo 
+	2, Build in parallel (Linux + Windows)
+	3, Run tests
+	4, Deploy to multiple enviroments (Dev -> QA -> Prod)
+	5, Send noditifications 
+	
+Key difference:
+Feature : Configuration 
+FreeStyle : GUI (click-based)
+Pipeline Job : Code (Jenkinsfile) 
+
+Feature: Flexibility 
+Freestyle : Limited 
+PipelineJob : Very high (conditions, loops, parallel, etc.)
+
+Feature : Best For
+FreeStyle : Small/Simple builds 
+PipelineJob : Complex CI/CD pipelines
+
+Feature: Version Controller
+FreeStyle: Not in Git 
+PipelineJob : Jenkinsfile stored in Git 
+
+Feature: ParallelExeecution
+FreeStyleJob : Not possible 
+PipelineJob : Possible 
+
+Feature : Maintainability 
+FreestyleJob : Hard (UI Only)
+PipelineJob : Easy (code-based, reviewable) 
+	
+	
+2. Accessing Artifacts
+
+After the build:
+   - Go to the Jenkins  build page.
+   - Click the "Artifacts" link in the sidebar.
+   - you can download or browse the files. 
+   
+Real-World Scenarios for Artifacts:
+
+Scenarios - Artifacts Used 
+Java Project - .jar files, test reports 
+Android App - .apk file for release or debug 
+CI/CD Depolyments - Zipped release packages 
+Game Development - Build assets(e.g., .pak,.exe)
+Logs & Reports - logs/*.log, test-results.xml 
+Infrastructure - Terraform plans, config archives
+
+What Artifacts Are Not 
+- Artifacts are not logs (though you can archive log files as artifacts)
+- Artifcat are not always published- you must explicitly archive them in Jenkins.
+- Artifacts are not permanent unless you presever them.
+
+
+Artifact Retention:
+
+- By default, Jenkins may clean up old artifacts after a certian number of builds (to save space)
+- You can configure 
+  - Build retention policy 
+  - Keep artifacts forever (manually or via script) 
+
+Term - Meaning 
+Artifact - Any file generated by the build that you want to save/share 
+Example - Binaries, logs, zipped packages, reports 
+How to archieve - Use archiveArtifacts or post-build action
+Why use them - For deployments, debugging, reports, sharing with teams. 
+
+*********************************************************************************************************************************************  
+   
+   
+Do not allow concurrent builds 
+
+Use Cases / Real-World Scenarios : 
+
+Scenario - Why Use it
+Build modifies shared file or folders - Prevents data corruption parallel access 
+Deployments or packaging - Ensures consistent and atomic packaging 
+Jobs writing to the same location (e.g., FTP,S3) - Avoid overwriting each other's output 
+Long-running test jobs - Avoid duplicated work and load 
+Trigger from SCM polling or webhooks - if code is passed frequently, prevent overlapping builds 
+Resource-intensive jobs - Prevent multiple parallel builds that consume too much CPU/RAM 
+
+When Not to Use it.
+
+if you job is:
+
+- Stateless
+- Doesn't write to shared locations.
+- Can safetly run in parallel(e.g., matrix testing, multi-branch pipelines)
+  
+Then you can leave this option unchecked and allow concurrent builds. 
+
+Summary:
+
+Option - Behaviour 
+Checked - Jenkins will not run more than one build of this job at the same time.
+UnChecked - Jenkins can run multiple builds of this job concurrently (parallel.) 
+
+********************************************************************************************************************************************
+
+Do not allow the pipeline to resume if the controller restarts 
+
+What is Jenkins Controller?
+- Think of Jenkins as a brain + hands system:
+  1) The Controller = The brain (decides what to do, manage jobs).
+  2) The Agents (or Nodes) = The hands (actually do the work: build, test, deploy). 
+  
+Jenkins Controller = The Master (old name)
+- Runs the main jenkins service.
+- Provides the Web UI(the dashboard you log into).
+- Stores job configuration, plugins, build history, credentials.
+- Assigns tasks to agents/nodes 
+- Can also execute jobs itself (if no agents are configured) -> but not recommeded for large setups.
+
+Responsibiliites of Controller:
+1, Manage the UI & Configurations -> You create jobs here.
+2, Schedule Builds -> Decides when pipeline or job should start.
+3, Distribute works -> sends builds to agent.
+4, Monitor & Report -> collects results from agents and shows status green or red. 
+
+Jenkins Agent/Node :
+- Separate machine (VM, container, or physical server).
+- Executes jobs (compilation, testing, deployments).
+- Communicates back with the controller.
+
+Real-World Analogy:
+- Controller = Uber App (manages rides, payments, dispatching).
+- Agents = Uber Drivers (actually do the driving) 
+
+If the Ubser app(controller) didn't exist, drivers wouldn't know where to go.
+If drivers (agents) didn't exist, the app(controller) couldn't complete rides.
+
+Real-Time Example in Companies:
+
+- A game company (like yours) runs Jenkins Controller on a server. 
+- Developers push code -> Controller triggers pipelines.
+- Heavy builds (Unity/Unreal compiles, automated tests) are sent to powerful build agents with GPUs/CPUs.
+- Controller just coordinates; agents do the hard work.
+
+
+What does it do?
+
+When this option is checked: 
+- if the Jenkins controller (master) restarts (e.g., due to server reboot, upgrade, crash), any runnning pipeline will be aborted and not resumed after the restart.
+
+If this option is unchecked (default behaviour): Jenkins will try to resume the pipeline from the last saved stage after a restart - provided the pipeline supports resumption.
+
+Use Cases - When to CHECK this box 
+
+Scenario - Why to Disable Resume 
+Critical deployment or destructive tasks - You don't want it to resume halfway through and possibly corrupt production.
+Pipelines using non-resumable steps - e.g,. input, docker, or tools that can't be resumed 
+Better control over restarts - you want to manually re-trigger the pipeline after a safe restart.
+You want a clean slate after restart - Especially in development or debugging environments 
+
+When to LEAVE IT UNCHECKED (default behaviour)
+
+Scenerio - why to Allow Resume 
+Long-running test or build pipelines - Prevents wasting hours of progress due to a restart 
+Infrastructure-as-code tasks - Resume Terraform/Ansible pipelines form last step 
+Building large artifacts - Avoid rebuilding from scratch after restart 
+Cloud-based build agents - Controller may restart due to scaling or updates; resuming helps continuity 
+
+Real-World Example:
+
+pipeline {
+   agent any 
+   options {
+     disableResume() // This disables resuming the pipeline 
+   }
+   stages {
+      stage('Deploy') {
+	     steps {
+		    echo 'Deploying critical system...'
+			// Any failure/resume here is dangerous. 
+		 }
+	  }
+   }
+}
+
+How It works Internally:
+
+- Jenkins pipelines are built on Durable Task plugin.
+- It saves pipeline state between stages or steps using checkpoints.
+- if resume is disabled, that state is discarded on controller restart.
+
+Summary:
+
+Option - Behaviour 
+Checked - Jenkins will abort the pipeline if controller restarts. 
+UnChecked - Jenkins will try to resume the pipeline from the last saved step.
+
+******************************************************************************************************************************************************
+
+GitHub project 
+
+- It is used to link your Jenkins job with a GitHub repository.
+
+What happens when you check it?
+1, A text field appears to enter the GitHub project URL.
+2, This URL is typically your repository, e.g,:
+https://github.com/your-org/your-repo 
+
+Why is it useful?
+
+Feature - Purpose 
+Webhooks - Enables GitHub to notify Jenkins when changes happen (like push, PR, etc)
+Display -  Jenkins shows a link to the GitHub repo on the job dashboard.
+Integration - Required for GitHub integration plugins (like GitHub plugin, GitHub Branch Source)
+GitHub triggers - Enables Build when a change is pushed to GitHub option in build triggers. 
+
+Prerequiste Plugins 
+
+- To make this effective, make sure you have these plugins installed.
+1, GitHub plugin 2, Git plugin 3, GitHub Branch Source (for multibranch pipelines) 
+
+Example Use Case:
+
+Let's say you are configuring a Jenkins job that builds when a change is pushed to GitHub:
+
+1, Check "GitHub Project" 
+2. Enter: https://github.com/your-org/your-repo 
+3, In Build Triggers, 
+   select 
+   - GitHub hook trigger for GITScm polling 
+4, Set up a Webhook in GitHub pointing to your Jenkins controller:
+   http://your-jenkins-server/github-webhook 
+   
+If you don't check it:
+- Jenkins won't associate the job with your GitHub project.
+- GitHub-specifc features (like webhooks, PR build status updates) won't work 
+
+********************************************************************************************************************************************************
+
+Pipeline -> Advanced Options -> Pipeline Speed/Durability Override 
+
+What Does it control?
+- This setting determines how often Jenkins saves (persists) the state of the pipeline to disk while it is running. 
+
+Available Options:
+
+Option - Description - Use Case 
+
+None (use default) - Uses the global Jenkins setting - Let Jenkins decide 
+
+Performance-Optimized - Saves state less often, faster execution - Best for fast pipelines where resume after restart is not critical 
+
+Maximal durability - Saves state frequently, can resume from almost any point - Safter, but slower 
+
+Survivable non-blocking steps - Middle ground; durable for critical points, non-blocking steps are skipped after restart - Balanced performance and durability 
+
+What's Actually Affected:
+
+- Checkpoint Frequency: More durability = more disk I/O and slower build 
+- Resumability: More durability = better ability to recover from Jenkins restarts or crashes.
+- Step Caching: Determines how much of your pipeline progress in cached or lost if Jenkins is reatarted. 
+
+Real-World Use Cases:
+
+Scenerio - Recommended Setting 
+Fast pipelines with few risks (e.g., unit tests, static analysis) - Performance-Optimized 
+Long-running jobs with approvals or user input (e.g., deployement) - Maximum durability 
+Jobs where downtime is rare and you want balance - Survivable non-blocking steps 
+
+Important Notes:
+
+- Performance-optimized builds may not resume correctly after a jenkins restart.
+- Maximum durability uses more disk and CPU but is more fault-tolerant.
+- You can also set global defaults in Manage Jenkins -> Configure System -> Pipeline Speed/Durability Settings. 
+
+****************************************************************************************************************************************************************
+
+
+Preserve stashes from completed builds :
+
+- In Jenkins Pipeline builds, you can use the stash and unstash steps to temporarily store and retrieve files between stages or even across builds. 
+- By default, stash data is discarded when a build completes.
+- When this checkbox is enabled, Jenkins retains the stashes even afer the build is finished, so future builds (or stages in parallel jobs) can unstash from older builds.
+
+Use Case Example:
+
+// Build1 
+pipeline {
+    agent any 
+    stages {
+        stage('Build'){
+           steps {
+		      sh 'make build'
+			  stash name: 'my-artifacts', include: 'build/**'
+		   }
+		}		
+	}
+}	
+
+// Build 2 (later or separate job)
+pipeline {
+    agent any 
+	stages {
+	   stage('Reuse Artifacts') {
+	       steps {
+		      unstash 'my-artifacts'
+			  sh 'deploy build/'
+		   }
+	   }
+	}
+}
+
+- Without Preserve stashes from completed builds, the unstash in Build 2 will fail.
+
+Real-World Scenarios:
+
+Scenario - why Preserve Stash?
+Deploy pipeline needs artifacts from a prior build - To avoid re-building the same code
+Split build & deploy into different jobs - Share build output between pipelines 
+Run tests on the same artifacts after build finishes - Test in another agent or delayed job 
+Manual rollback or debugging - Reuse previous build artifacts without re-run 
+
+Considerations:
+
+Risk - Description 
+Disk space usage - Stashed files are retained longer, increasing storage 
+Manual cleanup may be required - Consider using stash includes wisely or archiving artifacts instead. 
+
+Best Practices: 
+
+- Use stash + unstash for short-lived sharing (within or between builds).
+- Use "Preserve Stashes" only if:
+   - you need to access the same stash across builds or jobs.
+   - you don't want to archive files permanently as artifacts. 
+- For long-term storage, prefer archiveArtifacts.
+
+
+************************************************************************************************************************************************************************  
+   
+
+This project is parameterized 
+
+What Happens When you Enable it?
+- When you check "This project is parameterized", you can then add one or more parameters, such as:
+Parameter Type - Purpose 
+String parameter - Accept plain text input 
+Boolean parameter - True/False switch (checkbox) 
+Choice Paramter - Drop-down list with options 
+File Parameter - Upload a file to the job 
+Password Paramter - Secure string (hidden)
+Run Parameter - Reference another job's build 
+Git Paramter (with plugin) - Choose a Git branch/tag/commit 
+
+Example: Use Case 
+Suppose you have a deployment pipeline, and you want the user to select which environment to display to:
+1, Define a Choice Parameter:
+   Name : ENVIROMENT 
+   Choices: DEV, QA, PROD 
+   
+2, In your pipeline script:
+   
+     pipeline {
+	    agent any 
+		parameters {
+		   choice(name: 'ENVIROMENT', choices: ['DEV','QA','PROD'], description: 'Choose target environment')
+		}
+		stages {
+		   stage('Deploy') {
+		      steps {
+			    echo "Deploying to ${params.ENVIROMENT}" 
+			  }
+		   }
+		}
+	 }
+
+Benefits of Parameterixed Projects:
+
+- Run the same job with different configurations (e.g., test different branches)
+- Reuse one job for multiple environments or targets.
+- Limit control: e.g., only allow PROD deployment via manual input.
+- Enable external scripts or systems to pass input via API 
+
+Real-World Examples:
+
+JobType  - Typical Parameters 
+
+Build job - GIT_BRANCH, VERSION, CLEAN_BUILD 
+
+Deployment job - ENVIRONMNET, REGION, ROLLBACK_VERSION 
+
+Testing job - TEST_SUITE, BROWSER, OS 
+
+Release tagging - TAG_NAME, CHANGELOG_FILE 
+
+***********************************************************************************************************************************************************************************
+
+Throttle builds 
+
+- Enforces a minimum time between builds based on the desired maximum rate.
+Note: this does not enforce an "average" rate, it only looks at the time since last build.
+
+Number of builds - The maximum number of builds allowed within the specified time period.
+Time period - The time period within which maxium number of builds will be enforced. 
+
+Allow user triggered builds to skip the rate limit?
+- Enable this option to permit user triggred builds to skip the rate limit. Note that user triggered buidsl will still resume the rate limit for all builds, 
+  they just will not be subject to the limit. 
+  
+************************************************************************************************************************************************************************************
+
+Prepare an environment for the run 
+
+- if this option is checked, Jenkins makes it possible to set an environment for the build job (or for each run on a matrix project) by defining environment variables and 
+  execute a script ( a setup script)
+- All these actions will be executed before a SCM checkout.
+- By default, after the set up, only injected variables (with jenkins variables) will be available in the build scripts, in the Jenkins post-action, and so on.
+- Default inherited enviroment variables (inherited variables by the Jenkins process which often contains machine-specific information, like PATH,TIMEZONE, etc) 
+  can be unset if you enable the envinject properly and check Unset system variables in the node configuration page. 
+  
+    Keep Jenkins Enviroment Variables:
+	- Inject Jenkins system variables such as JENKINS_HOME, JENKINS_URL, NODE_NAME and so on.
+	- Inject also environment variables defined as global properites and as node properites.
+	
+	Keep Jenkins Build Variable 
+    - Inject Jenkins build variables such as EXECUTOR_NUMBER, BUILD_ID, BUILD_TAG, JOB_NAME and so on.
+	- Inject also enviroment contributors and build variable contributors provided by other plugins. 
+	
+	Override build parameters
+	  Properties file Path : 
+	                         - Gives a file path of a properties file. The file format must be the standard Java Property file format.
+							 - The file path can be absolute or relative to the workspace (the process is executed after a SCM checkout).
+							   All the properities name will be accessible as enviroment variables by their names. 
+							   
+	  Properties Content :
+	                      - Give a set of key/value 
+						  - All the properties name will be accessible as environment variables by their names. 
+						    You can use or override the properties specified in the above properities file. 
+							
+	  Script File Path :
+	                     - Execute a scritp file aimed at setting an environment such as creating folders, copying files, and so on.
+						 - Give the script file path.
+						 - The file path can be absolute path or relative to the workspace(the process is executed after a SCM checkout).
+						 - You can use the above properities as variables.
+						 - However, adding or overriding environment variables in the script has no impact in the build job.
+	  Script Content: 
+                       - Execute a script file aimed at setting an environment such as creating folders, copying files, and so on.
+                       - Give the script file content.
+                       - You can use the above properities as variables.
+                       - However, adding or overrding environment variables in the script doesn't have any impacts in the build job.
+
+     Evaluated Groovy script:
+                       - Evaluates a Groovy script and injects the results into the environment.
+                       - This script is powered by the Script Security Plugin; both approved script and groovy sandbox modes are available.
+                       - For the new scripts it is recommanded to use the Sandbox mode. 
+                       Usage:
+                       The groovy script must return an Map<string,string> Java object. 
+                       You can access parameters and other environment variables through variables in the Groovy script. 
+                       In the scripts you can also use the following variables.
+                       currentJob - current hudson.model.job instance.
+                       currentBuild - current hudson.model.Run instance.
+                       currentListener - current hudson.model.TaskListener instance, which can be used for logging purposes.
+					   out - Another logging instance as java.io.PrintStream, It is recommended to use currentListener instead of this variable when possible.
+					   
+					   All listed variables cna be used in both script modes. In the sandbox mode the acces to particular fields and methods may require an additional approval.
+					   
+					   Example:
+					   For example, the Groovy can compute environment variables fron user input parameters.
+					   The script below injects the COMPUTE_VAR environment variable according the CASE parameter value.
+					   
+					   def stringValue = "StRinG";
+					   if("upper".equals(CASE)) {
+					      def map = ["COMPUTE_VAR": stringValue.toUpperCase()]
+						  return map 
+					   } else if ("lower".equals(CASE)) {
+					      def map = ["COMPUTE_VAR": stringValue.toLowerCase()]
+						  return map 
+					   } else {
+					     return null;
+					   }
+	Groovy Script 
+   
+    Use Groovy Sandbox:
+      if checked, run this Groovy script in a sandbox with limited abilities. If uncheck, and you are not a Jenkins administor, you will need to wait for an adminstrator to approve the script.
+     	  
+					   
+ 	Additional classpath - Additional classpath entires accessible from the script.
+
+   	
+	Load script and properties files from the controller:
+ 
+    - if enabled, load files (properities or scripts) from controller. 
+	- Without this option, Jenkins loads the files from the target node (agent or controller).
+	- Loading the files from the controller may avoid conflicts between enviroment variables, such as the problematic PATH variable used on both Windows and Linux.
+	- As of Envinject2.0, global configuration can disable this option. 
+	- when the option has been disabled by global configuration, you will see a warning in order to flag the option was configured by the job but is now diabled.
+	  Once the option has been turnoff - to acknowledge the job has been reconfigured - the option will disappear from the UI. 
+	- It is not recommanded to use this option in new jobs even if it is enabled.
+	
+*****************************************************************************************************************************************************************************************************
+	
+Build Triggers:
+
+Build after other projecs are built: 
+
+- Setup a trigger so that when some other projects finish building, a new build is scheduled for this project.
+- This is convenient for running an extensive test after a build is complete.
+- for example: This configuration complements the "Build other projects" section in "Post-build Actions" of an upstream project, but is preferable when you want to configure the downstream project.
+
+Build periodically 
+
+- Provides a cron-like feature to preiodically execute this project.
+- This feature is primarily for using jenkins as a cron replacement, and it is not ideal for continously building software projects.
+- When people first start continous integration , they are often so used to the idea of regulary scheduled builds like nightly/weekly that they use this feature.
+- However, the point of continous integration is to start a build as soon as a change is made.
+- to provide a quick feedback to the change.
+- To do that you need to hook up SCM change notification to Jenkins.
+- So, before using this feature, stop and ask yourself if this is really what you want. 
+
+GitHub hook trigger for GITScm polling 
+
+- When jenkins receives a GitHub push hook.
+- GitHub Plugin checks to see whether the hook came from a GitHub repository which matches the Git repository defined in SCM/Git Section of this job.
+- if they match and this option is enabled, Github plugin triggers a one-time polling on GITScm.
+- When GITScm polls GitHub, it finds that there is a change and initiates a build. 
+- The last sentence describes the behaviour of Git plugin, thus the polling and initialting the build is not a part of GitHub plugin.
+
+Perforce trigger build 
+
+PollSCM :
+
+- Configure Jenkins to poll changes in SCM.
+- Note that that is going to be an expensive operation for CVS, as every polling requires to scan the entire workspaces and verify it with the server.
+- Consider setting up a "push" trigger to avoid this overhead, as described in this document. 
+  Schedule:
+      - This file follows the syntax of cron (with minor differences).
+	  - Specifically, each line consists of fields separated by TAB or whitespace:
+	    MINUTE(0-59) HOUR(0-23) DOM(1-31) MONTH(1-12) DOW(0-7) where 0 and 7 are sunday.
+      To specify multiple values for one field, the following operators are available. In the order of precedence. 
+	  -  * specifies all valid values.
+	  -  * M-N specifies a range of values.
+	  -  * M-N/X or */X steps by intervals of X trhough the specified range or whole valid range 
+	  -  * A,B,...,Z enumerates multiple values. 
+	  
+	  -To allow periodically scheduled task to produce even load on the system, the symbol H (for "hash") should be used whenever possible.
+	  -For example, using 0 0 * * * for a dozen daily jobs will cause a large spike at midnight.
+	  -In contrast, using H H * * * would still execute each job once a day, but not all at the same time, better using limited resources.
+	  
+	  - The H symbol can be used with a range, For example, H H(0-7) * * * means some time between 12:00 AM (midnight) to 7:59 AM.
+	  - You can also use step intervals with H with or without ranges.
+	  
+	  - The H symbol can be though of as a random value over a range., but it acutally is a hash of the job name, not a random function,
+	    so that the value remains stable for any given project. 
+		
+	  - Beware that for the day of month field, short cycles such as */3 or H/3 will not work consistently near the end of the most months, due to variable month lengths.
+	  - For example */3 will run to the 1st,4th,..31th days of a long month, then again the next day of the next month.
+	  - Hashes are always chosen in the 1-28 days range, so H/3 will produce a gap between runs of between 3 and 6 days at the end of a month. 
+	    (Longer cycles will also have inconsistent lengths but the effect may be relatively less noticeable.)
+		
+		Empty lines and lines that start with # will be ignored as comments.
+		
+		In addtion, @yearly, @annually,@monthly,@weekly,@daily,@midnight,and @hourly are supported as convenient aliases.
+		These use the hash system for automatic balancing. 
+		For example, @hourly is the same as H * * * * * and could mean at any time the hour. 
+		             @midnight actually means some time between 12:00 AM and 2:59 AM.
+					 
+		Examples:
+		# Every fifteen minutes (perhaps at :07, :22, :37, :52):
+		H/15 * * * * 
+		# Every ten minutes in the first half of every hours (three times, perhaps at :04, :14, :24):
+		H(0-29)/10 * * * *
+		# Once every two hours at 45 minutes past the hour starting at 09:45 AM and finishing at 3:45 PM every weekday.
+		45 9-16/2 * * 1-5 
+		# Once in every two hours slot between 8 AM and 4 PM every weekday (perhaps at 9:38 AM, 11:38 AN, 1:39=8 PM, 3:38 PM):
+		H H(8-15)/2 * * 1-5
+		# Once a day on the 1st and 15th of every month except december:
+		H H 1,15 1-11 * 
+		
+****************************************************************************************************************************************************
+****************************************************************************************************************************************************
+****************************************************************************************************************************************************
+
+1, What is Jenkins?
+A, 
+- Jenkins in an open-source automation server used for continous integration and continous delivery/depolyment.
+- It helps automate building, tesing, and deploying applications. allowing developers to detect issues early and release software faster.
+Examples/Scenerio:
+- Whenever a developer pushes code to GitHub, Jenkins can automatically build the project, run unit tests. and deploy it to a staging server. 
+  - A staging server is basically a pre-production environment used in software development. 
+
+2,What are the key features of Jenkins?
+A, - Open source and free 
+- Easy installation and configuration.
+- supports distribued builds (master-slave architecture)
+- Extensible via plugins.
+- Supports various SCM tools like Git,SVN.
+- Flexible pipeline management using Pipeline as code.
+- Automated testing and reporting.
+
+3, Explain Jenkins Pipeline?
+A,
+- A Jenkins Pipeline is a way to define your build, test and deployment process as code.
+- Pipelines can be written using Declarative or Scripted.
+
+Example:
+pipeline {
+-> It is the starting point of jenkins declartive pipeline.
+-> Without it - Jenkins won't recognise the file as a pipeline. 
+    agent any 
+	-> Says: "Run this pipeline on any available Jenkins node/agent"
+	-> you can also specify: 
+	   - agent none -> no default agent.
+	   - agent { docker { image 'maven:3.8.1' } } -> run inside a Docker container. 
+	stages {
+	-> Collection of steps grouped by phases.
+	-> Each stage represents one logical step (Build, Test, Deploy. etc). 
+	   stage('Build') {
+	   -> Defines one stage.
+       -> The name is what you see in Jenkins.	   
+	     steps {
+         -> The actual commands to run.
+         -> Example: sh 'make build', echo "Hello", mvn test, docker build.		 
+			echo 'Building...' 
+			-> Just prints a message in Jenkins logs.
+		}		 
+	   }
+	   stage('Test') {
+	     steps {
+		    echo 'Testing...' 
+		 }
+	   }
+	   stage('Deploy') {
+         steps {
+           echo 'Deploying...'
+		 }		 
+	   }
+	}
+}
+
+- pipeline {} = the top-level block of a Jenkins Declarative Pipeline.
+- Inside it -> you define where to run(agent), what do to (stages) , and how to do it (steps) 
+
+- Difference between Declartive ( pipeline { } ) and scripted pipeline (node { }) 
+
+Scenerio : Instead of clicking through the UI to build and deploy, the pipeline script ensures the process is repeatable, version-controlled,and automated. 
+
+4, What is the difference between FreeStyle and Pipeline jobs?
+A,
+Feature  -  FreeStyle Job - Pipeline Job 
+Configuratin - Manual, GUI Based - Codebased (Jenkinfile)
+Verison Control - Not natively integrated - Stored in source control 
+Complex workflows - Hard to manage - Easy to manage with stages and steps 
+Plugins - Limited dependency - Extensive Plugin support 
+
+5, What is a Jenkins Node (Slave)?
+A, 
+- A Jenkins Node(or Slave) is a machine that runs jobs delegated by the Jenkins Master.
+- This helps distribute workload and improve build performance.
+
+Scenario:
+- If you have 100 builds per day, one master may be overloaded. you can add multiple nodes to run builds in parallel.
+
+6, Explain Jenkins Master-Slave Artchitecture/
+A,
+- Master : Schedules and triggers jobs, manages UI, and stores build results.
+- Slave/Agent: Executes jobs assigned by the master.
+
+Scenerio: 
+Large projects often use multiple nodes for testing different environments. (Windows, Linux, Mac) Simultaneoulsy.
+
+7, What is a Jenkinsfile?
+A, 
+- A Jenkinsfile is a text file that contains the pipeline definition and is stored in the project's repository.
+- It allows Pipeline as Code, making the CI/CD process consistent across environments.
+
+8, How do you handle credentials in Jenkins?
+A,
+- Jenkins has a Credentials Plugin to securely store passwords, tokens, and SSH keys. 
+- Example:
+  withCredentials([usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASS')] {
+    sh 'echo $USER'
+  }
+ 
+9, How to trigger Jenkins jobs automatically?
+A, 
+- SCM Polling : Checks for changes in Git/SVN/Periodically.
+- Webhook Trigger: GitHub/GitLab can notify Jenkins when code is pushed.
+- Schedule Cron Jobs : Runs at specific times using cron syntax.
+- Upstream/Downstream Projects: Trigger jobs after another job completes. 
+
+10, What are some common jenkins plugins you have used?
+A, 
+Git plugin - Integrates Git repositories.
+Pipeline Plugin - Supports declarative/scripted pipelines.
+Credentials Plugin - Manages secrets 
+Email Extension Plugin - Sends email notifications.
+Slack Notification Plugin - Sends Slack updates.
+- A Slack notification plugin connects your application or tool to Slack, so that you can:
+  - Notify a team when a build fails or passes.
+  - Alert when a code review is created or updated.
+  - Send messages for deployments, errors, monitoring alerts. 
+Docker Plugin - Builds and deploys Docker images. 
+
+11, How do you ensure Jenkins job reliability?
+A, 
+- Use parameterized builds for flexibility.
+- enable build retries on failure 
+- Use stages in pipelines to isolate errors.
+- Monitor build logs and integrate alerts/notifications.
+- Use distributed builds for heavy workloads.
+
+12, What is Blue Ocean in Jenkins?
+A,
+- Blue Ocean in a modern UI for Jenkins designed for visualizing pipelines.
+- It provides a clean, interactive view of CI/CD pipelines with stages, logs, and result in one place.
+
+13, How do you backup jenkins?
+A, 
+- Backup JENKINS_HOME directory (contains jobs, configs, plugins)
+- Use plugins like ThinBackup or SCM Sync for automated backups.
+- Store backup securely off the server.
+
+14, What is difference between Continous Integration, Delivery, and Deployment?
+A, 
+Concept  -  Description 
+CI - Automatically builds and test code after commit.
+CD (Delivery) - Automatically prepare code for release.
+CD (Deployment) - Automatically deploys code to production.
+
+15, How to you handle envirnoment-specific configurations in Jenkins?
+A,
+- Use Parameterized builds.
+- Use Environment Variables.
+- Use Jenkins Credentials for secrets.
+- Maintian separate Jenkinsfiles or stages for dev/test/prod 
+
+I can also prepere a list of 30+ advanced Jenkins questions with answers that are often asked. 
+
+*******************************************************************************************************************
+
+1, How do you implement pipeline as code in Jenkins?
+A,
+- Jenkins support declartive and Scripted pipelines using a Jenkinsfile
+- Declarative Pipeline: Uses structured syntax (pipeline { ... }) and is easier to read and maintain.
+- Scripted pipeline: Use Groovy scripting (node { ... }) and is more flexible.
+- Pipelines are stored in source control, allowing versioning and code review.
+- Example real-world use: Automatically building, testing, and deploying microservices from a Git repo.
+
+*******************************************************************************************************************************
+
+2, How do you handle parallel builds in Jenkins pipelines?
+A,
+Jenkins supports parallel stages in Declarative Pipeline.
+
+pipeline{
+   agent any
+   stages {
+      stage('Test') {
+	      parallel {
+		     stage('Unit Tests') { steps { sh 'run_unit_tests.sh' } }
+			 stage('Integration Tests') { steps { sh 'run_integration_tests.sh' } }
+		  }
+	  }
+   }
+}
+
+- Use Case : Speed up CI by running multiple test suites or deployments simultaneously.
+- Caustion: Ensure enough executor resources to avoid contention.
+
+What's an executor in Jenkins?
+- Jenkins has nodes (the master and agents)
+- Each node has a number of executors.
+- An executor = a "worker slot" that can run one job or one stage at a time.
+- If a node has 2 exeecutors -> it can run 2 things in parallel.
+- if executors are all busy -> new ork has to wait in queue.
+
+- Parallel in Declartive Pipeline 
+  Example:
+  pipeline {
+     agent any 
+	 stages {
+	     stage('Parallel Work') {
+             parallel {
+                 stage('Job A') {
+				     steps {
+					 echo "Running A"
+					 sleep 10
+					 }
+				  }
+				 stage('Job B') {
+				   steps {
+				      echo "Running 8"
+					  sleep 8
+				   }
+				 }
+				 
+             }			 
+		 }
+	 }
+  }  
+- Here, Job A and Job B try to run at the same time.
+
+- The problem: Contention 
+  - If jenkins only has 1 executor free, then both jobs cannot acutally run in parallel.
+  - One will start, the other will wait in queue.
+  - This is called executor contention (multiple jobs fighting for too few slots.
+
+- The warning Means 
+  - Ensure enough executor resources to avoid contention =
+    "Before you use parallel() , make sure your jenkins nodes (agents) have enough executors so that each branch of your parallel block can relly run at the same time.
+
+- How to Ensure This:
+1, Check executors on Jenkins:
+   - Go to Manage Jenkins -> Nodes -> Configure 
+   - Set # of executors high enough for your needs.
+2, Match executors to parallel branches:
+   - if you run 4 parallel branches -> your node(s) mut have at least 4 executors available. 
+3, or Use multiple agents. 
+   stage('Parallel') {
+      parallel {
+	     stage('A') {
+		    agent { label 'linux' }
+			steps { sh 'build-a.sh' }
+		 }
+		 stage('B') {
+		    agent { label 'windows' }
+			steps { sh 'build-b.bat' }
+		 }
+	  }
+   }
+- Each branch can use a different node.
+
+*****************************************************************************************************************************************
+
+3, How do you secure Jenkins in a large Jenkins in a large enterprise?
+A,
+- Enable Authentication (LDAP, Active Dirctory, or Jenkins own user database).
+- Enable authorization using Role-Based Access Control (RBAC) or Matrix-based security.
+- Use credentials binding plugin instead of hardcoding secrets in pipelines.
+- Restrict scripted pipeline permissions using Script Security Plugin.
+- Real-world tip: Use agent containers to isolate builds and avoid security risks.
+
+*****************************************************************************************************************************************
+
+4, How do you mange build artifacts in Jenkins?
+A, 
+- USe Archive Artifacts step to store build outputs:
+  archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true 
+  
+  - For long-term storage, integrate with artifact repositories like Nexus or Artifactory.
+  - Use fingerprinting to tract artifact usage across builds.
+  - Real-world example: Java microservices uploading .jar files to Nexus for deployment in Kubernets.
+  
+5, How do you implement dynamic agents in Jenkins?
+A,
+- Use Jenkins Kubernetes Plugin or Cloud agents.
+- Agents (slaves) are provisioned on-demand and destroyed after the job completes.
+- Save infrastructure costs and scales CI/CD dynamically.
+- Real-world: Run resource-heavy builds like Android SPK compilation only on specific agent types.
+
+6, How do you implement Jenkins Pipeline as Code with Multi-branch pipelines?
+A, 
+- Multibranch Pipeline automaticaly discovers branches in GIL.
+- Jenkins creates jobs per branch, execute Jenkinsfile in each branch.
+- Supports PR builds: can test pull requests before merge.
+- Real-world: A team with multiple feature branches can ensure CI runs on each branch without manulaly creating jobs.
+
+7, How do you integrate Jenkins with Docker?
+A, 
+- Use docker pipeline Plugin to run builds inside containers.
+
+pipeline {
+    agent {
+	    docker { image 'maven:3.8.5-jdk-11' }
+	}
+	stages {
+	    stage('Build') { steps { sh 'mvn clean package' }}
+	}
+}
+
+- Benefits: ensures consistent build envirnoments and isloates dependencies.
+- Real-world: Build, test and deploy containerized microservices with reproducible environments.
+
+8, How do you handle Jenkins pipeline faliures and retries?
+A, 
+Use retry() block in pipeline to retry flaky steps:
+
+stage('Test') {
+   steps {
+      retry(3) { sh 'run_tests.h' }
+   }
+} 
+
+- Use catchError or try/catch for handling failures gracefully.
+- Real-World: Network or dependency issues sometimes fail tests temporarily; retries help reduce false negative. 
+
+20+ ultra-advanced Jenkins questions with answers, including real world troubleshooting scenarios, plugin integration, and CI/CD pipeline optimizations 
+
+1, How do you scale Jenkins for large teams and heavy workloads?
+A,
+- Use Master-Agent Architecture (offload builds to agents)
+- Configure multiple executors per agent (balance with CPU cores)
+- Use Ephemeral agents (Kubernetes, Docker) to spin up on-demand.
+- Implement Distributed builds with labels to route jobs.
+- Use Jenkinsfile + Shared Libraries to standardize pipeplines.
+- Store artifacts/logs in external storage (e.g. Nexus, S3) 
+- Monitor performance with Monitoring plugins (Prometheus, New Relic).
+
+2, How do you secure Jenkins pipelines and credentials?
+A, 
+- Use Credentials Binding Plugin (never hardcode password)
+- Enable Role-Based Access Control (RBAC).
+- Secure Jenikins matter with HTTPS and behind a reverse pxoxy.
+- Store secrets in Valut/AWS Secrets Manager/Azure Key Value (integrate with Jenkins) 
+- Restrict scripted pipelines (prefer declarative).
+- Audit logs + periodic credential rotation.
+
+3, What's the difference between Scripted and Declarative Pipeline?
+A,
+- Scripted Pipeline : Groovy-based, highly flexible, but harder to maintain.
+- Declartive Pipeline: Structured syntax, easier to read/maintain, includes features like post blocks when conditions.
+- Best Practice: use declartive for most cases, fallback to Scripted when advanced logic is needed.
+
+4, How do you implement pipeline-as-code for multiple microservices?
+A,
+- Use a Jenkins Shared library to avoid dupliation.
+- Define reusable steps (vars/*.groovy) for build, test, deploy.
+- Each microservice has a Jenkinsfile that imports the library.
+
+Example:
+
+@Library('shared-libs') _
+pipeline {
+   stages {
+      stage('Build') {
+	    steps { buildService() }
+	  }
+   }
+}  
+  
+5, How do you handle parallel execution in Jenkins pipelines?
+A,
+- Use the parallel directive.
+pipeline {
+    stages {
+	   stage('Tests') {
+	      paralled {
+		     stage('Unit') { steps { sh 'mvn test' }} 
+			 stage('Integratin') { steps { sh 'mvn verify' }}
+		  }
+	   }
+	}
+}
+- This reduces build time significantly. 
+
+6, How do you integrate Jenkins with Docker/Kubernets?
+A,
+- With Docker:
+  - Run builds inside containers using docker agent.
+  - Build & push images to DockerHub/ECR 
+- With Kubernetes:
+  - Use Jenkins Kubernetes Plugin -> Spawns agents in K8s pods.
+  - Each pipeline step runs in an isolated container.
+  - Scales elastically with workloads.
+
+7, How do you manage Jenkins when jobs grow too large?
+A,
+- Break monolithic pipelines into multi-branch pipelines.
+- Use upstream/downstrem triggers (Pipeline build job:)
+- Store pipeline configs in Git (Pipeline as Code).
+- Use Folders + Views plugin to organize.
+- For very large orgs -> consider Jenkins X (cloud native).
+
+8, How do you recover from Jenkins master failure?
+A,
+- Backup 
+      - $JENKINE_HOME(jobs, config.xml, credentials).
+      - Plugins + pipeline libraries.
+- Disaster recovery:
+       - Restore from backupes 
+	   - Keep Jenkins in HA setup (with replicas, external DB).
+	   - Use configuration as Code to recreate master quickly.
+	   
+9, How do you trigger Jenkins job automatically?
+A, 
+- SCM Webhooks (GitHub, GitLab, Bitbucket)
+- Polling SCM (not recommended fro large repos).
+- Cron syntax for scheduled builds.
+- Parameterized triggers fro dependent jobs.
+- REST APIcalls or Slack/Bot triggers.
+
+10, How do you monitor and optimize Jenkins performance?
+A,
+- Monitor with Prometheus + Grafana (vis Jenkins Exporter plugin).
+- Use This executors (avoid too many jobs per node).
+- Clean up workspace and old builds.
+- Offload heavy tasks(e.g., static anysis, artifact storage) outside Jenkins.
+- Upgrade plugins regularly to avoid memory leaks. 	   
+	  
+***********************************************************************************************************
+        
+
+jenkinsgsp.companyname.com 
+
+Step 1: Analyze the URL.
+
+jenkinsgsp.companyname.com 
+-> the name jenkins -> It's likely a self hosted (on-premise) Jenkins instance.
+-> the custom subdomain(companyname.com) -> not a public Saas like CloudBees or Jenkins X.
+-> So it's almost certainly a classic jenkins or jenkins pipeline running on your company's internal servers( may be VM or Kubernetes, but still internally hosted).
+
+Step 3: How to confirm which one 
+
+Try these quick checks:
+1, Open the job -> click "Pipeline Syntax" or "Build with parameters" (if available) 
+   - if it exists -> it's a pipeline job (Declarative or Scripted)
+   - if it doesn't -> It's a centerally managed Jenkins job.
+   
+2, Go to the project's git respostory -> look for a Jenkinsfile in the root.
+   Found? -> Pipeline is code=based.
+   Not found? -> Probably using Jenkins Job DSL / Jenkins-as-code
+   
+3, Ask your DevOps/Infra team 
+   Are we using Jenkins-as-Code or a shared Jenkins library setup?
+   -They'll confirm whether jobs are generated programmtically.
+   
+Step 4: Quick way to find out from Jenkins URL.
+-> When you open the Job in Jenkins, check the URL path:
+   - If it's like: https://jenkinsgsp.companyname.com/job/project-name/ 
+   That's a normal Jenkins job.
+-> If you see something like:
+   ../blue/organizations/jenkins/project-name/ 
+   That's Blue Ocean (modern pipeline UI) - your company is using Declartive pipeline jenkins with restricted configuratoin access.
+   
+Step 1:
+- Build Now 
+- configure 
+That means:
+- you have edit access to the job.
+- It's not locked down by DevOps (so not fully Jenkins-as-Code)
+- The job is likely either FreeStyle Jenkins or a Pipeline Jenkins (Declaritive/Scripted)
+
+In configure, "General", "Advanced project options", and "pipeline"
+-> That's the layout of a Jenkins Pipeline job - specifically, a modern Jenkins Pipeline (Declarative or Scripted).
+-> This means your company is not using old FreeStyle Jenkins.
+-> They've already upgraded to Pipeline-as-Code jenkins - the newer, DevOps-friendly model.
+
+What "Pipeline" section means 
+
+"Pipeline scripts from SCM" (and your GIT repo URL) - A declartive pipeline stroed in your repo as a Jenkinsfile. 
+
+Your company is using Jenkins Declartive Pipeline, configured to load the jenkinsfile from SCM (Source Control Managemne) - usally a Git repository 
+(like GitHub, GitLab, or Bitbucket) 
+
+Jenkins pipeline - Modern jenkins setup where build logic is written as code(not click-based).
+Declartive pipeline - Newer, structured syntax for pipelines - easier to maintain than the older scripted one.
+From SCM - The pipeline definition is stored in your project's repository (in a file name Jenkinsfile) .Every time jenkins runs, it pulls the latest verion of that file and executes it.
+
+Jenkins + Perforce plugin 
+
+The pipeline definition is stored in SCM. I observed that Jenkins automatically builds when check-in is done or developer has to invoke the build.
+
+That's exactly how Jenkins + Perforce behaves - it can do both:
+1, automatic builds (triggered on check-in)
+2, Manual builds (triggered via 'Build Now') 
+
+Let's understand how Jenkins decides when to build and how it knows a check-in happened. 
+
+Step 1: The connection between Jenkins and Perforce.
+- Your Jenkins job has the following configuration:
+  Definition: Pipeline script from SCM.
+  SCM: Perforce Software
+  Behind the scenes, Jenkins uses the Perforce Plugin (P4 Plugin). This plugin connects Jenkins to the Helix Core (P4D) server.
+  
+  
+  
+  
+
+
+
+   
+
+
+   
+
+
+
+  
+
+  
+  

@@ -1,0 +1,98 @@
+Target Concepts:
+- Modern C++ (C++ 11 - C++ 20)
+- Multithreading (std::thread, mutex, condition_variable)
+- Multiprocessing (via multiprocessing using fork() or similar, optional if cross-platform)
+- Data structures (queues, maps, etc)
+- Design patterns (Observer , Singleton, Factory etc).
+- OOP Principles (encapsulation, inheritance, polymorphism) 
+
+Project Idea: Intra-Process Chat Application (CLI-based) 
+We'll build:
+1, Chat Server - handles connected clients, routes messages.
+2, Chat Client - Connects to server, sends/receives messages.
+3, Message Bus - uses observer pattern to notify clients.
+4, Thread communication - separate thread for receiving messages.
+5, Command-line interface - users send chat messages from terminal.
+6, Queue-based architecture for buffering messages. 
+
+Steps Outline:
+1, Step 1 : Project design overview (classes, responsibilities, architecture) 
+2, Step 2 : Implement Message, User, and Queue (Data Structure layer) 
+3, Step 3 : MessageBus (Observer Pattern)
+4, Step 4 : ChatClient & ChatServer OOP Design 
+5, Step 5 : Add multithreading to handle messages concurrently.
+6, Step 6 : (Optional) Add multiprocessing or simulate it using fork/pipes 
+7, Step 7 : Combine and run CLI app 
+8, Step 8 : Add enhancementss (logging, timestamps, blocks queue, etc.) 
+
+Step 1 - Design Overview 
+Build a command-line chat system where:
+- Many clients connet to one server.
+- clients send messages to the server.
+- Server distributes (broadcasts) messages to all other clients.
+- Each clinet runs in its own thread, listening + sending messages simultaneoulsy.
+
+This allows us to demostrate:
+- Modern C++ features ( smart pointers, std::thread, std::unique_ptr,std::mutex, etc)
+- Data Structures ( queues for messsages, map for connected clients) 
+- OOP principles(encapsulation, inheritance, polymorphism)
+- Design patterns ( Observer Pattern for notifications)
+
+Major Components:
+
+Component  -   Role  - Key Concepts 
+Message - Holds text, sender info, time stamp  - Simple struct/classes
+MessageQueue - Thread-safe queue of messages - Data Structure + multithreading 
+MessageBus - Distributes messages to subscribers - Observer Pattern 
+ChatClient - Connects to server, sends + receives messages  - Threads, OOP
+ChatServer - Holds all clients, broadcasts messages  - Threads, maps, OOP 
+
+Classes We'll Create :
+
+1, Message
+   - Represents a chat message.
+   - Fields: sender, text, timestamp 
+   - Modern C++ : std::string, std::chrono 
+   
+2, MessageQueue (Thread-safe)
+   - Uses std::queue<Message> internally.
+   - Protect with std::mutex + std::condition_variable.
+   - Allows producer-consumer pattern
+
+3, MessageBus ( Observer Pattern ) 
+   - Maintians a list of subscribters (clients)
+   - When server receives a message it notifies all clients.
+
+4, ChatClient 
+   - Has two threads 
+      - one to send messages.
+      - one to receive messages.
+   - Communicates with server via sockets or in-process queue. 
+
+5, ChatServer 
+   - Accepts multiple clients 
+   - Stores clients in a std::map<int, ChatClient*> or smart pointers 
+   - Handles broadcssting messages to all connected clients.
+
+Data Flow Diagram (Simple)
+
+Client1 ->
+Client2 ->  -- Messages --> Chat Server ---> broadcasts back  
+Client3 -> 
+   
+Each client runts in its own thread. The server also runs in a thread.
+We use MessageQueue to queue incoming messages so server can process them safetly.
+
+Architecture with Patterns:
+- Observer Pattern : MessageBus notifies all registered clients whenever a new message arrives.
+- Single Pattern (Optional) - We could make the server a singleton so only one instance exists.
+
+Why This Design Works:
+- Thread safety : MessageQueue prevents race conditions.
+- Extensibility : WE can add features like private messaging, timestamps easily.
+= Modern C++ : We'll use RAII, Smart Pointers, lambdas for callbacks. 
+
+
+
+
+

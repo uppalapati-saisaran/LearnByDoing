@@ -7,7 +7,7 @@ mkdir -p "$backup_folder"
 
 while true 
 do 
-  new_files=$(find "$watch_folder" -type -f -mmin -1)
+  new_files=$(find "$watch_folder" -type f - -1)
   
   if [ ! -z "new_files" ]; then 
       echo "New file detected, backing up..."
@@ -38,7 +38,7 @@ What is a Cron Job?
 
 How to Create a Cron job 
 
-Step1 : Open you Crontabl file 
+Step1 : Open you Crontab file 
 
 crontab -e 
 

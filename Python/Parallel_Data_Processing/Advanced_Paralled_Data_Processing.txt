@@ -1,0 +1,61 @@
+// Decorators + Custom Exceptions + Retry Logic 
+
+1, A decorator retry_on_failure.
+   - Wraps any function.
+   - Automatically retries it a few times on exception.
+   - Use time.sleep between retries.
+   
+2, A custom exception FetchError 
+   - Raised when a fetch fails.
+   - Our decoraaor with catch it and retry_on_failure
+ 
+3, Integrate it into DataFetcher._fetch_single 
+   - So even if a fetch "fails" once, It'll retry automatically.
+   
+
+New File:
+
+import time 
+import logging 
+from functools import wraps 
+
+class FetchError(Exception):
+  """ 
+  Custom exception for fetch failures. 
+  """
+  
+  def retry_on_failure(max_retries=3, delay=1):
+      """
+	  Decorator to retry a function if FetchError is raised.
+	  : param max_retries: Number of retry attempts.
+	  : param delay: Delay in seconds between retries. 
+	  """
+	  def decorator(func):
+	     @wraps(func)
+		 def wrapper(*args,**kwargs):
+		     for attempt in range(1, max_retries + 1):
+			    try:
+				    return func(*args, **kwargs)
+				except FetchError as e:
+				    logging.warning(
+					  f"[Retry] Attempt {attempt} failed with error: {e}. Retrying..."
+					)
+				    time.sleep(delay) 
+			 logging.error("[Retry] All attempts failed.")
+			 raise 
+		 return wrapper 
+	  return decorator 
+	  
+- class FetchError(Exception): -> our custom exception to signal a fetch error.
+- retry_on_failure(max_retries=3, delay=1) -> factory for our decorator 
+- decorator(func) -> the actual decorator return.
+- @wraps(func) -> Perserves function's metadata  
+- wrapper(*args, **kwargs) -> tries to call original function
+- On FetchError:
+    - Logs a warning.
+	- Sleeps for delay seconds.
+	- Retries up to max_retries times.
+- If still failing -> logs error and re-raises.
+
+
+	  

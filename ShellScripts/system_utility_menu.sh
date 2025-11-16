@@ -42,6 +42,6 @@ while true; do
 	echo ""
 	read -p "Press [Enter] to continue..."
 	clear 
-  done
+done
 		 
 		 

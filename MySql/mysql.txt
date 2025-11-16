@@ -122,6 +122,8 @@ union all:
   union all
   select city from sample2  ==> Duplicates values are displayed.
   
+**********************************************************************************************************************************
+  
 9, Inner join 
 - Based on the equality conditiion data is retrieved from multiple tables.
 - we must have a common column in both the tables with the same data type.
@@ -146,6 +148,8 @@ union all:
   select dname,sum(sal) from emp e,dept d 
   where e.deptno=d.deptno 
   group by dname
+  
+***********************************************************************************************************************************
  
 10, Self join 
 - What it does 

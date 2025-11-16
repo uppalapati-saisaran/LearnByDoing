@@ -1,0 +1,801 @@
+What It Simulates:
+
+- A real-world backend system that:
+
+1, Downloads data (simulate with threads)
+2, Processing data (with multiprocessing)
+3, Logs results safely 
+
+
+Full Scope Summary(Updated)
+Layer - Covered 
+Python Core - Loops, classes, functions
+Threading - Parallel tasks
+Multiprocessing - CPU-bound tasks
+class based design - Object oriented 
+Modular structure - Split into .py files.
+Advanced Concepts - Yes (listed below) 
+
+Advanced Python concepts to include:
+
+- We'll sprinkle these in gradully, explained line-by-line 
+
+Concept - Usage 
+@staticmethod / @class method - Utility methods 
+*args / **kwargs - Flexible parameters
+__name__ == "__main__" - Entry point check 
+with statement - Context managers (file/thread lock use)
+Custom exceptions - Clean error handling 
+enumerate, zip, map, filter, lambda - Functional tools 
+Type hints -  ->str. ->None 
+Logging - Replacing print with real logs 
+__str__, __repr__ - class string output 
+Packaging structure - Folder based __init__.py modules 
+
+Step 1: Modular Project Structure + Class-Based Threading Setup  
+
+Folder Struture:
+
+Here's how your project will be structured:
+
+parallel_data_processing/
+|- main.py         ---> Entry point 
+|- config.py       ---> Setting/constants 
+|- uploader/
+   |- __init__.py
+   |- upload_manager.py --> Handles threaded uploads 
+   
+What We'll be Do in Step 1:
+- Create a class that manages multiple uploads using threading.
+- Design it in a modular structure 
+
+config.py 
+
+#config.py 
+TOTAL_USERS = 5 
+Explanation:
+- Central file for constants 
+- Easy to tweak number of users (or later,file paths etc.) 
+
+uploader/upload_manager.py 
+
+#uploading/upload_manager.py 
+import threading
+# Python's built-in threading library 
+import time 
+# For simulating delay 
+import random 
+# To randomly assign upload times 
+from config import TOTAL_USERS 
+#Import user count from config file
+
+class UploadManager:
+   def __init__(self):
+       self.user_count = TOTAL_USERS   # Set from config 
+	   self.threads = []  #list to store all threads 
+	   
+   def simulate_upload(self,user_id:int) -> None 
+       print(f"User-{user_id} started uploading...")
+	   upload_time = random.uniform(1,3)  # Random duration (1 to 3 seconds)
+       time.sleep(upload_time)# Simulate "uploading" delay 
+       print(f"User-{user-id} finished in {upload-time:.2f}s") 
+   // Advanced: user_id: int and -> None are type hints to indicate input/output types (modern Python style) 
+
+   def start_uploads(self)-> None:
+       for user_id in range(1,self.user_count + 1):
+	       thread = threading.Thread(thread=self.simulate_upload,args=(user_id,))
+		   self.threads.append(thread)
+		   thread.start() 
+   // .join() ensures main program waits for threads to finish 
+		
+	   for thread in self.threads:
+	       thread.join() 
+
+main.py - The Entry Point 
+#main.py 
+from uploader.upload_manger import UpdateManager 
+
+if __name__ == "__main__":	
+    manager = UploadManager()
+    manager.start_uploads() 
+
+from uploader... - Imports the thread handling class 
+if __name__... - Ensures this block only runs if main.py. Is the script being run.	
+manager = UloadManger() - Creates an object of the class 
+manager.start_uploads() - Starts the update simulation using threads 
+
+
+Run It:
+python main.py 
+
+
+Step 2: Add a multiprocessing class to simulate CPU-bound file processing?
+
+Goal of Step2:
+
+- Add a new module to simulate CPU-heavy file provessing.
+- Use multiprocessing to run tasks in parallel processes 
+- Keep it modular and class-based
+
+Udpated Folder Structure: 
+
+parallel_data_pipeline/
+|- main.py 
+|- config.py 
+|- uploader/
+   |-- __init__.py 
+   |-- upload_manager.py 
+|- processor/
+   |-- __init__.py 
+   |-- process_manager.py New: CPU-bound processing module 
+   
+processor/process_manager.py 
+
+# processor/process_manager.py 
+import multiprocessing
+# For running CPU tasks in separate process 
+import time 
+#To simulate slow operations
+import random 
+# Used for dummy math 
+from config import TOTAL_USERS
+# Number of Users to simulate  
+
+class ProcessManager:
+    def __init__(self):
+	    self.user_count = TOTAL_USERS
+		// user_count fetched from config for reusability 
+		
+	def simulate_processing(self,user_id: int)->None:
+	    print(f"Processing started for User-{user_id}...")
+		result = 0
+		for _ in range(10_000_000): #Simulate CPU work 
+		    result += random.randint(1,10)
+		time.sleep(1) #Optional I/O-like delay 
+		print(f"Finished processing User-{user_id}  (Result: {result % 100}) 
+	
+	- This simulates something CPU-heavy like: Image processing, Large number crunching, Crypotographic operations 
+	- Note: random.randint(1,10) just keeps the CPU busy in a loop. 
+
+    def start_processing(self) -> None:
+	    processes = [] 
+		
+		for user_id in range(1,self.user_count+1):
+		    process = multiprocessing.Process(target=self.simulate_processing, args=(user_id,))  # Create a new process 
+			processes.append(process) 
+			process.start() // Starts the process 
+			
+		for process in processes:
+		    process.join()    // Main program for this process to finish 
+			
+			
+Updated main.py 
+
+from uploader.upload_manager import UploadManager 
+from processer.process_manager import ProcessManager 
+
+if __name__ == "__main__":
+   print("\n-- Starting uploads (Threads) ---")
+   manager = UploadManager() 
+   manager.start_uploads() 
+   
+   printf("\nStarting Processing (Processes) ---")
+   processor = ProcessManager()
+   processor.start_processing() 
+   
+Output Summary:
+
+python main.py 
+
+You'll see:
+
+- Users uploading in parallel using threads 
+- Then being processed in parallel using multiprocessing. 
+
+
+Recap of Concepts Covered So Far:
+
+Concept    Used Where 
+Modular design -  uploader/, processor/
+Class-based OOP - uploadManager, ProcessManager
+threading.Thread - Uploads 
+multiprocessing.Process - CPU-bound work 
+join() - Wait for threads/processes to finish 
+__name_ == "__main__"  - Entry point guard 
+TOTAL_USERS config  - Reusable configuration 
+
+
+Step 3: Add Thread-Safe Logging with Lock + Advanced Concepts like @staticmethod, type hints, logging , with statements?
+
+Step 3 is where we actually write our first threaded module in a class based, modular way.
+
+We'll create the data_fetcher.py module inside the tasks folder.
+
+File tasks/data_fetcher.python
+
+import threading -> Lets us create and manage threads.
+import time  -> used for simulating delay 
+import logging -> professional alternative to print() for thread safe logging.
+
+class DataFetcher(threading.Thread):
+"""
+A thread class responsible for fetching data from a simulated source.
+In a realworld app, this might be an API call, DB query, or file read. 
+"""
+// Inherits from threading.Thread so we can create a real thread class.
+// This means calling .start() will interanally call .run() in a separate thread.
+    def __init__(self, source_name: str, delay: int = 1):
+		"""
+		  Constructor method for initializaing the Data Fetcher.
+		  
+		  :param source_name : Name of the data source(string)
+		  :param delay: Time delay between fetch operations(int, default 1 second) 
+		"""
+		// Accepts a data source name and a fetch delay.
+		// Ths : str and : int are type hints (good practice in modern python) 
+		// Default delay in 1 second. 
+		# Call the Thread base class constructor 
+		super().__init__();
+		// Calls the parent class (threading.Thread) constructor - required for thread setup.
+		self.source_name = source_name 
+		self.delay = delay 
+		self.data = [] # Will store fetch data 
+		// Stores all fetch items in a list for later use 
+		self._stop_event = threading.Event() # Used to signal thread stop 
+		// A thread-safe flag used to tell the thread to stop.
+		// This is better than using a while True loop that never ends. 
+	
+    def run(self):
+	    """"
+		Overridden method for threading.Thread 
+		This is where the thread's activity starts when .start() is called. 
+		"""
+		// Overridden method - where the thread's work happens.
+		// It starts when we call .start()
+		logging.info(f"Starting data fetcher for {self.source_name}..."} 
+	    count = 0 
+		while not self._stop_event.is_set() anc count < 5:
+		// Loop runs until stop event is set OR we have fetched 5 items. 
+		    #Simulate fetching data 
+			item = f"{self.source_name} data item {count +1}"
+			sefl.data.append(item)
+			logging.info(f"[{self.source_name"] Fetched: {item}") 
+			
+			time.sleep(self.delay) # Simulated wait time between fetches 
+			// Simlates a real-world dealy (e.g., API resource time)
+			count += 1 
+		logging.info(f"Fetcher for {self.source_name} stopped.")
+		
+    def stop(self):
+	    """
+		Stops the thread safely by setting the stop evnt.
+		""" 
+		// clean way to tell the thread to stop.
+		self._stop_event.set() 
+		
+    def get_data(self):
+	    """
+		Returns the fetched data list.
+		"""
+		// Getter method for retrieved data. 
+		return self.data 
+		
+		
+Step 4: is where we add ad multiprocessing module to our project so we're not just threading, 
+but also doing paralled CPU-bound work.
+
+We'll create the file tasks/data_processor.py 
+
+tasks/data_processor.py 
+
+import multiprocessing 
+// Brings in Python's multiprocessing module for running CPU-bound tasks in separate processes. 
+import time 
+// Used to simulate heavy work with sleep. 
+import logging
+// Used to log messages instead of print (more professional, supports timestamps & severity leavels) 
+
+def process_time(item):
+     """
+	 A standalone worker function to process a single data item.
+	 This will run in a separte process.
+	 """
+	 // This is a standalone worker function.
+	 // Im multiprocessing, function must be picklable,so they can't be instance methods unless handled carefully. 
+	 logging.info(f"Processing {item}...")
+	 // Logs start, simulates a heavy task, returns processed data. 
+	 time.sleep(1) # simulate heavy computation 
+	 result = f"{item}-processed"
+	 logging.info(f"Finished processing {item}")
+	 return result 
+	 
+class DataProcessor:
+    """ 
+	A multiprocessing-based data processor.
+	Uses a pool of worker processes to process multiple items in parallel.
+	"""
+//Wraps multiprocessing logic in a clean, reusable class. 	
+	def __init__(self, num_workers: int = 2):
+	// Lets you configure how many process you want run. 
+	    """
+		Initialize the DataProcessor with a specific number of worker processes.
+		:param num_workers: Number of process to run in parallel.
+		""""
+		self.num_workers = num_workers 
+		
+	def process_data(self, data_list):
+	    """
+		Process a list of items in parallel using a pool of worker processes.
+		:param data_list: List of items to process
+		:return: List of processed results. 
+		
+		logging.info(f"[DataProcessor] Starting processing with {self.num_workers} workers...")
+		// Logs start
+		#'with' ensures pool resources are cleaned up automatically.
+		with multiprocessing.Pool(self.num_workers) as pool:
+		// Use a context manager (with) to create and clean up a multiprocessing.Pool 
+		     results = pool.map(process_item, data_list) #Paralled map 
+			 //Runs the worker function on each list element in parallel. 
+		logging.info(f"[DataProcessor] Finished processing all items.")
+		return results 
+		// Returns the list of processed results. 
+		
+#This file to be run standalone for quick testing 
+if __name_ == "__main__":
+   // Lets you run this module direclty from standalone testing. 
+   logging.basicConfig(     // Configure logging output format and level. 
+      level=logging.INFO,   
+      format="%(asctime)s - %(levelname)s - %(message)s"
+) 
+
+processor = DataProcessor(num_workers=3)
+// Creates processor with 3 parallel processes. 
+sample_data = ["Item 1","Item 2","Item 3","Item 4","Item 5"]
+// A list of data items to be processed. 
+output = processor.process_data(sample_data)
+// Calls the parallel processing method 
+logging.info(f"Processed output: { output }")
+// Logs the final procesed output 
+
+
+Step 5: is where we bring everything together into a main orchestrator(main.py) that:
+1, Uses threading to fetch data in parallel.
+2, Use multiprocesing to process that data 
+3, Demostrates class-based, module-based, and advanced Python concepts working together. 
+
+main.py - The Orchestrator 
+
+import logging  --> For professional logging 
+from tasks.data_fetcher import DataFetcher  --> Imports our threading module(I/O-bound tasks). 
+from tasks.data_processor import DataProcessor --> Imports our multiprocessing module(CPU-bound tasks). 
+
+class Orchetrator:  -> Main controller for our workflow  
+    """
+	Orchestrates the entire data pipeline:
+	- Threading for fetching data concurrently (I/O bound) 
+	- Multiprocessing for processing data in parallel (CPU bound) 
+	"""
+    def __init__(self):
+	   self.fetcher = DataFetcher()   -> Creates one DataFetcher object 
+	   self.processor = DataProcessor(num_workers=3)  -> Creates one DataProcessor object (with 3 processes). 
+	   
+	def run(self):  --> The main method to execute the entire pipeline. 
+	   """
+	   Run the data pipeline:
+	   Step 1 : Fetch data from multiple sources using threads.
+	   Step 2 : Process fetched data using multiple processes. 
+	   """
+       logging.info("[Orchestrator] Starting data pipeline...")
+	   
+	   #Step 1 : Thread data fetching 
+	   source = [ "API_1","API_2","API_3","API_4","API_5"] --> Pretend data sources 
+	   logging.info("[Orchestrator] Fetching data from sources ...") --> Uses threading to fetch from all APIs in parallel 
+	   fetched_data = self.fetcher.fetch_from_sources(sources) --> USes multiprocessing to process the fetched results. 
+	   logging.info(f"[Orchestrator] Processed data: {processed_data }") -> clearly tell us what's happening at each stage. 
+	   
+	   logging.info("[Orchestrator] pipeline completed successfully!")  --> clearly tell us what's happening at each stage, 
+
+if __name__ == "__main_":    --> Allows running this file directly 
+   logging.basicConfig(      --> Configures logs 
+       level = logging.INFO,  
+	   format=%(asctime)s - %(levelname)s - %(messages)s"
+   ) 
+   
+orchestrator = Orchestrator()  --> Creates the pipeline manager. 
+orchestrator.run() --> Runs the entire threaded +  multiprocessing pipeline 
+
+
+Step 6: We can add advanced Python concepts like:
+
+- Type hints everywhere 
+- Dataclasses for clean data handling 
+- Config files for settings.
+- Thread-safe queues for passing data between threads & proesses
+
+config.py 
+
+#config.py 
+
+#Number of worker processes for multiprocessing 
+NUM_WORKERS = 3 -> This sets how many parallel processes we'll use for multiprocessing. 
+
+#API sources to fetch data from 
+API_SOURCES = ["API_1","API_2","API_3","API_4"] -> A list of strings representing the name of fake APIs we want to fetch data from. 
+
+// By putting this in config.py, we separate configuration from logic so we can easily chnage settings without touching code. 
+
+tasts/data_fetcher.py ( Threaded with type hints & dataclasses)
+
+import threading -> Python's module to run tasks concurrently in the same procoess. 
+import time -> To simulate network delay using sleep().
+import logging -> For structed, timestamped messages instead of print() 
+from dataclasses import dataclass -> To create a lightweight data structure without writing boilerplate __init_ code 
+from queue import Queue -> A thread-safe data structure that allows multiple threads to safely add or remove items. 
+from typing import List  -> From typing, for type hints. 
+
+@dataclass -> Automatically generates __init__ , __repr__. and other methods 
+class FetchData: 
+    source: str  -> Type hint showing this attribute must be a string 
+	content: str -> Anouther string storing fetched information. 
+	# This class represents one fetched item from a given sources 
+	
+class DataFetcher: -> A class that groups all fetching logic in one place. 
+   """ -> The docstring explains the purpose of the class. 
+   Fetches data from multiple soures using threads. 
+   """
+   
+   def __init__(self) -> None:  -> Constructor method called when you create a DataFetcher. 
+      self.results: Queue[FetchedData] = Queue()  
+	  -> self.results -> Stores a thread-safe queue where results are placed. 
+	  -> Queue[FetchedData] -> Type hint says this queue will contain FetchedData objects. 
+	  
+   def _fetch_single(self, source: str) -> None:   -> A private helper method to fetch one source. 
+       logging.info(f"[Fetcher] Fetching from {source}...)  -> Logs a message with INFO level. 
+       time.sleep(1) #Simulate network delay   -> Pretends fetching takes 1 second (like a real network call) 
+       data = FetchData(source, f"Data from {source}") -> Create a new FetchedData object 
+       self.results.put(data) #Thread-safe queue -> Adds result to the thread-safe queue 
+       logging.info(f"[Fetcher] Done fetching from {source}") 
+
+   def fetch_from_sources(self, sources: List[str]) -> List[FetchedData]: -> Public method to fetch from all sources 
+       threads: List[threading.Thread] = []  -> List to keep references to all created threads 
+       
+	   for src in sources:   -> Loop through sources. 
+	       t = threading.Thread(target=self._fetch_single, args=(src,))  -> Create a thread that runs _fetch_single for one source. 
+		   threads.append(t) -> stores the thread in the list. -> Store the thread in a list 
+		   t.start() -> Begins executin in parallel 
+		   
+	   for t in threads: -> After all threads, loop again: 
+	       t.join() -> Wait for each thread to finish. 
+		   
+	   return list(self.results.queue)  -> Finally the queue to a list and return it. 
+	   
+	   
+tasks/data_processor.py 
+
+import logging -> For log messages
+from multiprocessing import Pool -> For log messages 
+from typing import List -> Type hint for lists 
+from dataclasses import dataclass -> For structured processed data 
+
+@dataclass 
+class ProcessedData:   -> Represents processed results. 
+     source: str  -> Where data came from 
+	 processed_content: str -> The transformed data. 
+	 
+class DataProcessor:  -> Groups processing logic into one class. 
+    """
+	Processes data in parallel using multiprocessing 
+    """
+	def __init__(self, num_workers: int)-> None:  -> Stores how many worker processes to use. 
+        self.num_workers = num_workers 	
+   
+	def _process_single(self,data) -> ProcessedData:    -> Worker method to process one FetchedData.
+	    logging.info(f"[Processor] Processing {data.source}...")
+		transformed = data.content.upper()    -> Example transformation(upper case) 
+		return ProcessDate(data.source,transformed)   -> Returns a ProcessedData object 
+		
+	def process_data(self, fetched_data: List) -> List[ProcessedData]:
+	     with Pool(self.num_workers) as pool:                    -> Opens a process pool with num_workers. 
+		      results = pool.map(self.process_single,fetched_data) -> Distributes data items across processes.
+		 return results  -> Collects results and returns them. 
+		 
+main.py 
+
+import logging 
+from config import API_SOURCES, NUM_WORKERS 
+from tasks.data_fetcher import DataFetcher, FetchedData 
+from tasks.data_processor import DataProcessor, ProcessedData 
+from typing import List 
+-> Imports logging, comparsion values and classes from other modules.
+-> Keeps main script clean by using modular imports.
+
+class Orchestrator:
+   """
+   Orchestrates the data pipeline with threading + multiprocessing
+   """
+   // The Orchestrator coordindates fetching and processing.
+   // A single entry point for the workflow.
+   
+   def __init__(self) -> None:
+       self.fetcher = DataFetcher()
+	   self.processor = DataProcessor(NUM_WORKERS) 
+	   // Creates instances of fetcher & processor with config values. 
+	   
+   def run(self) -> None:
+       logging.info("[Orchetrator] Starting pipeline..")   -> Logs start of pipeline 
+	   
+	   fetched_data : List[FetchedData] = self.fetcher.fetch_from_sources(API_SOURCES)   -> gets raw data 
+	   logging.info(f"[Orchestrator] Fetched data: {fetched_data}")  -> Logs results at each step 
+	   
+	   processed_data : List[ProcessedData] = self.processor.process_data(fetched_data)  -> transforms the data in parallel. 
+	   loging.info(f"[Orchestroatr] Processed data: {processed_data}")  -> Logs results at each step 
+	   
+	   logging.info("[Orchestrator] Pipeline completed.")  
+
+if __name__ == "__main__":  -> Ensure code runs only when script is executed directly.
+   logging.basicConfig(
+      level=logging.INFO,
+	  format="%(asctime)s - %(levelname)s - %(message)s"  -> Configures logging format & level 
+   )
+   orchestrator = Orchestrator()   -> Creates orchestrator and runs it. 
+   orchestrator.run() 
+
+
+**********************************************************************************************************************
+**********************************************************************************************************************
+**********************************************************************************************************************
+
+config.py 
+
+#Config.py 
+
+#Number of worker processes for multiprocessing 
+NUM_WORKERS = 3 
+
+#API Sources  
+API_SOURCES = ["API_1","API_2","API_3","API_4","API_5"] 
+
+Explanation:
+
+1, # config.py -> A dedicated configuration file (real-world practice). Keeps code clean 
+2, NUM_WORKS = 3 -> Number of parallel processes we want in our multiprocessing pool.
+                 - If your CPU has 4 cores, you can increase this for more speed.
+3, API_SOURCES = ["API_1","API_2","API_3","API_4","API_5"] 
+   - List of sources we pretend to fetch data from (simulating APIs)
+   - In real software - > These could be URLs, database names, or file paths. 
+   
+tasks/data_fetcher.py 
+
+import threading 
+import time 
+import logging 
+from dataclasses import dataclass 
+from queue import Queue 
+from typing import List 
+
+threading -> To create multiple threads
+time -> Used for sleep() to simulate network delay 
+logging -> For nice logs instead of print()
+dataclass -> Special decorator to create simple data-holder classes automatically 
+Queue -> Thread-safe way to share results between threads.
+typing.List -> Type hints for lists 
+
+@dataclass 
+class FetchedData:
+    source : str 
+	content : str 
+- @dataclass -> Python auto-generates __init__, __repr__, etc.
+- FetchedData -> Holds rsult of a fetch. 
+  - Source : Which API/data source it came from.
+  - content: the fetched data (string) 
+  
+class DataFetcher:
+     """
+	 Fetches data from multiple sources using threads. 
+	 """
+	
+- Defines a class DataFetcher.
+- Docstring explains -> this class uses threads to fetch data concurrently. 
+
+    def __init__(self)-> None:
+	    self.results : Queue[FetchedData] = Queue() 
+		
+	- Constructor 
+	- self.results -> A thread-safe Queue to store fetched results.
+	- Queue[FetchedData] -> Type hint says it will hold FetchedData objects. 
+	
+    def _fetch_single(self, source: str) -> None:
+	    logging.info(f"{[Fetcher] Fetching from {source}...") 
+		time.sleep(1) # Simulating network delay 
+		data = FetchedData(source,f"Data from {source}")
+		self.results.put(data)  # Thread-safe queue 
+		logging.info(f"[Fetcher] Done fetching from {source}") 
+	
+    - _fetch_single -> Private helper fetch from one source.
+	- Logs start message.
+	- time.sleep(1) -> Pretend the API takes 1 second 
+	- Create FetchedData with source + fake data 
+	- self.results.put(data) -> Push into thread-safe queue.
+	- Logs that fetching is done 
+	
+	def fetch_from_sources(self, sources: List[str]) -> List[FetchedData]:
+	    threads: List[threading.Thread] = [] 
+		- public method to fetch from all sources.
+		- Creates empty list to hold threads. 
+		
+		for src in sources:
+		    t = threading.Thread(target=self._fetch_single,args=(src,))
+			threads.append(t)
+			t.start() 
+	    - For each source:
+	       - Create a Thread object
+		   - Target = _fetch_single, args = (src,)
+		   - Add it to threads list 
+		   - t.start() -> starts exeuction in parallel.
+		   
+	    for t in threads:
+		    t.join()
+	    - waits for all threads to finish before continuing.
+		
+		return list(self.result.queue) 
+		- Converts Queue contents to a list.
+		- Returns list of FetchedData objects. 
+
+tasks/data_processor.py 
+
+import logging
+from multiprocessing import Pool 
+from typing import List 
+from dataclasses import dataclass 
+
+- logging -> for messages.
+- multiprocessing.Pool -> to run tasks in paralled on multiple processes 
+- List -> type hints.
+- dataclass -> for processed results.
+
+@dataclass 
+class ProcessedData:
+   source: str 
+   processed_content: str 
+   - Define  a dataclass 
+     - source -> Where the data came from 
+     - processed_conent -> processed/cleaned/transformeddata 
+
+class DataProcessor:
+   """
+   Processes data in parallel using multiprocessing.
+   """  
+  - Class responsible for processing data 
+  - Uses multiprocoessing, not threads   
+ 
+  def __init__(self, num_workers: int) -> None:
+      self.num_workers = num_workers
+	
+  - constructor saves how may workers (processes) we'll use. 
+  
+  def _process_single(self, data) -> ProcessedData:
+     logging.info(f"[Processor] Processing {data.source}...")
+	 transformed = data.content.upper()
+	 return ProcessData(data.source, transformed)
+	 
+	 -process_single -> Processes one item.
+	 -Logs message 
+	 - Example processing: convert text uppercase 
+	 - Returns ProcessedData 
+	 
+  def process_data(self, fetch_data: List) -> List[ProcessedData]:
+      with Pool(self.num_workers) as pool:
+	       results = pool.map(self._process_single, fetched_data) 
+      - Pool(self.num_workers) -> create a pool of worker processes.
+      - Pool.map(func, data) -> splits data and applies _process_single in parallel.
+      - Returns list of processed results. 
+
+main.py 
+
+import logging 
+from config import API_SOURCES, NUM_WORKERS
+from tasks.data_fetcher import DataFetcher, FetchedData 
+from tasks.data_processor import DataProcessor, ProcessedData 
+from typing import List 
+
+- logging -> for logs 
+- Import constants(API_SOURCES, NUM_WORKERS)
+- Import classes (DataFetcher, FetchedData)
+- Import class (FetchedData, ProcessedData) 
+- List for type hints 
+
+class Orchestrato:
+    """"
+    Orchestrates the data pipeline with threading + multiprocessing. 
+	"""
+- Orchestrator -> central manager
+- Responsible for running both fetch (threads) + process (multiprocessing).
+
+def __init__(self) -> None:
+   self.fetcher = DataFetcher()
+   self.processor = DataProcessor(NUM_WORKERS)
+   
+- Constructor 
+- Creates a DataFetcher 
+- Creates a DataProcessor with configured workere count.
+
+def run(self) -> None: 
+    logging.info("[Orchestrator] Starting pipeline...")
+	
+	fetched_data: List[FetchedData] = self.fetcher.fetch_from_sources(API_SOURCES)
+	logging.info(f"[Orchestrator] Fetched Data: {fetched_data}")
+	
+	processed_data: List[processedData] = self.processor.process_data(fetched_data) 
+	logging.info(f"[Orchestrator] Pipeline completed.") 
+	
+	logging.info("[Orchestor] Pipeline completed.")
+	
+	- Logs start 
+	- Calls fetch_from_sources to fetch all API data.
+	- Logs fetched data.
+	- Calls process_data to process results in parallel.
+	- Logs pipeline complete
+	
+if __name == "__main__":
+   logging.basicConfig(
+     level=logging.INFO,
+	 format = "%(asctime)s - %(levelname)s - %(message)s"
+   )
+
+   orchestrator = Orchestor()
+   orchestrator.run() 
+
+- Entry point 
+- Configure logging -> adds timestamps 
+- Creates orchestor 
+- Runs the pipeline.
+
+  
+	
+	
+	
+
+
+
+
+ 
+	
+
+
+		
+   
+
+
+
+		 
+   	   
+   
+
+
+
+  
+ 
+
+
+
+	  
+
+
+
+
+			
+
+
+   
+
+
+
+
+
+      
+
+
+
+
+
+

@@ -1,0 +1,7204 @@
+1, What are Python's key features?
+A, Easy to learn and read, Interpreted language, dynamically typed, object-oriencted and functional, huge standard library, platform independent.
+
+************************************************************************************************************************************************** 25-07-2025 
+
+2, Difference between a list and a tuple?
+A, List  : Mutable, declared with [], slower.   my_list = [1,2,3] 
+   Tuple : Immutable, declared with (), faster my_tuple = (1,2,3) 
+   
+************************************************************************************************************************************************** 25-07-2025
+   
+3, What are *args and **kwargs?
+A, *args = variable number of positional arguments.
+   **kwargs = variable number of keyword arguments.
+   
+   def example(*args, **kwargs):
+      print(args,kwargs)
+	  
+************************************************************************************************************************************************* 25-07-2025
+	  
+4, What is a Python dictionary?
+A, A key-value data structure 
+   
+   my_dict = {'name':'Paarth','age': 9}
+   
+************************************************************************************************************************************************* 25-07-2025 
+   
+5, Explain Python's indentation rule.
+A, Indentation is used to define code blocks (loops,if,functions). It's required.
+
+   if True:
+      print("Indented block")
+	  
+************************************************************************************************************************************************ 25-07-2025
+	  
+6, Difference between is and ==?
+A, == checks value equality, is checks object identity 
+   a = [1,2] 
+   b = [1,2]
+   a == b # True 
+   a is b # false 
+   
+************************************************************************************************************************************************ 25-07-2025 
+   
+7, What is a virtual environment?
+A, It's an isolated Python environment used to manage project dependencies without affecting the system Python.
+   
+   python -m venv myenv
+   source myenv/bin/activate  #Linux/masOS
+   myenv\Scripts\activate # Windows
+   
+*********************************************************************************************************************************************** 25-07-2025 
+   
+8,What is self in class?
+A, self refers to the current instance of the class and is used to access its variables and methods. 
+class Test:
+    def __init__(self,name):
+        self.name = name 
+    def __str__(self):
+        return f"{self.name}"
+    def __repr__(self):
+        return f"Person(name={self.name})" 
+        
+t = Test("Paarth")
+print(t)
+print(repr(t));
+		
+***********************************************************************************************************************************************25-07-2025 
+		
+9, What are Python decorators?
+A, A decorator is a function that adds functionality to another function without changing its structure. 
+
+   def decorator(func):
+       def wrapper():
+	       print("Before")
+		   func()
+		   print("After") 
+	   return wrapper 
+	   
+   @decorator 
+   def say_hello():
+       print("Hello")
+	   
+   say_hello() 
+   
+***********************************************************************************************************************************************27-07-2025 
+
+10, What are list comprehensions? Give an example.
+A, A shorter way to create lists from other lists.
+
+square = [ x*x for x in range(5)]
+print(square)
+for s in square:
+    print(s,end=" ")
+print("\n");    
+for i,s in enumerate(square):
+    print("Index :", i,"Value :",s);
+
+***********************************************************************************************************************************************27-07-2025 
+
+11, Difference between shallow copy and deep copy?
+A, Shallow copy : 
+    - Copies only references of nested objects.
+	- makes a shallow copy - only top-level is copied.
+
+   Deep copy : 
+    - Copies actual nested objects too. 
+	- copies everything recursively. 
+   
+import copy
+original1 = [1,2,3]
+original2 = [4,5,6]
+shallow = copy.copy(original1)
+print("Shallow Copy :",shallow)
+original1.append(4);
+print("Changed Original :",original1)
+print("Shallow Copy Changed original :",shallow)
+deep = copy.deepcopy(original2)
+print("Deep Copy :",deep)
+original2.append(7);
+print("Changed Original :",original2)
+print("Deep Copy Changed original :",deep)
+
+Shallow Copy : [1, 2, 3]
+Changed Original : [1, 2, 3, 4]
+Shallow Copy Changed original : [1, 2, 3]
+Deep Copy : [4, 5, 6]
+Changed Original : [4, 5, 6, 7]
+Deep Copy Changed original : [4, 5, 6]
+   
+********************************************************************************************************************************************** 27-07-2025
+   
+12, Explain Python's garbage collection.
+A, Python uses reference counting and a cyclic garbage collector to free up memory of unused objects.
+-> Python uses reference counting as its primary garbage collection mechanism, where each object keeps track of how many references point to it.
+   When the count goes to zero, the object is automatically deleted.
+# Example: Reference Couting in Python  
+import sys
+#create an object(a simple list)
+my_list = [1,2,3]
+#check the reference count using sys.getrefcount()
+print("Initial reference count:",sys.getrefcount(my_list))
+#create another reference to the same list.
+another_ref = my_list 
+print("Reference count after new list reference:",sys.getrefcount(my_list))
+#Remove one reference 
+del another_ref 
+print("Reference count after deleting one reference:", sys.getrefcount(my_list))
+#Remove the last reference 
+del my_list  # Now the reference becomes 0, and the object is garbage collected.
+
+-> A Circular reference occurs when two or more objects reference each other, preventing Python's reference counter from detecting that they are no longer in use.
+-> Python's garbage collector(GC) can detect and clean up these cycles.
+#Example:Cyclic References in Python 
+import gc 
+class Node:
+    def __init__(self,name):
+        self.name = name
+        self.other = None
+        
+    def __del__(self):
+        print(f"{self.name} destoryed")
+#create two objects that reference each other.
+a = Node("A")
+b = Node("B")
+a.other = b 
+b.other = a 
+#Remove references from the main scope 
+del a 
+del b 
+#At this point, the objects are still in memory due to circular reference 
+print("Collecting garbage...")
+#Manually trigger garbage collection 
+gc.collect() 
+   
+
+********************************************************************************************************************************************** 27-07-2025
+
+13, What are generators? How are they different from iterators?
+A, Generators are iterators that yield items lazily using yield. They use less memory.
+   A generator is a function that yield values one at a time uing yield instead of returning all at once.
+   It saves memory and is useful for large datasets or streams. 
+
+def gen():
+        yield 1 
+        yield 2
+        
+g = gen() 
+try:
+    value = gen()
+    print(next(value))
+    print(next(value))
+    print(next(value))
+except Exception as e:
+    print("Error occured while reading data")
+
+********************************************************************************************************************************************** 27-07-2025 
+
+14, What is the Global Interpreter Lock(GIL)?
+A, GIL is a mutex in CPython that allows only one thread to execute Python bytecode at a time, limiting true parallelism.
+-> how it affects multithreading when working with CPU-bound tasks.
+
+# GIL Example: Multithreading vs Multiprocessing 
+# CPU-Bound Task (like calculating factorial of large numbers)
+
+import threading 
+import multiprocessing 
+import time 
+
+def cpu_bound_work():
+    # A CPU-intenstive task (factorial calculation)
+    x = 1 
+    for i in range(1,50000):
+        x *= i 
+        
+def run_threads():
+    threads = [] 
+    for _ in range(4):
+        t = threading.Thread(target=cpu_bound_work)
+        threads.append(t)
+        t.start() 
+    for t in threads:
+        t.join() 
+        
+def run_processes():
+    processes = []
+    for _ in range(4):
+        p = multiprocessing.Process(target=cpu_bound_work)
+        processes.append(p)
+        p.start()
+    for p in processes:
+        p.join() 
+        
+if __name__ == "__main__":
+    start = time.time()
+    run_threads()
+    print(f"Threading took {time.time() - start:.2f} seconds")
+    
+    start = time.time()
+    run_processes() 
+    print(f"Multiprocessing took {time.time() - start:.2f} seconds")
+
+
+*********************************************************************************************************************************************** 27-07-2025 
+
+15, What are lambda function?
+A,  Anonymous one-liner functions.
+    square = lambda x: x * x 
+    print(square(5)) # 25
+   
+********************************************************************************************************************************************** 27-07-2025 
+   
+16, difference @staticmethod, @classmethod and instance method?
+A, Instance method: Needs self ( access the object)
+   @classmethod: Uses cls (access to class)
+   @staticmethod: No access to class or instance 
+   
+   class Myclass:
+       def instance_method(self): pass 
+	   @classmethod
+	   def class_method(cls) : pass 
+	   @staticmethod 
+	   def static_method(): pass
+	   
+********************************************************************************************************************************************** 27-07-2025 
+	   
+17, what is monkey patching?
+A, Changing a class or module behaviour at runtime. 
+
+import math 
+math.sqrt = lambda x : "Hacked!" 
+
+********************************************************************************************************************************************** 27-07-2025 
+
+18,Explain context messagers and the with statement.
+
+with open('file.txt') as f:
+   data = f.read() 
+#No need to close() 
+
+********************************************************************************************************************************************* 27-07-2025 
+
+
+19, How does Python manage memory?
+A, Reference counting, Automatic garbage collection, memory pools(PyMalloc)
+
+******************************************************************************************************************************************** 37-07-2025
+
+20, Explain multithreading vs multiprocessing?
+A, multithreading:  Good for I/O bound tasks, effected by GIL.
+   multiprocessing: Spawns new processes, better for CPU-bound tasks.
+   
+   from multiprocessing import Process
+   from threading import Thread 
+   
+****************************************************************************************************************************************** 27-07-2025 
+
+21, What are python data types?
+A,
+Numeric : int, float, complex 
+Sequence : list, tuple, range 
+Text: str 
+Set types: set, frozedset
+Mapping: dict 
+Boolean: bool 
+
+****************************************************************************************************************************************** 27-07-2025 
+
+22, What are Pythons' mutable and immutable types?
+A, 
+Mutable: list, dict, set 
+Immutable: int,float,bool,str,tuple,frozenset 
+
+******************************************************************************************************************************************* 37-07-2025 
+
+23, what is the difference between break, continue, and pass?
+A,
+break : exits the loop 
+continue : skips the current iteration.
+pass: does nothing (placeholder) 
+
+****************************************************************************************************************************************** 27-07-2025 
+
+24, What will this output?
+
+a = [1,2,3]
+b = a
+b.append(4)
+print("a :")
+print(a)
+print("b :")
+print(b)
+
+
+Answer: 
+a :
+[1, 2, 3, 4]
+b :
+[1, 2, 3, 4]
+
+b = a means b and a refer to the same list in a memory. so appending to b also changes a.
+
+****************************************************************************************************************************************** 27-07-2025 
+
+25, Difference between @staticmethod and @classmethod?
+A,
+
+Feature                                 @staticmethod                          @classmethod 
+Access to self or cls                        No                                    Yes(accesses class as cls)
+
+Bound to                                 The class(no instance/                 The class (class passed as first arg) 
+                                         class passed) 
+
+Usage                                    Utility Functions                      Factory methood, class-level access.
+
+******************************************************************************************************************************************* 27-07-2025 
+
+26, Is Python pass-by-value or pass-by-reference?
+A,
+ Python is pass-by-object-reference (also called pass-by-assignment).
+ It means the reference to the object is passed - so mutable types (like lists,dicts) can be modified inside functions, but 
+ immutable type (like int,str) cannot. 
+ 
+****************************************************************************************************************************************** 27-07-2025
+ 
+27, What is the output?
+def fun(x=[]):
+    x.append(1)
+	return x
+
+print(func())
+print(func())
+
+A, [1]
+   [1, 1]
+   
+Default mutable arguments are created only once, not every time the function is called. so the list keeps growing.
+
+****************************************************************************************************************************************** 27-07-2025 
+   
+28, Lamba function to multiply two numbers
+   multiply = lambda a,b: a*b 
+   print multiply(2,5);
+A, 10 
+
+****************************************************************************************************************************************** 27-07-2025 
+
+29, What will this output?
+
+x = (i*i for i in range(3))
+print(next(x))
+print(next(x))
+
+A, 
+0
+1
+
+- This is a generator expression. It lazily computes i*i 
+- First next(x) gives 0*0 = 0 
+- Second next(x) gives 1*1 = 1
+
+****************************************************************************************************************************************** 27-07-2025 
+
+30, Difference between isinstance and type()
+
+A, isinstance(obj, class) - Checks if object is instance class or subclass.
+   type(obj) - Returns the extact type object. 
+   
+   isinstance(True,int); #True 
+   type(True) == int; #True (but in some cases, type checking is stricter) 
+   
+ my_l = [1,2,3]
+print(isinstance(my_l,list)) # True 
+print(isinstance(my_l,int)) # False 
+print(type(my_l))  # <class 'list'> 
+print(type(my_l) == list)  # True 
+   
+ **************************************************************************************************************************************** 27-07-2025 
+   
+31, what is the output?
+def outer():
+    x = "Python"
+	def inner():
+	    print(x)
+	return inner 
+
+my_func = outer()
+my_func()
+
+Answer: Python 
+
+The inner function remembers the variable x from the outer function - this is a closure.
+
+****************************************************************************************************************************************** 27-07-2025 
+
+32, What is the difference between an iterator and an iterable?
+A,
+Iterable - Any object that can return an iterator (e.g. list,tuple,str).
+Iterator - An object with __next__() and __iter__() methods that returns items one a time 
+
+lst = [1,2,3]
+try :
+    it = iter(lst) 
+    print(next(it)) 
+    print(next(it)) 
+    print(next(it)) 
+    print(next(it)) 
+except Exception as e:
+    print("Error occured reading the list")
+
+Output:
+1
+2
+3
+Error occured reading the list
+
+****************************************************************************************************************************************** 03-08-2025
+
+33, What is a context manager in Python?
+A, A context manager manages resources (like files, DB connections) using the with statement.
+with open("file.txt","r") as f:
+    data=f.read()
+It automatically handles opening and closing the file. 
+you can create your own using a class with __enter__() and __exit__() methods.
+
+try:
+    with open("file.txt","r") as f:
+        data=f.read() 
+except FileNotFoundError:
+    print("File not Found Error")
+	
+Output:
+File not Found Error ( Run on online compiler) 
+
+***************************************************************************************************************************************** 03-08-2025
+
+34, What is the purpose of __init_() and __str__() methods in a class?
+A, 
+__init__() is the constructor; it runs when the object is created.
+__str__() defines the string representation when you use print(obj).
+
+class Person:
+    def __init__(self,name):
+        self.name = name 
+    def __str__(self):
+        return f"Person : {self.name}"
+    
+p = Person("Paarth")
+print(p)
+
+Output: 
+
+Person : Paarth
+		
+**************************************************************************************************************************************** 03-08-2025 
+		
+35, you're given this Python function:
+
+def mystery(a,b=[]):
+    b.append(a)
+	return b 
+
+What will be output of the following calls?
+
+print(mystery(1)) 
+print(mystery(2))
+print(mystery(3,[]));
+print(mystery(4)) 
+
+Output :
+[1]
+[1,2]
+[3]
+[1,2,4] 
+
+**************************************************************************************************************************&********** 03-08-2025
+
+36, Solid Principles in Python 
+
+1, S - Single Responsibility Principle 
+- Each class should do only one thing 
+class ReportPrinter:
+    def print(self, data):
+        print(data)
+		
+rp = ReportPrinter();
+rp.print("Paarth")
+
+Output:
+Paarth 
+
+class ReportSaver: 
+    def print(self,data):
+        open("file.txt","w").write(data) 
+
+rp = ReportSaver();
+rp.print("Paarth")
+
+or 
+
+class ReportSaver:
+    def print(self,data):
+        with open("file.txt","w") as f:    // context management
+            f.write(data)
+        
+
+rp = ReportSaver();
+rp.print("Paarth")
+
+Output:
+
+File is created with the name file.txt and Paarth word is written into it. 		
+
+
+2, O - Open/Closed Principle 
+- code should be open for extension, but closed for modification.
+class Shape:
+    def area(self): pass 
+class Circle(Shape):
+    def area(self): return 3.14 * 5 *5 
+	
+c = Circle()
+print(c.area())
+
+Output:
+78.5 
+
+3, L - Liskov Subsitution Principle
+- Subclasses should be replacable with base classes without breaking behaviour. 
+class Bird:
+    def fly(self): print("Bird Flying")
+    
+class Sparrow(Bird):
+    def fly(self): print("Sparrow Flying")
+
+s = Sparrow() 
+s.fly() 
+
+b = Bird()
+b.fly()
+
+Output:
+Flying 
+	
+4, I - Interface segregation principle 
+- Clients shouldn't be forced to implement unused methods.
+- Use multiple small interfaces instead of one big one.
+
+class Printable:
+    def print_doc(self): pass 
+	
+class Scannable:
+    def scan_doc(self): pass 
+	
+class Printer(Printable):
+    def print_doc(self): print("Printing...") 
+	
+class Scanner(Scannable):
+    def scan_doc(self): print("Scanning...") 
+	
+p = Printer()
+p.print_doc() 
+
+s = Scanner()
+s.scan_doc() 
+
+Output:
+Printing...
+Scanning...
+	
+
+5, Dependency Inversion Prinicple:
+- High level modules should be depend on low-level modules. Both should depend on abstractions.
+- In Python, use constructor injection. 
+
+class Keyboard:
+    pass 
+class Computer:
+    def __init__(self,keyboard : Keyboard):
+        self.keyboard = keyboard
+
+************************************************************************************************************* 03-08-2025
+
+
+37, How is a set different from a list?
+- Set is unordered, no duplicates.
+s = {1,2,4,3}
+print(s) 
+
+Output:
+{1,2,3,4}
+
+************************************************************************************************************* 03-08-2025 
+
+38, Dict vs defaultdict 
+- defaultdict is a subclass of the built-in dict class, provided by the collections module.
+- It overrides one method and provides a default value for the key that does not exist.
+
+Why use defaultdict?
+- Normally, accessing a non-existent key in a regular dicitionary throws a KeyError.
+- defaultdict solves this by providing a default value automatically when a key is not found.
+
+Syntax:
+from collections import defaultdict 
+d = defaultdict(default_factory)
+
+- default_factory is a function that provides the default value(like int, list, set. etc.)
+
+Example1: Counting Elements with int (returns 0 by default)
+from collections import defaultdict
+word_count = defaultdict(int)
+sentence = "hello world hello python"
+for word in sentence.split():
+    word_count[word] += 1 
+print(word_count) 
+
+Output:
+defaultdict(<class 'int'>, {'hello':2, 'world':1, 'python':1}) 
+
+
+Example 2: Grouping items with list 
+
+from collections import defaultdict 
+
+students = [
+         ('Math','Alice'),
+		 ('Science', 'Bob'),
+		 ('Math', 'Charlie'),
+		 ('Science', 'David'},
+		 ]
+		 
+grouped = defaultdict(list)
+for subject, student in students:
+    grouped[subject].append(student)
+
+print(grouped)
+
+Output:
+defaultdict(<class 'list'>,{'Math': ['Alice','Charlie'],'Science':['Bob','David']}) 
+
+Example 3: Avoiding KeyError 
+from collections import defaultdict
+d = defaultdict(str)  #default value is empty string 
+print(d['missing']) # returns ' '
+
+-In python, a dict (short for dictionary) is a built-in data type used to store key-value pairs.
+- It's unordered (before python 3.7), mutable, and indexed by keys (which must be hastable and unique) 
+
+Syntax:
+my_dict = {
+  "key1": "value1",
+  "key2": "value2"
+}
+
+Key Features:
+- keys must be immutable types(like strings, numbers, tuples).
+- values can be any data type.
+- Dictionary is mutable, so you can add,update, or delete key-value pairs.
+
+Example 1: Basic Dictionary 
+
+person = {
+     "name": "Alice",
+	 "age": 30,
+	 "city": "New York"
+	}
+print(person["name"]) # Output: Alice 
+
+Example 2: Adding and Updating Values
+person = {
+    "name":"Alice",
+    "age": 30,
+    "city": "New York"
+}
+print(person["name"]) 
+print(person["age"]) 
+
+person["age"] = 31 
+print(person["age"]) 
+
+print(person)
+person["professional"] = "Doctor"
+print(person)
+
+Output:
+Alice
+30
+31
+{'name': 'Alice', 'age': 31, 'city': 'New York'}
+{'name': 'Alice', 'age': 31, 'city': 'New York', 'professional': 'Doctor'}
+
+Example 3: Iterating Over Dictionary
+
+person = {
+    "name":"Alice",
+    "age": 30,
+    "city": "New York",
+    }
+
+try:
+    for key,value in person.items():
+        print(f"{key} : {value}")
+except NameError:
+    print("Dictionary is not defined")
+
+Output: 
+name : Alice 
+age : 30 
+city : New York 	
+
+	
+Example 4: Useful Dictionary Methods 
+
+my_dict = {"a": 1, "b":2}
+#get value safely 
+print(my_dict.get("c",0)) #Output: 0 (default value if key not found)
+
+#check if key exists
+print("a" in my_dict) #True 
+
+#remove a key 
+my_dict.pop("b") 
+
+#keys, values, items
+print(my_dict.key()) # dict_keys(['a']) 
+print(my_dict.values()) # dict_values([1]) 
+print(my_dict.items()) # dict_items([('a',1)])
+
+Example 5: Dictionary Comprehension 
+squares = {x: x*x for x in range(5)}
+print(squares) # {0:0,1:1,2:4,3:9,4:16}
+
+************************************************************************************************************* 10-08-2025
+
+39, Find the missing number is an array from 1 to N.
+A, 
+def find_missing(arr,n):
+    return n * (n + 1) // 2 - sum(arr) 
+	
+a = [1,2,4]
+print(find_missing(a,3))	
+	
+Output: -1 
+
+a = [1,2,4]
+print(find_missing(a,4))
+
+Output: 3 
+
+a = [1,2,3,4]
+print(find_missing(a,4))
+
+Output: 0 
+
+**************************************************************************************************************** 10-08-2025 
+	
+	
+40, check if a string is a palindrome 
+A, 
+def is_palidrome(s):
+    s=s[::-1]
+    return s
+
+s = input("Enter the word to check for Palidrome :")
+try : 
+    if (s == is_palidrome(s)):  
+        print(f"{s} is palidrome")
+    else:
+        print(f"{s} is not palidrome") 
+except ValueError: 
+    print("It is not character value")
+finally:
+    print("Program ended")
+	
+Output :
+
+Enter the word to check for Palidrome :UUSR
+UUSR is not palidrome
+Program ended	
+	
+************************************************************************************************************** 10-08-2025 
+
+41, Fibonacci using memoization 
+from functools import lru_cache
+@lru_cache 
+def fib(n):
+    if n <= 1: return n 
+	return fib(n-1) + fib(n-2) 
+	
+print(fib(10)) 
+
+Output: 55 
+
+from functools import lru_cache 
+@lru_cache 
+def fib(n):
+    if n<=1:
+        if(n == 1):
+            print("0","1",end=" ")
+        return n
+    else: 
+        print(fib(n-1) + fib(n-2),end=" "); 
+        return fib(n-1) + fib(n-2) 
+
+
+fib(10)
+
+Output:
+0 1 1 2 3 5 8 13 21 34 55 
+
+************************************************************************************************************* 10-08-2025 
+	
+42, Two sum problem 
+def two_sum(nums, target):
+    seen = {}
+    for i,n in enumerate(nums):
+        if target - n in seen:
+            return [seen[target - n], i]
+        seen[n] = i 
+		
+// enumerate() is a built-in python function that lets you loop through a list(or any iterable) and get both the index and 
+the value at the same time. 
+
+************************************************************************************************************Repeat - 10-08-2025 
+
+43, Design patterns 
+1, Single Pattern 
+class Singleton:
+     _instance = None 
+     def __new__(cls):
+         if not cls._instance:
+             cls._instance = super().__new__(cls)
+             print("Instance created...")
+         return cls._instance 
+         
+S = Singleton()
+R = Singleton()
+
+Output:
+Instance created...
+
+2, Factory Pattern 
+class Dog: pass
+class Cat: pass 
+
+def get_pet(pet="dog"):
+    pets = {
+           'dog': Dog(),
+           'cat' : Cat()
+    }
+    return pets[pet]
+    
+Animal = get_pet("cat")
+if not Animal:
+    print("Animal is empty")
+else:
+    print("Animal is initialized with", Animal.__class__.__name__)
+	
+Output:
+Animaal is initialized with Cat
+
+3, Observer Pattern 
+ class Subject:
+    def __init__(self): 
+        self._observers = []
+    def attach(self,obs):
+        self._observers.append(obs)
+    def notify(self):
+        [ o.update() for o in self._observers ]
+
+class Observer:
+    def update(self):
+        print("Observer has been notified")
+
+        
+s = Subject();
+Ob = Observer();
+s.attach(Ob)
+s.notify() 
+
+Ouput:
+Observer has need notified 
+
+4, Decorator Pattern 
+def decorator(func):
+    def wrapper():
+        print("Before")
+        func()
+        print("After")
+    return wrapper
+
+@decorator
+def great() : print("Hi") 
+
+great()
+
+Output: 
+Before
+Hi
+After
+
+**************************************************************************************************
+
+44, How does Python's garbage collection work?
+- it uses reference counting and a cyclic garbage collector to clean up unused objects.
+
+*************************************************************************************************
+
+45, Time Complexity:
+    list.append() -> O(1)
+	list.pop() -> O(1)
+	list.remove(x) -> O(n)
+	set lookup -> O(1)
+	dict lookup -> O(1) 
+	
+
+*************************************************************************************************	
+
+	
+46, How do you implement a stack in Python?
+A, 
+stack = [] 
+print("Element inserted:", stack.append(2)) #Push 
+print("Element Deleted:", stack.pop()) #pop 
+
+Output:
+Element inserted: None
+Element Deleted: 2
+   
+*************************************************************************************************
+
+47, How to implement a queue?
+A,  from collections import deque 
+    queue = deque()
+    queue.append(1)
+	queue.popleft() 
+	
+from collections import deque
+queue = deque()
+print("Element enque:", queue.append(1))
+print("Element deque:", queue.popleft()) 
+
+************************************************************************************************* 13 - 07 - 2025 
+	
+48, Algorithm
+
+1, Reverse a linked list:
+
+class Node:
+    def __init__(self,data):
+        self.data = data;
+        self.next = None 
+
+class linklist:
+    def __init__(self):
+        self.head = None
+    #Insert at end 
+    def append(self,data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node 
+            return 
+        
+        current = self.head 
+        while current.next:
+            current = current.next 
+        current.next = new_node 
+    
+    def print(self):
+        if not self.head:
+            print("No nodes in the linklist")
+            return 
+        current = self.head
+        while(current != None):
+            print(f" -> {current.data}",end = " ")
+            current = current.next
+            
+    def reverse(self):
+        print("\nReversing the linklist :")
+        prev = None 
+        current = self.head 
+        
+        while current:
+            next_node = current.next 
+            current.next = prev 
+            prev = current 
+            current = next_node 
+        self.head = prev 
+        
+        
+ln = linklist()
+prev = linklist() 
+ln.append(30)
+ln.append(20)
+ln.append(10) 
+ln.print()
+ln.reverse()
+ln.print()
+
+Output:
+
+ -> 30  -> 20  -> 10 
+Reversing the linklist :
+ -> 10  -> 20  -> 30 
+ 
+2, Check if two strings are anagrams:
+   
+def is_anagram(s1,s2):
+    return sorted(s1) == sorted(s2)
+    
+s1="sai"
+s2="Sai"
+if (is_anagram(s1,s2)):
+    print(f"{ s1 } and { s2 } are anagram")
+else:
+    print(f"{ s1 } and { s2 } are not anagram")
+
+Output:
+sai and Sai are not anagram	
+
+3, Binary Search 
+
+def binary_search(arr,target):
+    left = 0
+    right = len(arr)-1 
+    
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid # Target found at index mid 
+        elif arr[mid] < target:
+            left = mid + 1 
+        else:
+            right = mid - 1
+            
+    return -1     
+
+
+
+arr = [1,3,5,7,9,11,13]
+target = 7 
+
+result = binary_search(arr,target)
+if result != -1 : 
+   print(f"Found at index {result}")
+else:
+    print("Not found")
+
+Output: 
+
+Found at index 3	
+	   
+*****************************************************************************************
+       	   
+49, Functions and Lamdba 
+
+- Modular code using functions.
+- Lamdba for one-line anonymous functions.
+
+add = lambda x,y : x + y
+print(add(3,5))  # 8
+
+Output:
+8
+
+*****************************************************************************************
+
+50, Exception Handling 
+
+- Handle runtime errors gracefully.
+
+try:
+    x = 1/0 
+except ZeroDivisionError:
+    print("Can't divide by zero.") 
+
+Output:
+Can't divide by zero.
+
+	
+****************************************************************************************
+	
+	
+51, REST APIs (With Flask or FastAPI)
+
+- Real time services or microservices.
+
+from flask import Flask 
+app = Flash(__name__)
+
+@app.route("/")
+def home():
+    return "Hello API"
+	
+******************************************************************************************
+	
+52, Unit Testing 
+
+- Write tests using unittest or pytest.
+
+import unittest 
+
+class TestMath(unittest.TestCase):
+    def test_add(self):
+        self.assertEqual(2+3,5)
+        
+tm = TestMath()
+tm.test_add() 
+
+Output:
+Nothing printed on screen.		
+		
+******************************************************************************************		
+		
+		
+53, The Python concepts across software developement life cycle from design to deployment and maintence.
+
+
+a, Requirements and Design phase:
+   
+   - Key Concepts:
+     * OOP & SOLID Principles - used for planning scalable, maintainable code architecture.
+	 * UML Diagrams + Class/Module Design - Often mapped to classes/modules in Python.
+	 
+   - Python Skills:
+     * OOP(classes , inheritance, polymorphism)
+	 * Abstract Base Classes (abc module).
+	 * Design Patterns (Factory, Strategy, Observer) 
+	 
+b, Development Phase 
+
+   Key concepts:
+   - Modularity and Reusability 
+   - Error Handling & Logging
+   - Data Structures & Algorithms.
+   - Code Quality 
+   
+   Python Skills:
+   - Functions, Modules and Packages.
+   - Built-in Data Structures (list, dict, set, tuple)
+   - Exception Handling (try/except)
+   - Logging 
+   - Writing reusable libraries 
+   
+c, Testing Phase 
+
+   Key Concepts:
+   - unit testing
+   - Integration Testing
+   - Mocking 
+   - Code coverage 
+   
+   Python Tools:
+   - unittest,pytest,nose2
+   - mock (for dependecny simulation)
+   - coverage.py 
+   
+   Example:
+   import unitest
+
+   def add(x,y):
+       return x+y;
+   
+   class TestMath(unittest.TestCase)
+      def test_add(self):
+          self.assertEqual(add(2,3), 5) 
+
+d, Build & Integration Phase 
+
+   Key Concepts:
+   - Dependency Management 
+   - Enviroment Management 
+   - Linting and Formatting
+   - Automated Build systems
+   
+   Python Tools:
+   - pip,virtualenv,pipenv,poetry
+   - requirement.txt 
+   - black,flake8,mypy
+   - make, tox, GitHub Actions, Jenkins 
+   
+5, Deployment Phase 
+   
+   Key Concepts:
+   - Packing and Distribution
+   - CI/CD Pipelines
+   - Containerization 
+   
+   Python Tools:
+   - setupTools and pyproject.toml 
+   - Dockerize python apps
+   - use gunicorn, uvicorn for webapps
+   - Use GitHub Actions, GitLab CI, Jenkins for CI/CD
+   
+ 6, Operations & Monitoring 
+ 
+   Key Concepts:
+   - Logging and Alerting
+   - Monitoring APIs and Services.
+   - Real-Time Performance Tuning 
+   
+   Python Tools:
+   - logging module.
+   - Integrate with tools like Sentry,Prometheus,Granfana
+   - REST API's using FastAPI, Flask for health endpoints.
+   
+ 7, Maintenance & Refactoring:
+ 
+    Key Concepts:
+	- code Refactoring 
+	- Performance Optimization 
+	- Bug Fixes and Patches
+	
+	Python Techniques:
+	- Use timeit and cProfile for profiling.
+	- Refactor using design prinicples (SRP, DRY, KISS)
+	- continous unit testing after each change.
+	
+Cross-Cutting concerns:
+
+- These span across all phases:
+Security - Input validation, avoiding injection.
+Documentation - DocStrings, Sphinx, API docs
+Version Contrl - Git with branching strategy 
+
+****************************************************************************************************************************
+
+
+Step1 : Python & Software Design (OOP + SOLID Principles) 
+
+Example : SRP and OCP 
+
+class Report:
+    def __init__(self,data):
+	    self.data = data;
+		
+	def generate(self):
+	    return f"Report Data: {self.data}"
+		
+class PDFExporter:
+    def export(self, report: Report)
+	    print("Exporting PDF:", report.generate())
+		
+class CSVExporter:
+    def export(self, report:Report)
+	    print("Exporting PDF:", report.generate())
+		
+#Now we can extend exporters without changing the Report class (OCP).
+
+
+***************************************************************************************************************************
+	
+Step 2 : Python Data Structures & Algorithms :
+
+Why it matters in SDLC:
+
+- Efficient data structures = faster code.
+- Core to solving real-world problems (search, filter, sort, store, etc.).
+- Essential for interviews and scalable system design.
+
+2.1 Core Python Data Structures:
+
+#List : Ordered, changable sequence 
+tasks = ["design", "code", "test"]
+tasks.append("deploy")
+
+#tuple : Ordered, Immutable 
+
+#dict : key-value mapping 
+user = {"name":"Sai","role","Developer");
+print(user["role"]); # Developer 
+
+#set : unique elements
+unique_ids = {101,102,103}
+unique_ids.add(104) 
+
+2.2 
+
+Built-in Algorithms in Python: 
+
+numbers = [5,1,8,3]
+numbers.sort() # [1,3,5,8]
+
+Searching (in) :
+ if 3 in numbers:
+    print("Found") 
+	
+2.3
+
+Common Algorithmic Patterns
+
+Two-pointer - Reversing list, pair sum 
+Sliding Window - Max sum subarray
+Hashing - Fast lookups using dict 
+Recursion - Tree Traversal, backtracking 
+
+Example : Sliding Window 
+
+def max_sum_subarray(arr,k):
+    max_sum = sum(arr[:k]
+	window_sum = max_sum 
+	
+	for i in range(k,len(arr)):
+	    window_sum += arr[i] - arr[i-k]
+		max_sum = max(max_sum, window_sym)
+	return max_sum 
+	
+print(max_sum_subarray([1,2,3,4,5],3))
+
+******************************************************************************************************
+
+1. Python Functions Deep Dive 
+
+In Python, functions are first-class citizens. This means you can:
+- Assign functions to variables.
+- Pass function as arguments.
+- Return functions from functions
+
+def great(name):
+    return f"Hello, {name}"
+#Assign function to the variable.
+say_hello = great("Sai")) # output : Hello Sai 
+
+def call_func(func,name):
+    return func(name)
+
+print(call_func(greet,"Siran")) 
+
+2, OOP in Python (Classes, Objects, Inheritance)
+
+Simple Class Example:
+
+class Dog:
+    def __init__(self,name):
+	    self.name = name 
+	
+	def bark(self):
+	    print(f"{self.name} says Woof!") 
+
+#Create object 
+dog1 = Dog("Tommy")
+dog1.bark()
+
+Inheritance Example:
+
+class Animal:
+    def __init__(self,name):
+	    self.name = name 
+    
+	def speak(self):
+	    print(f"{self.name} makes a sound") 
+		
+class Dog(Animal):
+    def speak(self):
+	    print(f"{self.name} barks") 
+    
+dog = Dog("Rocky")
+dog.speak() # Ouput: Rocky barks 
+
+OOPs help to organize big applications very cleanly.
+
+
+**********************************************************************************************************************************************
+**********************************************************************************************************************************************
+
+3. SOLID Responsibility in Python 
+
+S - Single Responsibiity Principle 
+
+Bad:
+
+   class UserManager:
+       def add_user(self,name):
+           # Add user 
+           pass 
+       
+       def send_email(self,user):
+           # send email
+           pass 
+
+Good:
+   
+   class UserManager:
+       def add_user(self,user)
+
+   class EmailSender:
+       def send_email(self,user):
+	       # send email 
+		   pass 
+		   
+   Each class has one responsibility 
+   
+O - Open/Close Principle 
+
+Definition: 
+Software entities (Classes, modules, functions) should be open for extension, but closed for modification.
+
+What does it mean?
+- Open for extension: you should be able to add new features easily.
+- Closed for modifition : you should not have to change existing code. 
+
+Why?
+ - Protects existing code (no bugs introduced when adding features).
+ - Makes code easier to maintain and scale.
+ 
+Simple Example (without following Open/Closed Principle - BAD)
+
+Suppose you have class:
+
+class PaymentProcessor:
+    def process(self,process_type):
+	    if payment_type = "CreditCard")
+		   print("Processing credit card payment")
+		elif payment_type = "PayPal")
+		   print("processing Paypal payment") 
+
+Problem: 
+if tommorrow you add "BitCoin" or "ApplyPay" you must modify this class. This violates Open/Closed principle.
+
+How to fix it (Using Open/Closed Principle - Good) 
+
+Make a base class and extend it for new payment types.
+
+from abc import ABC, abstractmethod 
+'''
+abc - stand for abstract base classes.
+ABC - This is special class that helps you create abstract classes in Python.
+abstract method -> This is a decorator (the @symbol) that marks the method as abstract - meaning "no body, only structure"
+'''
+
+#Base class (abstract class) 
+class Payment(ABC):
+    @abstractmethod 
+	def pay(self):
+	   pass
+
+#Extended classes 
+class CreditCardPayment(payment):
+    def pay(self):
+	    print("Processing credit")
+		
+class PayPalPayment(Payment):
+    def pay(self):
+	    print("Processing PayPal payment");
+		
+#Processor PaymantProcessor 
+class PaymentProcessor:
+    def __init__(self,payment: Payment):
+	   self.payment = payment 
+	   
+    def process(self):
+	    self.payment.pay() 
+		
+Now Usage:
+
+payment1 = CreditCardPayment()
+processor1 = PaymentProcessor(payment1)
+processor1.process
+
+payment2 = PayPaypalPayment()
+processor2 = PaymentProcessor(payment1)
+processor2.process()
+
+Why it this better?
+
+- Tommorrow if you want to add Bitcoin Payment, just create a new class 
+
+class BitcoinPayment(Payment):
+    def pay(self):
+	    print("Processing BitCoin")
+		
+- No change inside PaymentProcessor class!
+- This is open/closed prinicple in action.
+
+L - Liskov substitution Principle (LSP)
+
+Definition:
+If S is a subtype of T, then objects of type T should be replacable with objects of type S without breaking the program.
+
+Simple words: 
+Child classes should be able to stand in place of parent classes without causing errors or unexcepted behaviour.
+
+Very simple real-world example:
+
+Suppose:
+- Parent class: Bird 
+- Child Classes: Sparrow,Penguin 
+
+Problem:
+- Sparrow can fly - OK
+- Penguin cannot fly - but if you call fly() on Penguin, it will crash the program.
+- This violates LSP.
+
+Example in Python (Wrong Way - LSP Viloated)
+
+class Bird:
+    def fly(self):
+	    print("Bird can fly.") 
+		
+class Sparrow(Bird):
+    pass
+	
+class Penguin(Bird):
+    pass
+	
+#using:
+def make_bird_fly(bird):
+    bird.fly();
+	
+make_bird_fly(Sparrow()) # OK
+make_bird_fly(Penguin()) # Not OK (Penguin can't fly!) 
+
+Problem: Penguin cannot fly, but we forced it because we treated it like a general Bird.
+
+How to fix (correct LSP)
+
+- We should design classes properly, knowing that not all birds can fly.
+class Bird:
+    def move(self):
+	    pass
+		
+class FlyingBird(Bird):
+    def fly(self):
+	   pass 
+	   
+class NonFlyingBird(Bird):
+    def walk(self):
+	   pass
+	   
+class Sparrow(FlyingBird):
+    def fly(self):
+	    print("Sparrow files.") 
+		
+class Penguin(NonFlyingBird):
+    def walk(self):
+	    print("Penguin walks.") 
+		
+#Using :
+def move_bird(bird):
+    bird.move() 
+	
+sparrow = Sparrow()
+penguin = Penguin()
+
+sparrow.fly() # Sparrow files.
+penguin.walk() # Penguin walks 
+
+Now:
+- Sparrow knows how to fly.
+- Penguin knows how to walk
+- No confusion. No worng assumption 
+- This respects LSP.
+
+
+Real Company Example - LSP Violation
+
+Situation: In a company, they built a payment system for an E-commerence App.
+
+They had:
+
+class PaymentMethod:
+    def pay(self, amount):
+	    pass
+		
+class CreditCard(PaymentMethod):
+    def pay(self,amount):
+	    print(f"Paid {amount} by Credit Card.")
+		
+class PayPal(PaymentMethod):
+    def pay(self,amount):
+	    print(f"Paid {amount} using PayPal")
+		
+class BankTransfer(PaymentMethod):
+    def pay(self,amount):
+	    print(f"{Paid {amount} via Bank Transfer,")
+		
+Everything was working fine.
+
+New Requirement:
+
+Later, company said:
+
+We are introducing Cash on Delivery (COD) also.
+
+Developer added:
+
+class CashOnDelivery(PaymentMethod):
+    def pay(self,amount):
+	    raise Exception("Payment happens after deliverym not now.")
+		
+Problem:
+
+When the checkout system called:
+
+def complete_payment(payment_method,amount):
+    payment_method.pay(amount) 
+
+#Works
+complete_payment(creditCard(),100)
+complete_payment(PayPal(),200) 
+
+#Fails
+complete_payment(CashOnDelivery(), 300) # Exception!! App crashes 
+
+- Crash happened at runtime!
+- Because CashonDelivery could not handle pay() properly.
+- This violates LSP: CashonDelivery cannot replace PaymentMethod properly.
+
+Result:
+- Customer orders failed.
+- Sales team shouted.
+- Developer had to redesign the system in a hurry 
+
+Correct LSP Respectful design:
+
+They changed design like this:
+
+class PaymentMethod:
+    def pay(self,amount):
+	    pass
+
+class PostPaymentMethod:
+    def pay_later(self,amount):
+	   pass 
+	  
+class CrediCard(PaymentMethod):
+    def pay(self,amount):
+	    print(f"Paid {amount} by Credit Card.") 
+		
+class PayPal(PaymentMethod):
+    def pay(self,amout):
+        print(f"Paid {amount} using Paypal");
+
+class CashOnDelivery(PostPaymentMethod):
+    def pay_later(self,amount):
+        print(f"Will collect {amount" at delivery"}
+
+- Now, CreditCard and Paypal follow paymentmethod.
+- CashonDelivery follows PostPaymentMethod 
+- No confusion 
+		
+Lesson Learned:
+
+- Never force a subclass to do something it cannot or should not do.
+- if necssaary, crate a better hierachy.
+
+*********************************************************************************************
+
+I - Interface Segregation Principle (ISP)
+
+What is interface segregation principle?
+
+Definition: A client should not be forced to depend on interfaces it does not use.
+
+Simple Meaning:
+- if you are creating an interface (or a base class), don't make it too big.
+- Keep the interface small and specific.
+- So that the child classes only implement what they really need.
+
+
+simple Real-World Example:
+
+- you create an interface for a Machine
+
+class Machine:
+    def print(self):
+	    pass 
+   
+    def scan(self):
+	    pass 
+		
+	def fax(self):
+	    pass
+		
+Now if a company builds a simple printer Only device, it must implement all three methods- even though it cannot scan or fax!
+
+class OldPrinter(Machine):
+    def print(self):
+	    print("Printing..")
+	
+	def scan(self):
+	    raise NotImplementedError("Cannot scan.") 
+		
+	def fax(self):
+	    raise NotImplementedError("Cannot fax.")
+		
+Problem:
+- Code becomes ugly.
+- Raise unnecessary errors.
+- This viloates ISP.
+
+Correct Design following ISP:
+Split into smaller interfaces:
+class Printer:
+   def print(self):
+       pass 
+	   
+clas Scanner:
+   def scan(self):
+       pass 
+	   
+class Fax:
+   def fax(self):
+       pass 
+	   
+Now, OldPrinter can only implement Printer:
+
+class OldPrinter(Printer):
+    def print(self):
+	    print("Printing...")
+		
+And a full office device can implement all:
+
+class OfficeMachine(Printer, Scanner, Fax):
+    def print(self):
+	    print("Priniting...")
+	
+	def scan(self):
+	    print("Scanning...")
+		
+	def fax(self):
+	    print("Faxing...")
+		
+D - Dependency Inversion Principle (DIP)
+
+Definition: 
+- High-level modules should be depend on low level modules. Both should depend on abstractions.
+- Abstractions should not depend on details. Details should depend on abstractions.
+
+Simple meaning:
+- High-level code (business logic) should not directly depend on low-level code(database, hardware, file system).
+- Both should depend on a common abstract layer(interface/base class).
+- This keeps the code flexible, extensible, and less fragile when changes happen.
+
+Simple Real-World Example:
+
+Imagine:
+-  High-level module: ReportGenerator(generates reports)
+- Low level module: FileWriter (writes files to disk) 
+
+
+Bad design(Violates DIP)
+
+class FileWriter:
+    def write(self,data):
+	    print("f"Writing data to file: {data}")
+		
+class ReportGenerator:
+    def __init__(self):
+	    self.file_wrtier = FileWriter() # Direct dependency 
+	
+	def generate(self):
+	    self.file_write.write(data)
+		
+Problem:
+- ReportGenerator depends directly on FileWriter.
+- if tommorrow, you want to save to Database or Cloud Storage, you must modify ReportGenerator code.
+- Tightly coupled = BAD!
+
+Correct design (Following DIP)
+
+Create an abstraction:
+
+class Writer:
+  def write(self,data):
+      pass 
+
+Low-level modules implement Writer:
+
+class FileWriter(Writer):
+    def write(self,data):
+        print("Writing data to file: {data}"); 
+
+class DatabaseWriter(Writer):
+    def write(self,data):
+        print(f"Saving data to database: {data}");
+
+High-level module depends on Writer abstraction:
+
+class ReportGenerator:
+     def __init__(self,writer: Writer):
+         sefl.writer = writer 
+    
+	 def generate(self):
+	     data = "Report Data"
+		 self.write.write(data)
+		 
+Now when using:
+
+file_writer = FileWriter()
+report_gen = ReportGenerator(file_writer)
+report_gne.generate() 
+
+# Or use database writer 
+db_wrtier = DatabaseWriter()
+report_gen_db = ReportGenerator(db_writer)
+report_gen_db.generate(); 
+
+Result:
+- ReportGenerator doesn't care how the data is saved.
+- It can work with File,Database,Cloud,anything.
+- Loosely coupled - GOOD!
+
+
+****************************************************************************************************************
+****************************************************************************************************************
+
+Lists vs Tuples:
+
+- Use Tuples when data should not change(e.g., coordinates, config keys).
+- Use Lists for dynamic collections(e.g., queue, task list).
+
+Dictionaries (HashMaps):
+
+- Real-time use: caching config settings, request mappings.
+- Efficient: average O(1) lookup time.
+
+Sets:
+
+- Use in real-time systems for duplicate detection, membership checking.
+
+***************************************************************************************************************
+
+Singleton Pattern:
+
+- Used to shared resources lke database connections, logging, etc.
+
+Observed Pattern(Pub/Sub):
+
+- Used in event-based systems or GUI frameworks.
+
+*************************************************************************************************************
+
+Python Concurrency (Threads, Mutliprocessing, AsyncIO) :
+
+Modern applications often need to handle:
+
+- Multiple tasks at once (e.g., UI + background tasks)
+- IO-bound operations (e.g., HTTP, file read/write)
+- CPU-bound operations (e.g., large calculation) 
+
+1, Threading - For IO bound applications
+
+Example: Downloadding files in parallel.
+
+import threading 
+import time 
+
+def download(file):
+    print(f"Downloading {file} ...")
+	time.sleep(2) 
+	print(f"Finished {file}...")
+	
+	
+files = ["file1","file2","file3"] 
+threads = []
+
+for f in files:
+    t = threading.Thread(target=download, args=(f,))
+	t.start()
+	threads.append(t) 
+	
+for t in threads:
+    t.join()
+	
+- Use when tasks are waiting (IO).
+- Threads share memory.
+
+2, Multiprocessing - For CPU-bound tasks
+
+import multiprocessing 
+
+def compute_square(n):
+    return n * n-1
+
+if __name__=="__main__":
+   with multiprocessing.Pool(processes=4) as pool:
+        result = pool.map(compute_square,[1,2,3,4])
+        print(result) 
+
+- Use when your tasks are CPU-heavy.
+- Each process has its own memory space (no GIL blocking)
+
+
+3, AsyncIO - Modern async for IO-bound coroutines:
+
+import asyncio 
+
+async def task(name):
+      print(f"Staring {name}')
+      await asyncio.sleep(2)
+      print(f"Finished {name}')
+
+async def main():
+      await asyncio.gather(task("A"),task("B"))
+      
+asyncio.run(main()) 
+
+- Best for network IO (APIs, DB queries, file IO)
+- No threads or processes needed, uses event loop.
+
+
+When to use What?
+
+FileIO, API calls  -   Threading/AsyncIO 
+
+Math-heavy loops - Multiprocessing 
+
+Socket servers  -  AsyncIO 
+
+Real-time systems - AsyncIO + threading 
+
+
+***********************************************************************************************
+
+Sorting Algorithms:
+
+Example: Custom sort for real-time leaderboard.
+
+players = [("Alice",30), ("Bob",40), ("Charlie",20)]
+players.sort(key=lambda x: x[1], reverse=True)
+print(players)
+
+- understand : QuickSort, MergeSort 
+- Real-time uses: scoreboards, search, auto-suggestions
+
+
+Searching Algorithms:
+
+Example: Binary Search
+
+- use in : games, search engines, UI filters 
+
+
+Hashing (Dictionaries In Python) 
+
+Example: Detect duplicate usernames
+
+name = ["a","b","c"]
+seen = set()
+for name in names:
+    if name in seen:
+	    print("Duplicate:",name)
+	seen.add(name) 
+	
+- use in: login systems, caching,indexing 
+
+Graph Algorithms:
+
+Used in: routing(GPS), social network, game logic 
+Example: BFS(Breadth-First Search)
+
+from collections import deque 
+def bfs(graph,start):
+    visited = set()
+	queue = deque([start]) 
+	
+	while queue:
+	    node = queue.popleft()
+		print(node)
+		for neighbor in graph[node]:
+		    if neighbor not in visited:
+			   visited.add(neighbor)
+			   queue.append(neighbor) 
+
+graph = {
+    'A': ['B','C'],
+	'B': ['D'],
+	'C': ['E'],
+	'D':[],
+	'E':[]
+}
+
+bfs(graph,'A')
+
+
+Dynamic programming:
+
+Used in : Game scores, optimal decision systems, caching results.
+
+Example:  Fibonacci with memoization 
+memo = {}
+def fib(n):
+    if n in memo:
+	    return memo[n] 
+	if n <= 2:
+	    return 1
+	memo[n] = fib(n-1) + fib(n-2)
+	return memo[n] 
+	
+print(fin(10))  # Output: 55
+
+
+***********************************************************************************************************
+
+System Design in Python (Real-Time Concepts) 
+
+- This teaches you show to design scalable and maintainble systems.
+
+Key concepts you must know:
+
+1, Rate Limiting ( Protecting APIs from abuse )
+Use cases: Limit users to 10 requests per minute.
+
+import time 
+from collections import deque 
+
+class RateLimiter:
+     def __init__(self,max_requests,interval):
+	     self.max_requests = max_requests
+		 self.interval = interval
+		 self.requests = deque() 
+		 
+	 def is_allowed(self):
+	     now = time.time()
+		 while self.requests and self.requests[0] < now - self.interval:
+		       self.requests.popleft()
+		 if len(self.requests) < self.max_requests:
+             self.requests.append(now)
+             return True   
+         return False 
+
+limiter = RateLimiter(3,10) 
+for i in range(6):
+    print("Allowed:", limter.is_allowed ())
+    time.sleep(2) 
+
+
+2, In-Memory Cache (with TTL) 
+
+- Real-time systems often use Redis, but there's a Python version.
+
+import time
+
+class Cache:
+    def __init_(self):
+	    self.store = {}
+		
+	def set(self,key,value,ttl):
+	    self.store[key] = (value, time.time() + tt1)
+	
+	def get(self,key):
+	    val = self.store.get(key)
+		if not val:
+		   return None
+		value, expiry = val 
+		if time.time() > expiry:
+		    del self.store[key] 
+		    return None 
+	    return value 
+
+cache = Cache() 
+cache.set("user1","data",tt1=5)
+print(cache.get("user1")) # "data"
+time.sleep(6)
+print(cache.get("user1")) # None 
+
+
+3, Retry Mechanism with Backoff 
+
+Usecase: Retry failing API calls safely.
+
+import time 
+import random
+
+def retry(fun, retries=3):
+    for i in range(retries):
+        try:
+           return func()
+        except Exception as e:
+           print(f"Attempt {i+1} failed: {e}")
+           time.sleep( 2 ** i)
+    return None 
+
+def flaky_api():
+    if random.random() < 0.7:
+	   raise Exception("Network Error:)
+	return "success!"
+	
+result = retry(flaky_api)
+print(result) 
+
+
+************************************************************************************************
+
+ 	  
+What are python's key features that support software development?
+
+A,
+Interpreted and dynamically typed : No need for explicit type declaration.
+High-level syntax: Easier readability and maintainability.
+Memory management: Automatic garbage collection.
+Modular and extensiable : Easliy integrates with C/C++
+Large standard libary: Built-in modules for common tasks.
+Cross-platform: Write once, run anywhere.
+
+Explain Python's memory management?
+
+A,
+Uses reference counting and garbage collection(gc)
+GC handles cyclic rferences using the gc module.
+Objects are stored in a private heap managed by the Python memory manager. 
+
+Data Structures 
+
+Compare list, tuple, set and dictionary.
+
+Type    Ordered    Mutable   Duplicates 
+List     Yes        Yes       Yes 
+Tuple    Yes        No        Yes 
+Set      No         Yes       No
+Dict    Yes (3.7+)        Yes        No (Keys)
+
+
+When would you use deque over a list?
+
+A, deque (from collections) is optimized for fast appends and pops from both ends, unlike lists
+   which are slow for insert(0,val).
+   
+Example:
+
+from collections import deque
+dq = deque()
+dq.appendleft(1)
+dq.append(2)
+
+How to you find the first non-repeating character in a string?
+A,
+  from collections import Counter 
+  def first_non_repeating(s):
+      freq = Counter(s)
+	  for ch in s:
+	      if freq[ch] == 1:
+		      return ch
+	  return None 
+	  
+  Time: O(n), Space: O(n)
+  
+Explain SOLID principles with Python examples.
+A, 
+
+S - Single Responsibility: Each class should have one reason to change.
+class InvoicePrinter:
+    def print(self, invoice): pass
+	
+class InvoiceSaver:
+    def save(self, invoice): pass 
+	
+O - Open/Closed: Open for extension, closed for modification.
+class Shape:
+    def area(self): pass 
+
+class Circle(Shape):
+    def area(self): return 3.14 * r * r 
+	
+L - Liskov Substitution: Subtypes should substitute base types without breaking behaviour.
+
+I - Interface Segregation: Avoid forcing clients to depend on unused methods.
+
+D - Dependency Inversion: Depend on abstractions, not concretions.
+
+
+Explain the Singleton Pattern With Python.
+A,
+class Singleton:
+    _instance = None 
+	
+	def __new__(cls):
+	   if not cls._instance:
+	       cls._instance = super(Singleton, cls).__new__(cls)
+	   return cls._instance 
+	   
+Used when exactly one instance of a class is needed, e.g., Logger 
+
+What is the factory pattern?
+A,
+Creates objects without specifying the exact class.
+
+class Animal:
+    def speak(self): pass 
+	
+class Dog(Animal):
+    def speak(self): return "Woof"
+	
+class AnimalFactory:
+    @staticmethod
+	def get_animal(animal_type):
+	     if animal_type == 'dog':
+		    return Dog() 
+			
+Explain map, filter, and reduce.
+A, 
+map: Apply a function to all items in an iterable.
+filter: Filter items with a condition.
+reduce: Reduce a sequence to a single value.
+
+from functools import reduce 
+reduce(lambda x,y: x+y, [1,2,3]) #6 
+
+How do you write unit tests in Python?
+A,
+Using unittest:
+
+import unittest
+class TestMath(unittest.TestCase):
+    def test_add(self):
+	    self.assertEqual(2+2,4)
+		
+Other tools: pytest,mock,coverage 
+
+How does Python handle exceptions?
+A, 
+
+try:
+    # risky code 
+except ValueError as e:
+    # handle ValueError
+except Exception as e:
+    # handle all exceptions 
+finally:
+    # cleanup 
+	
+How do you improve performance in Python?
+A,
+- Use built-in functions and libraries
+- Prefer generators overlists when dealing with large data.
+- Use set for membership checks.
+- Avoid global variables
+- Profile with cProfile, line_profiler
+
+Common Python Tools Used in SDLC
+A,
+
+- black,flake8,mypy-code formatting and linting.
+- pytest,unittest,mock - Testing
+- docker, virtualenv,poetry - Environment management.
+- pydantic,attrs - data validation 
+- fastapi,django,flask - web developement framework 
+- SQLAlchemy, pymongo, redis-py - DB interaction 
+
+What is the difference between is and == in python?
+
+== compares values (what the variables contain).
+is compares identities ( whether two variables point to the same object in memory).
+
+Example;
+a = [1,2,3]
+b = [1,2,3]
+print(a==b) # True - vlaues are the same 
+print(a is b) #False - different memory locations
+
+How does Python's Global interpreter lock (GIL) affect multi-thread programs?
+A,
+- The GIL allows only one thread to execute Python bytecode at a time-- even on multi-core processors.
+- This means CPU-bound programs (like heavy computations) don't benefit much from threads.
+- I/O - bound programs (e.g., file or network operations) still benefit from threading.
+
+Use multiprocessing for parallel CPU-bound tasks.
+
+What are Python decorators?
+A,
+- Decorators are functions that wrap another function to extend or modify its behaviour without changing its source code.
+Example:
+
+def my_decorator(func):
+    def wrapper():
+	    print("Before function call")
+		func()
+		print("After function call")
+	return wrapper
+
+@my_decorator
+def say_hello():
+    print("Hello")
+	
+say_hello() 
+
+Reverse a Linked List:
+
+class Node:
+   def __init__(self,data):
+       self.data = data 
+	   self.next = None 
+	   
+def reverse_linked_list(head):
+      prev = None 
+	  current = head
+	  while current:
+	      next_node = current.next
+		  current.next = prev 
+		  prev = current 
+		  current = next_node 
+	  return prev 
+	  
+TimeComplexity: O(n)
+Space complexity:O(1) 
+
+Check if two strings are anagrams
+
+from collections import Counter
+def is_anagram(s1,s2):
+   return Counter(s1) == Counter(s2) 
+
+Example:
+print(is_anagram("listen","silent")) # True 
+
+Time complexities 
+
+Operaton                     List    Tuple   Set    Dictionary
+Access by Index              O(1)     O(1)   N/A     N/A 
+Search (in)                  O(n)     O(n)   O(1)    O(1)
+Insert/Append                O(1)     N/A    O(1)    O(1)
+Delete                       O(n)     N/A    O(1)    O(1) 
+
+
+Open/Closed Principles Example:
+
+Open for extension, closed for modification.
+
+class Shape:
+    def area(self):
+	    pass 
+		
+class Circle(Shape):
+    def __init__(self,radius):
+	    self.radius = radius 
+	def area(self):
+	    return 3.14 * self.radius * self.radius 
+		
+class Square(Shape):
+     def __init__(self,side):
+	     self.side = side 
+	 def area(self):
+	     return self.side * self.side 
+	
+def print_area(shape: Shape):
+    print(shape.area())
+
+- You can add new shapes without modifying existing logic.
+
+
+Drawbacks of violating single responsibility principle:
+
+- Harder to test individual behaviour.
+- Changes for one reason can break unrelated functionality.
+- Difficult to extend and maintain 
+
+Fix: Break into smaller, focused classes or functions.
+
+Factory Pattern for Vehicles:
+
+class Vehicle:
+    def drive(self):
+	   pass 
+	   
+class Cer(Vehicle):
+    def drive(self):
+	    return "Driving a car"
+		
+class Bike(Vehicle):
+    def drive(self):
+	    return "Driving a bike"
+		
+class VehicleFactory:
+    @staticmethod:
+	def create_vehicle(vehicle_type):
+	    if vehicle_tyep == 'car':
+		   return Car()
+		elif vehicle_type == 'bike':
+		   return Bike()
+		else:
+		   raise ValueError("UnKnown vehicle type")
+	
+#Usage 
+vehicle = VehicleFactory.create_vehicle("bike")
+print(vehicle.drive()) 
+
+When to use Strategy Pattern insteead of if-else?
+
+- When you have multiple interchangeable algorithms (strategies) for a task.
+- It avoid long if-else or switch-case blocks.
+- Encourages Open/Closed Principle.
+
+DataAnalyzer Class (Single Responsibility) 
+
+from statistics import mean, median, mode 
+
+class DataAnalyzer:
+     def __init__(self,data):
+	    self.data = data 
+		
+	 def get_mean(self):
+	    return mean(self.data)
+		
+	 def get_median(self):
+	    return median(self.data)
+		
+	 def get_mode(self):
+	    return mode(self.data)
+# Example 
+analyzer = DataAnalyzer([1,2,3,3,4])
+print(analyzer.get_mean()) # 2.4 
+print(analyzer.get_median()) # 2
+print(analyzer.get_mode()) # 2
+
+What are the differences between threading, multiprocessing and asyncio in Python?
+
+Feature        Threading 
+Type           Concurrent 
+Use Case       I/O-bound tasks 
+GIL Impact     Affected (1 thread runs at a time)
+Memory         Shared memory 
+
+Threaded File Downloader 
+
+Download 3 files in parallel using threading.
+
+import threading
+import time
+
+def download_file(file_name):
+   print(f"Starting download: {file_name}")
+   time.sleep(2) # Simulate download 
+   print(f"Finished download: {file_name}")
+
+files = ["file1.txt","file2.txt","file3.txt"]
+threads = []
+
+
+***************************************************************************************************************************************************
+
+
+Dictionary (HashMap) + List Comprehsion + Functions 
+- This combo is frequently used in APIs, data processing and autmation scripts.
+
+Example: Group Employees by Department 
+
+Let's say you get data from a database or API in the form of a list of dictionaires:
+
+employees = [ 
+  {"name" : "Alice", "dept": "HR"},
+  {"name" : "Bob", "dept": "Engineering"},
+  {"name" : "Charlie", "dept":"HR"},
+  {"name" : "David", "dept":"Engineering"},
+  {"name" : "Eve", "dept":"Sales"},
+]
+
+- You want to group employees by their department:
+- Real Time Concept used:
+1) Dictionaries for grouping.
+2) Functions for reusability.
+3) List Comprehension for processing 
+
+Code Example :
+
+#Function to group employees by department 
+employees = [ 
+    {"name":"Alice", "dept": "HR"},
+    {"name": "Bob", "dept": "Engineering"},
+    {"name": "Charlie", "dept": "HR"},
+    {"name": "David","dept": "Engineering"},
+    {"name": "Eve","dept":"Sales"},
+]
+
+#Function to group employees by department 
+def group_by_department(employees):
+    department_groups = {}
+    for emp in employees:
+        dept = emp["dept"]
+        name = emp["name"]
+        #Initialize list if dept is not dicitonary 
+        if dept not in department_groups:
+            department_groups[dept] = []
+        department_groups[dept].append(name)
+    return department_groups
+
+#Call the function     
+grouped = group_by_department(employees)
+
+#Print results
+print(grouped)
+
+Output:
+{'HR': ['Alice', 'Charlie'], 'Engineering': ['Bob', 'David'], 'Sales': ['Eve']}
+
+*************************************************************************************************************************
+
+File Handling: 
+
+with open("config.json","r") as f:
+     config = json.load(f) 
+	 
+************************************************************************************************************************
+
+Dictionary + List Comprehsion 
+
+users = [{"name": "Alice", "role":"admin", {"name": "Bob", "role":"user"}]
+admins = [ u["name"] for u in users if u["role"] == "admin"]
+
+***********************************************************************************************************************
+
+
+class User:
+   def __init__(self, name):
+       self.name = name 
+	   
+   def greet(self):
+       return f"Hello, {self.name}" 
+	   
+**********************************************************************************************************************
+
+Exception Handling:
+
+try:
+   data = fetch_api()
+except ConnectionError as e:
+   print("API failed:", e)
+ 
+***********************************************************************************************************************
+
+Decorator Example (e.g., for authentication)
+
+def require_login(func):
+    def wrapper(*args, *kwargs):
+	    if not logged_in():
+		   raise Exception("Not logged in")
+		return func(*args, **kwargs)
+	return wrapper 
+	
+***********************************************************************************************************************
+
+
+What is a Function?
+
+- A function is a reusable block of code that performs a specific task.
+Syntax:
+def function_name(parameters):
+   #Code block
+   return result 
+   
+def greet(name):
+    return f"Hello, {name}!"
+	
+print(greet("Alice")) 
+
+Why do we use function?
+
+- Avoid repetition (DRY: Don't Repeat Yourself) 
+- Easy to test 
+- Improves readabiiity 
+- Can return results
+
+Real-life Usage:
+
+- Image you are sending emails to users. Instead of repeating the same email sending code 100 times:
+
+   def send_email(to,subject,body):
+       print(f"Sending email to {to}: {subject}\n{body}") 
+	   
+- Try this yourself:
+ 
+  def add(a,b):
+      return a+b 
+	  
+  result = add(10,5)
+  print("Sum :", result) 
+  
+*******************************************************************************************************************
+
+What is a Dictionary?
+
+- A dictionary in Python is a collection of key-value pairs. It's used to store data that is associated together.
+Syntax:
+
+my_dict = {
+   "key1":"value1",
+   "key2":"value2",
+}
+
+Simple Example:
+
+student = {
+    "name":"Alice",
+	"age":22,
+	"grade":"A"
+}
+
+print(student["name"]) 
+
+Why use a dictionary:
+
+Feature                                     Benefit Example 
+Fast lookup                                 Get a student's name by ID instantly 
+
+Organize data                               Store user profiles, product info, config 
+
+Flexible structure                          can nest lists, dictionaries inside 
+
+
+Real-Life Example:
+
+Storing employees and their departments:
+
+employees = {
+   "E001": "IT",
+   "E002": "HR",
+   "E003": "Finance"
+}
+
+print(employees["E002"])  #HR 
+
+Add or Update Values:
+
+student["age"] = 23  #Update 
+student["city"] = "Toronto" #add new key 
+
+
+Loop Through Dicitionary:
+
+for key, vlaue in student.items():
+    print(f"{key}: {value}")
+
+Check if key exists:
+
+if "grade" in student:
+    print("Grade exists") 
+	
+Try this:
+
+book = {
+   "title": "Python 101",
+   "author": "John",
+   "price": 19.99 
+} 
+
+print("Book title is:", book["title"])
+
+************************************************************************************************************************
+
+List Comprehension:
+
+What is List Comprehension?
+A, List comprehension is a short and clean way to create a new list by looping through an existing list(or any iterable), with or without condition.
+
+Basic Syntax:
+
+new_list = [expression for item in iterable] 
+
+With Condition:
+
+new_list = [expression for item in iterable if condition]
+
+Simple Example:
+
+numbers = [1,2,3,4,5]
+squares = [ n*n for n in numbers ]
+print(squares) # Output; [1, 4, 9, 16, 25]
+
+With Condition:
+
+even = [ n for n in numbers if n % 2 == 0]
+print(even) #output: [2,4] 
+
+Real-Life Use:
+
+Filter employees from IT department:
+
+employees = [
+   {"name": "Alice", "dept": "IT"},
+   {"name": "Bob", "dept", "HR},
+   {"name": "Charlie", "dept", "IT"},
+]
+
+it_employees = [ emp["name"] for emp in employees if emp["dept"] == "IT"]
+print(it_employees) 
+
+Comparsion with for loop:
+#Regular loop 
+squares = []
+for n in numbers:
+   squares.append(n*n) 
+   
+#List comprehension(shorter)
+squares = [ n*n for n in numbers ]
+
+Try this:
+names = ["john","sara","bob"]
+upper_names = [name.uppers() for name in names ]
+print(upper_names)
+
+*************************************************************************************************
+
+What is File I/O?
+
+- File I/O means reading from and writing to files (like .txt, .csv, .json) using python.
+
+Types of operations:
+
+Operation                        What it does 
+read                             Read content from a file 
+write                            Write content (overwrite)
+append                           Add content to end 
+
+Basic Syntax:
+
+with open("filename.txt","mode") as file:
+    # Do something with file 
+
+Mode                                Meaning 
+'r'                                 Read 
+'w'                                 Write(overwrite) 
+'a'                                 Append 
+'rb','wb'                           Binary modes 
+
+Example 1: Reading from a file 
+
+Suppose you have a file data.txt with this content:
+
+css 
+Hello world
+Welcome to Python 
+
+python
+with open("data.txt","r") as file:
+   content = file.read()
+   print(content)
+   
+Example 2: Writing to a file 
+
+python 
+with open("output.txt","w") as file:
+    file.write("This is new content.\n")
+	file.write("Writing more lines.\n")
+
+If the file doesn't exist, it will be created.
+If it exists, the content will be overwrittten.
+
+Example 3: Appending to a file 
+
+python
+with open("output.txt","a") as file:
+    file.write("This will be added at the end.\n")
+	
+
+Example 4:
+
+python:
+with open("data.txt","r") as file:
+    for line in file:
+	     print("Line :", line.strip()) 
+		 
+Real world use cases:
+
+Use Case                   Example File I/O work 
+
+Config files               Reading setting from config.txt 
+
+Log files                  Append errors to log.txt 
+
+Data export/import         Write data to .csv or read .json 
+
+Local caching              Save results locally instead of API calls.
+
+Try this:
+
+python
+with open("myfile.txt","w") as f:
+   f.write("Name: Alice\n")
+   f.write("Role: Developer\n")
+   
+Then open myfile.txt to see the result 
+
+
+*****************************************************************************************************************************************
+
+Dictionary + List Comprehension in Python 
+
+- Here's a real world example of using dictionary + list comprehension together to solve a pratical data transformation problem.
+- Use Case: Grouping Student Scores by Subject and Calculating Average 
+   
+  Suppose you have a list of student scores like this: 
+  
+  records = [
+      ("Math","Alice", 85),
+	  ("Science","Bob", 90),
+	  ("Math", "Charlie", 75),
+	  ("Science","Alice", 95),
+	  ("Math","Bob",80)
+  ]
+
+- you want to crate s dictionary where:
+   - Each subject is a key.
+   - The value is a list of all scores for that subject.
+   - Then, you want to summary dictionary with average scores per subject.
+   
+Step 1: Group Scores Using Dictionary + List Comprehension 
+
+from collections import defaultdict 
+# Grouping scores by subject 
+subject_scores = defaultdict(list)
+[subject_scores[subject].append(score) for subject,_, score in records]
+print(dict(subject_scores)) 
+
+Output:
+{
+  'Math': [85,75,80],
+  'Science': [90,95]
+}
+
+
+Step 2: Compute Average Using Dictionary Comprehension 
+
+average_scores = {subject: sum(scores) / len(scores) for subject,scores in subject_score.items()} 
+
+Output:
+{
+'Math': 80.0,
+'Science': 92.5
+}
+
+Final Result:
+
+. List comprehension to populate dictionary lists (defaultdict(list)).
+. Dictionary compreshension to calculate the average scores from grouped data.
+
+Using dictionary + list comprehension is common in real-world Python applications - especially where you're transforming, grouping or summarizing data.
+- Here are some powerful real-world use cases across different domains.
+
+1, Log File Analysis 
+
+Use Case: Group log messages by log level (e.g., INFO ERROR)
+
+logs = [ 
+       ("INFO", "System booted"),
+	   ("ERROR", "Disk full"),
+	   ("INFO",  "User login"),
+	   ("WARNING", "Low memory"),
+	   ("ERROR", "failed to connect"),
+]
+
+from collections import defaultdict 
+log_dict = defaultdict(list)
+[ log_dict[level].append(msg) for level, msg in logs]
+print(log_dict)
+
+2, Sales Data Aggregation 
+
+Use Case: Calculate total sales per product 
+
+sales = [
+      ("Apple", 3),
+	  ("Bananan", 2),
+	  ("Apple", 4),
+	  ("Banana", 1),
+	  ("Orange",5)
+]
+
+from collections import defaultdict 
+
+product_totals = defaultdict(int)
+[product_totals[product] += quatity for product , quality in sales] # or use a loop 
+print(product_totals)
+
+3, Indexing for Search (Inverted Index)
+
+Use Case: Build a word-to-document index (search engine concept)
+docs = {
+    1: "hello world",
+	2: "hello python",
+	3: "python world"
+}
+
+from collections import defaultdict 
+
+index = defaultdict(list)
+[ word for doc_id, text in docs.items() for word in text.split() if not index[word].append(doc_id)]
+
+#Convert to dict with unique values.
+index = {k: list(set(v)) for k, v in index.items()}
+print(index)
+
+***********************************************************************************************************************************
+
+
+Concept 5 : Class & Objects ( OOP - Object-Oriented Programming)
+
+What is a Class?
+
+- A class is a blueprint for creating objects.
+- An object is an actual instance based on that blueprint.
+
+Think of:
+
+Class = Cookie Cutter 
+Object = Each Cookie 
+
+Syntax:
+
+class ClassName:
+   def __init__(self, arg1,arg2):
+       self.arg1 = arg1 
+	   self.arg2 = arg2 
+	   
+   def method_name(self):
+       return self.arg1 
+	   
+	   
+Simple Example 
+
+class Person:
+   def __init__(self, name, age) #Constructor 
+       self.name = name 
+	   self.age = age 
+	   
+   def greet(self):
+       return f"Hello, I am {self.name} and I am {self.age} years old." 
+	   
+Create an Object:
+
+p = Person("Alice", 30)
+print(p.greet()) #Output: Hello, I am Alice and I am 30 years old. 
+
+
+Real-Life Example: User Class 
+
+class User:
+   def __init__(self, username, email):
+       self.username = username;
+	   self.email = email 
+	   
+   def send_email(self, message):
+       print(f"Sending email to {self.email}: {message}")
+	   
+u = User("john_doe","john@example.com")
+u.send_email("Welcome to the app!") 
+
+
+Important OOP Terms 
+
+Term - Meaning 
+__init__ - Constructor (runs when object is created)
+self - Refers to the object itself 
+Method - A function inside a class 
+Attribute - A variable inside a class (like self.name) 
+
+Why use classes ?
+
+- Reuse and organize code.
+- Hide internal details (encapsulation)
+- Can create multiple similar objects.
+- Useful in large apps (like users,products,orders) 
+
+Try this :
+
+class Car:
+   def __init__(self,brand):
+      self.brand = brand 
+	  
+   def drive(self):
+      return f"{self.brand} is driving." 
+	  
+mycar = Car("Toyota")
+print(mycar.drive()) 
+
+*********************************************************************************************
+
+Exception Handling: 
+
+What is Exception Handling ( try/except) 
+- Exceptions are errors that happen while the program is running (like file not found, divided by zero, API down, etc.).
+- Exception handling lets you catch those errors and respond without crashing the program. 
+
+Syntax:
+try:
+   #risky code 
+except SomeError:
+   #What to do if error occurs 
+   
+Simple Example:
+
+try:
+   reslt = 10/0;
+except ZeroDivisionError:
+   print("You can't divide by zero!")
+
+Output:
+You can't divide by zero! 
+
+Why use it?
+
+Reason - Example 
+Prevent app from crashing - If file not found, show message 
+Log errors gracefully - Save to logs or notify user 
+Handle different errors - one try, many except blocks 
+
+Read-Life Example: Reading a file 
+
+try:
+   with open("config.txt","r") as f:
+        content = f.read() 
+except FileNotFoundError:
+   print("Configuration file missing!") 
+
+Catching Multiple Errors:
+
+try:
+   val = int(input("Enter number: "))
+   result = 10 / val    
+except ValueError:
+   print("Invalid number!") 
+except ZeroDivisionError:
+   print("Can't divide by zero!")
+  
+Optional else and finally:
+
+try:
+   print("Trying...")
+   result = 10/2 
+except ZeroDivisionError:
+   print("Division error")
+else:
+   print("Success:", result) 
+finally:
+   print("Done") 
+   
+Try this:
+try:
+   name = input("Enter your name.")
+   print("Hello, ",name) 
+except Exception as e:
+   print("Something went wrong:",e) 
+   
+Best Practice:
+- Catch specific exceptions (not just except: blindly)
+- Use finally for cleanup (e.g,. close files or DB connections) 
+
+************************************************************************************************
+
+Concept 7: Modules & Imports 
+
+What is a Module?
+- A module in just a python file (.py) that contains functions,classes or variables you want to reuse in other files.
+- Imports allow you to reuse code without rewriting it. 
+
+Types Of Modules: 
+Type    Examples
+Built-in - math,os,random,json 
+Third-party - requests, pandas, flask
+Custom - your own .py files 
+
+Built-in Example: math 
+
+import math 
+print(math.sqrt(16))  # 4.0 
+print(math.pi)   # 3.14159 
+
+Third-Party Examples: requests 
+(install using pip install requests) 
+
+import requests 
+response = requests.get("https://api.github.com")
+print(reponse.status_code) # 200 
+
+Custom Module Example 
+
+mymath.py 
+
+def add(a,b):
+    return a+b 
+	
+main.py 
+
+import mymath 
+print(mymath.add(5,3))  #Output 8 
+
+Different Ways to Import 
+
+#Import entire module 
+import math 
+print(math.sqrt(9)) 
+
+#Import specific function 
+from math import sqrt 
+print(sqrt(9))
+
+#Import with alias 
+import math as m
+print(m.pi) 
+
+Reak-Life Need     Use This Module 
+Read/write files  -  os,pathlib 
+
+Work with JSON data - json 
+
+Call APIs  - requests 
+
+Handle dates - datetime 
+
+Data analysis - pandas,numpy 
+
+
+Try this:
+
+import random
+
+num = random.randint(1,10)
+print("Random number:", num) 
+
+**********************************************************************************************
+
+Concept 8: Lamdba + map, filter, reduce 
+
+These are part of functional programming in Python - very useful for data processing, especially with lists or dictionaries 
+
+What is lambda?
+
+- A lamdba is a tiny function written in a single line - often used when you don't want to define a full def function.
+
+Syntax:
+lamdba arguments: expression 
+
+Example:
+add = lambda x,y = x+y 
+print(add(5,3)) #Output 8 
+
+map, filter, and reduce 
+Function - What it does 
+map - Applies a function to each item 
+filter - Keeps items that match a condition 
+reduce - Combines itesm into a single result.
+
+map() Example :
+
+nums = [1,2,3,4] 
+squares = list(map(lambda x: x * x,nums)) 
+print(squares) #Output: [1,4,9,16] 
+
+filter() Example:
+nums = [1,2,3,4,5,6,]
+even = list(filter(lamdba x: x % 2 == 0, nums)) 
+print(even) # Output: [2,4,6] 
+
+reduce() example(needs functools) 
+
+from functools import reduce 
+nums = [1,2,3,4]
+product = reduce(lambda x, y: x * y, nums) 
+print(produce) # Output: 24 
+
+Real-Life Use: 
+
+Convert all names to uppercase   map(lambda...) 
+Filter users over age 8    filter(lambda...) 
+Get total order price reduce(lambda...) 
+
+Try this:
+
+names = ["alice","bob","charlie"]
+upper_names = list(map(lamdba name: name.upper(),names)) 
+print(upper_names)
+
+**********************************************************************************************************************
+
+
+List/Dict Comprehion:  Cleaner data transformations
+Generators & Iterators: Efficient looping over large data
+Decorators : Add features like logging, caching
+OOP : Build scalable systems 
+Exception Handling : Graceful eror management 
+File/JSON Hadling: Configs, data exchange 
+Modules & Packages: Organize code into reusable units 
+Unit testing: Code quality & test automation 
+Concurreny & AsyncIO : Real-time systems, networking, fileI/O 
+API development: Connect with frontend, third party systems. 
+
+**********************************************************************************************************************
+
+What is unit testing?
+- Unit testing is testing small, isolated parts of your code( like functions or classes) to make sure they work correctly.
+- Python has a built-in module for this:
+   
+  unittest 
+  
+- We can also use a thrid-party tool: 
+
+  pytest (We'll do that later)
+  
+Step1: A simple python function 
+
+Let's say you wrote this simple function in a file called calculator.py:
+
+#calculator.py 
+
+def add(a,b):
+   return a + b 
+   
+def subtract(a,b):
+   return a-b 
+   
+Step2: Write Unit Test for This (Using unittest)
+
+create a new file test_calculatror.py:
+
+import unittest
+from calculator import add,substract 
+class TestCalculator(unitest.TestCase):
+   def test_add(self):
+       self.assertEqual(add(2,3),5)
+	   self.assertEqual(add(-1,1),0)
+	   self.assertEqual(add(0,0),0) 
+	   
+   def test_substract(self):
+       self.assertEqual(subtract(5,3),2)
+	   self.assertEqual(subtract(add(0,3),-3)
+	   self.assertEqual(add(10,10),0)
+
+#This runs the test when we run the file 
+if __name__ == '__main__':
+   unittest.main() 
+   
+def is_even(num):
+    if (num %2 == 0):
+        return True
+    return False
+
+
+num = int(input("Enter the number :"))
+print(f"{num} is even :", is_even(num))
+print(f"{num+1} is even :", is_even(num+1)) 
+
+
+import unittest
+class Test_EvenNumber(unittest.TestCase):
+    def test_iseven(self):
+        self.assertTrue(is_even(2));
+        self.assertFalse(is_even(3)); 
+        
+
+if __name__ == '__main__':
+    unittest.main(argv=[' '],exit=False)
+    // Some compilers won't show unittest output unless you run it in a special way. You may need to run it as above.	
+	
+Output:
+Enter the number :4
+4 is even : True
+5 is even : False
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+
+
+Step3: How to Run the Test 
+Open terminal (command line) and run: 
+
+python test_calculator.py 
+
+You'll see something like:
+
+Ran2 tests in 0.000s 
+
+OK
+
+Two tests passed!
+
+What Do these lines Mean?
+
+self.assertEqual(add(2,3),5)
+
+This checks:
+Is there result of add(2,3) equal to 5?
+if yes -> test passed 
+if no -> test failed 
+
+Common Assertion Method in unittest
+
+Method   Checks if...
+assertEqual(a,b)   a == b 
+assertNotEqual(a,b)   a != b 
+assertTrue(x)   bool(x) is True 
+assertFalse(x)  bool(y) is False 
+assertIsNone(x) x is None 
+assertIsNotNone(x) x is not None
+assertRaises(Exception) A specific error is raised 
+
+Example with Exception Handling:
+
+#calculator.py 
+
+def divide(a,b):
+    if b == 0:
+	    raise ValueError("Cannot divide by zero") 
+	return a / b 
+
+In your test file:
+
+# test_calculator.py 
+
+class TestCalculator(unittest.TestCase):
+
+    def test_divide_by_zero(self):
+        with self.assertRaises(ValueError):
+            divide(10,0) 
+
+Folder Structure (Real Projects)
+
+my_project/
+|
+|_ calculator.py 
+|_ test_calculator.py <- test file 
+
+In real-world:
+|
+|-- my_module/
+    |-- calculator.py 
+|-- tests/ 
+    |-- test_calculator.py 
+	
+Summary 
+
+Concept   Example 
+import unitest -   import unittest 
+Define test class - class TestSomething(unittest.TestCase)
+Write test method - def test_add(self): ... 
+Run test - python test_file.py 
+
+Let's now write a unit test example for a Python class, explained step by step - 
+
+Step-by-Step Example: Unit Testing a Class 
+
+Code User Test: BankAccount class 
+
+Create a file called bank.py:
+
+#bank.py 
+class BankAccount:
+    def __init__(self,owner,balance=0):
+	    self.owner = owner 
+		sel.balance = balance 
+		
+	def deposit(self,amount):
+	    if amount <= 0:
+		    raise ValueError("Deposit amount must be positive")
+		self.balance += amount 
+		
+	def withdraw(self,amount):
+	    if amount > self.balance:
+		    raise ValueError("Insufficient funds")
+		self.balance -=amount 
+		
+	def get_balance(self):
+	    return self.balance 
+		
+Step by Step: Write Unit Tests 
+
+Create another file called test_bank.pydantic
+#test_bank.py
+import unittet 
+from bank import BankAccount 
+
+class TestBankAccount(unittest.TestCase):
+    def setUp(self):
+	    """This runs before each test method."""
+		self.account = BankAccount("Sai Saran", 1000)
+	
+	def test_initial_balance(self):
+	    self.assertEqual(self.account.getbalance(), 1000)
+		
+	def test_deposit(self):
+	    self.account.deposit(500)
+		self.assertEqual(self.account.get_balance(), 1500)
+	
+	def test_withdraw(self):
+	    self.account.withdraw(300)
+		self.assertEqual(self.account.getBalnace(), 700)
+		
+	def test_withdraw_insufficient_funds(self):
+	     with self.assertRaises(ValueError):
+		    self.account.withdraw(2000) 
+			
+	def test_deposit_negative_amount(self):
+	     with self.assertRaises(ValueError):
+		    self.account.deposit(-100) 
+# Run tests 
+if __name__ = '__main__':
+   unittest.main() 
+
+********************************************************************************************************************************************   
+
+Python API connection exmaple with unitest, that you can run in an online compiler.
+
+We'll use the requests library to make an API call (e.g., to get a random joke from a public API), 
+and the write a unit test to check if the response is working. 
+
+Step-by-Step: Python API call with unit Test (Spoon-fed style)
+
+1, API We Will Use: 
+
+** We'll use a free public API - it gives random jokes:
+https://official-joke-api.appspot.com/jokes/random 
+
+2. Python code to connect to API 
+
+import requests 
+def get_random_joke():
+    url = "https://official-joke-api.appspot.com/jokes/random" 
+    response = requests.get(url)
+    if response.status_code == 200:
+        print("Response recieved")
+        return response.json() 
+    else: 
+        print("No response from url")
+        return None 
+        
+print(get_random_joke())  
+	   
+Output:
+
+Response recieved
+{'type': 'general', 'setup': 'What did the Dorito farmer say to the other Dorito farmer?', 'punchline': 'Cool Ranch!', 'id': 171}
+	   
+import unittest 
+
+class TestJockAPI(unittest.TestCase):
+     def test_joke_api_status(self):
+	     joke = get_random_joke()
+		 self.assertIsNotNone(joke,"API did not return data")
+		 self.assertIn("setup", joke)
+		 self.assertIn("punchline", joke)
+
+#Run unit tests (important for online compilers)
+if __name__ = "__main__":
+   unittest.main(argv=[' '],exit=False) 
+   
+Output: 
+
+Response recieved
+{'type': 'general', 'setup': 'What kind of dinosaur loves to sleep?', 'punchline': 'A stega-snore-us.', 'id': 252}
+Response recieved
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.313s
+
+OK
+   
+Note: For Online Compiler 
+Some online compilers do not allow internet access,so if you get a 
+ConnectionError, it means the online compiler blocks external HTTP requests. 
+
+What you can do if API calls are blocked:
+-  Use a mock respons in unit tests to simulate the API call.
+-  Let me know if:
+   - you want a mocket API test (on internet required)
+   - you're using a specific online platform (like Replit or Programiz)
+   
+
+mocked API call using unittest.mock.
+This means you can test your API code without needing an actual internet connection - works even online compilers that block HTTP requests.
+
+Step-by-Step:
+
+Mocked API call + Unit Test (No internet Needed) 
+
+1, Function That calls an API (Same as before) 
+
+import requests
+def get_random_joke():
+    url = "https://official-joke-api.appsport.com/jokes/random"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None 
+
+2, Mocked UnitTest Using Unittest.mock 
+
+import unittest
+from unittest.mock import patch 
+
+class TestJokeAPI(unittest.TestCase):
+    @patch('requests.get')
+    def test_joke_api_mocked(self, mock_get):
+        #prepare fake respons data 
+        fake_joke = {
+            "id": 123,
+            "type": "general",
+            "setup": "Why did the developer go broke?",
+            "punchline": "Because he used up all his cache.."
+        }
+        
+        #Configure the mock to return a fake response with .json() and .status_code 
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = fake_joke 
+        
+        #call the function 
+        joke = get_random_joke() 
+        
+        #Assertions 
+        self.assertIsNotNone(joke)
+        self.assertEqual(joke['setup'],fake_joke['setup'])
+        self.assertEqual(joke['punchline'],fake_joke['punchline'])
+        
+if __name__ == '__main__':
+    unittest.main(argv=[' '],exit=False)
+	
+Output:
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+	
+What This Does:
+
+- It mocks requests.get() so no real API call is made.
+- It pretenss the API gave us a predefined joke.
+- you can test your logic offline or in online compilers.
+
+***************************************************************************************************************************
+
+Categories of Built-in in APIs in Python 
+
+Let's divide them into useful real-work groups:
+
+1, Math and Numbers 
+math - Advanced math (sin, cos,sqrt, etc.)
+random - Generate random numbers 
+statistics - Mean, median, mode
+
+import math 
+print(math.sqrt(16)) # 4. 0 
+
+import random 
+print(random.randint(1,10)); #  Random number between 1 and 10 
+
+2, File and OS Access
+** os - Work with folders, files, env vars 
+shutil - copy/move/delete files 
+** pathlib - Modern file path operations
+glob - Find files using patterns 
+
+import os 
+print(os.getcwd()) # Curernt working directory 
+
+from pathlib import Path 
+print(Path("myfile.txt".e).exists())
+
+3, Date and Time 
+** datetime - Work with dates and times 
+** time - Measure delays, sleep
+calender - Show or calculate calendars 
+
+import datetime 
+print(datetime.datetime.now()) # Current date and time 
+
+4, Networking and internet 
+urllib - Work with URLs (GET requests)
+http.client - Low-level HTTP connections 
+socket - Low-level network programming 
+
+from urllib.request import urlopen 
+response = urlopen("https://example.com")
+print(response.status) # 200 = 'OK' 
+
+5, Concurrency/Parallelism 
+threading - Multithreading 
+multiprocessing - parallel processing 
+asyncio - Async I/O programming 
+
+import threading 
+def say_hello():
+    print("Hello from thread")
+
+t = threading.Thread(target=say_hello)
+t.start()
+
+6. Data Structures and Algorithms 
+collections - Advanced data types (deque Counter) 
+heapq - Head queues (priority queue)
+bisect - Binary search tools 
+
+from collections import Counter 
+print(Counter("banana")) # Counter each letter 
+
+7, Testing and Debugging 
+
+** unittest - Unit testing 
+doctest - Test examples in docstrings 
+pdb - debugger tool 
+
+import unittest 
+
+class TestMath(unittest.TestCase):
+    def test_add(self):
+	    self.assertEqual(2+3,5) 
+		
+8, Security / Encoding 
+hashlib - Create hashes like SHA256 
+base64 - Encode/decode base64 
+
+import hashlib 
+print(hashlib.sha256(b"hello").hexdigest()) 
+
+9, Data Handling and Serialization 
+** json - convert python to JSON and back 
+** csv - Read/Write CSV files 
+pickle - Save/load Python objects 
+
+data = {"name": "Sai"}
+json_str = json.dump(data)
+print(json_str) 
+
+10, Built-in Functions (No import needed) 
+
+len() - len([1,2,3])
+sum() - sum([1,2,3])
+max() - max([4,2,9])
+min() - min([4,2,9])
+sorted() - sorted([3,1,2])
+map() - map(str,[1,2,3])
+filter() filter(...)
+reduce() (needs functools)
+zip() - combine lists 
+
+******************************************************************************************************************
+
+What is concurrency?
+
+- Concurrency means: running multiple tasks at the same time(or almost at the same time), so your program is faster and more responsive.
+- Think of it like a kichen where:
+   - The chef is boiling rice,
+   - At the same time frying vegetables,
+   - And making tea 
+- All tasks are happening side-by-side using threads or processes. 
+
+Python concurrency Modules 
+
+There are 3 main ways to achieve concurrenty in Python:
+threading - Best for I/O-bound tasks( like reading files,networks calls)
+multiprocessing - Best for CPU-bound tasks ( heavy calculation )
+asyncio - Best for async I/O ( web APIs,DB calls, etc.) 
+
+Let's start with the easiest one:
+
+Example: Concurrency using threading 
+We'll create two tasks:
+- One function prints "Boiling noodles"
+- Another prints "Frying egg"
+They'll run at the same time using thread.
+
+code with spoon-fed explanation:
+
+import threading # This module helps us create threads 
+import time  # To simulate time delays 
+
+# Taks1 : Boil noodles 
+def boil_noodles():
+    for i in range(3):
+	    print("Boiling noodles...");
+		time.sleep(1) # Simulate 1-second delay 
+		
+# Task2 : Fry egg 
+def fry_egg():
+    for i in range(3):
+	    print("Frying egg...")
+		time.sleep(1) # Simulate 1-second delay 
+
+# Create a thread for each task 
+thread1 = threading.Thread(target=boil_noodles)
+thread2 = threading.Thread(target=fry_egg) 
+
+#Start both threads (runs in parallel) 
+thread1.start();
+thread2.start() 
+
+#Wait for both tasks to complete
+thread1.join()
+thread2.join() 
+
+print("Breakfast ready!") 
+
+What Happnes Here?
+
+threading.Thread(...) - Create a thread to run the function 
+start() - Begin running that thread 
+sleep(1) - Simulates the task taking 1 second 
+join() - Wait until the thread finishes before moving on 
+Result - Both taks run together instead of one after on other 
+
+**************************************************************************************************************
+
+What is concurrencty with Threads?
+- Concurrency using threads is a way to run multiple tasks at (almost) the same time- within the same program, using shared memory. 
+- It's iike:
+  * One brain (Python program)
+  * Doing many things at once (using threads like boiling, frying) 
+  
+Why Use Threads?
+- improves performance when tasks involve waiting (like file I/O, web calls).
+- Threads are lightweight (shared memory, no need to copy data).
+- Used in real-time systems, games, servers, GUIs 
+
+Python Limitation: GIL ( Global Interpreter Lock )
+- Python has a lock that allows only one thread to execute Python bytecode at a time. 
+
+Important:
+- Threads work well for I/O-bound tasks (waiting for files, network, etc.) 
+- Not good for CPU-bound tasks(heavy calculations) -> Use multiprocessing instead 
+
+Thread - A small task insidea program that can run indpendently.
+Main Thread - The default thread that starts first 
+start() - Begins the thread execution 
+join() - Waits for the thread to finish 
+daemon - Runs in background, killed when the main program ends 
+Shared memory - Threads cna access same variables 
+
+import threading
+import time 
+
+# Shared resource 
+shared_list = [] 
+
+# Task 1: Add numbers to a list 
+def add_numbers():
+    for i in range(5):
+	    print(f{[Thread 1] Adding {i}")
+	    shared_list.append(i) # shared memory 
+		time.sleep(1)
+	
+# Task 2: Print current list 
+def print_list():
+    for i in range(5):
+	    print(f"[Thread 2] Current list: {shared_list}")
+		time.sleep(1) 
+		
+# create threads 
+thread1 = threading.Thread(target=add_numbers)
+thread2 = threading.Thread(target=print_list) 
+
+#Start threads
+thread1.start()
+thread2.start() 
+
+print("All tasks done.") 
+
+Shared Memory Insight:
+- Both threads read/write the same shared_list.
+- That's shared memory: It's powerful but can be dangerous(next topic) 
+
+Race Conditions and Synchorization:
+
+Problem: Race condition
+- When two threads access the same variable at the same time,it can cause weird, buggy behaviour 
+Example:
+- Thread 1 writes to a file 
+- Thread 2 reads from the same file 
+*** Conflicit! ***
+
+Solution: Use Locks to synchronize 
+lock = threading.Lock() #  Create lock 
+
+def safe_add():
+    for i in range(5):
+	    with lock: # Only one thread can enter here at a time 
+		   shared_list.append(i) 
+		   
+Threading Internals (for Interview and Depth) 
+
+Thread(target=...) - Function to run in parallelism
+args=(...) - Arguments to pass to the thread 
+name="T1" - Optional thread name 
+is_alive() - Check if the thread is still running 
+setDaemon(True) - Set as background thread(dies with main thread) 
+Lock() - Used to prevent data corruption 
+
+Example 2:
+
+import threading 
+import requests 
+
+#List of image URLs
+image_urls = [ 
+   "https://picsum.photos/200/300",
+   "https://picsum.photos/300/300:,
+   "https://picsum.photos/400/300
+] 
+
+#  Thread worker function 
+def download_image(url, filename):
+    print(f"[START] Downloading {filename}")
+	response = requests.get(url) # get the image data 
+	with open(filename, "wb") as f:
+	    f.write(response.content) # save image to file 
+	print(f"[DONE] {filename} downloaded.")
+
+# Lists to hold all threads 
+threads = []
+
+#Create one thread per image
+for i, url in enumerate(image_urls):
+    filename = f"image_{i}.jpg" 
+	t = threading.Thread(target=download_image,args=(url, filename))
+	threads.append(t)
+	t.start() # Starting downloading in a thread 
+
+#Wait for all threads to finish 
+for t in threads:
+    t.join() 
+
+print("All images downloaded.") 
+
+Example 3 :
+
+Let's add a progress bar for each image download, so you get real-time visual feedback while downloading in threads.
+
+Goal
+We will:
+1, Download multiple images using threads.
+2, Show a progress bar for each download
+
+Requirements:
+
+Intall this first:
+pip install tqdm 
+
+tqdm -> used to create progress bars
+requests -> to fetch data 
+threading -> to run downloads in parallel 
+
+Complete Working code with progress Bar: 
+
+import threading
+import requests
+from tqdm import tqdm
+
+#List of image URLs
+image_urls = [
+  "http://picsum.photos/500/300",
+  "http://picsum.photos/600/400",
+  "http://picsum.photos/700/500" 
+]
+
+# Thread worker function with progress bar 
+def download_image_with_progress(url, filename):
+    print(f"[START] Downloading {filename}")
+	
+	response = requests.get(url,stream=True) #stream=True 
+	total_size = int(response.headers.get('content-length',0)) 
+	chunk_size = 1024 #1KB 
+	
+	with open(filename, "wb") as f, tqdm(
+	     desc=filename,
+		 total=total_size,
+		 unit="8",
+		 unit_scale=True,
+		 unit_divisor=1024,
+		 leave=True
+	) as bar: 
+	   for chunk in response.iter_content(chunk_size=chunk_size):
+	       if chunk:
+		      f.write(chunk)
+			  bar.update(len(chunk)) 
+	
+	print(f"[DONE] {filename} downloaded.")
+	
+# Create and start threads 
+threads = []
+
+for i,url in enumerate(image_urls):
+    filename = f"image_{i}.jpg"
+    t = threading.Thread(target=download_image_with_progress, args=(url, filename))
+    threads.append(t)
+    t.start() 
+
+# Wait for all threads to finish 
+for t in threads:
+    t.join() 
+
+print("All images download with progress.") 
+
+Spoon-Fed Explanation:
+
+Line - Explanation 
+
+requests.get(...,stream=True)  - Download data in chuncks instead of full in one go 
+tqdm(...) - Creates a progress bar 
+response.iter_content(...) - Reads file in chunks of 1KB 
+bar.update(len(chunk)) - Move the progress bar forward as each chunk is written.
+threading.Thread(...) - Runs each download in its own thread 
+
+*****************************************************************************************************************
+
+- Python's multiprocesssing,ideal for scaling CPU-heavy tasks across cores.
+- I've included a core cxample using worker processes and queues. 
+
+Why Use Multiprocessing?
+
+- Python's GIL blocks true multi-core execution for CPU-bound code.
+- Multiprocesssing bypasses the GIL by creating separate processes, each with its own Python Interpreter and memory space.
+- Great for tasks like data crunching, image processing, or scientific computing. 
+
+Thread vs PRocesses 
+
+Feature-Threads-Processes  
+1, Memory-Shared-Separate 
+2, GIL Impact- Yes (no real parallel CPU use)- No (paralled across cores)
+3, Best for - I/O-bound (network,disk) - CPU-bound(heavy computation) 
+4, Overhead - Low (cheap context switches) - Higher (process creation & IPC costs) 
+
+Multiprocessing Example: Worker Pool + Queues 
+- This pattern is classic for distributing tasks and collecting results using multiple processes.
+
+# multiprocessing_example.py 
+import time, random 
+from multiprocessing import Process, Queue, current_process, freeze_support 
+
+def calculate(func, args):
+    return '%s: %s%s = %s' % (
+	   current_process().name,
+	   func.__name__, args,
+	   func(*args)
+	)
+  
+def worker(task_queue, result_queue):
+    for func, args in iter(task_queue.get, 'STOP');
+        	
+			
+**********************************************************************************************************************
+	
+Concepts 8:
+
+What is a Decorators?
+
+- A decorator is a way of add extra behaviour to a function without changing its original code.
+- It's often used for : Logging, Authentication, Timing, and Validation. 
+
+Basic Syntax:
+
+def decorator(func):
+   def wrapper():
+       # Do Something before 
+	   result = func() 
+	   # Do something after 
+	   return return 
+	return wrapper 
+	
+Then use @decorator_name above a function
+
+Step by Step Example:
+
+Step1: Define a Decorator 
+
+def say_hello_decorator(func):
+    def wrapper():
+	   print("Before the function")
+	   func() 
+	   print("After the function")
+	return wrapper 
+
+Step 2: Apply it to a function
+
+@say_hello_decorator 
+def greet():
+   print("Hello")
+   
+greet() 
+
+Output:
+Before the function
+Hello!
+After the function 
+
+Behind the scenes:
+
+greet = say_hello_decorator(greet)
+greet()
+
+Real-world Example: Logging 
+
+def log(func):
+    def wrapper(*args,**kwargs):
+	    print(f"Calling {func.__name__}")
+		return func(*args,**kwargs)
+    return wrapper 
+	
+@log 
+def add(a,b):
+    return a+b 
+	
+print(add(5,3)) 
+
+Output:
+Calling add
+8 
+
+Real-Life Use in Web Apps (like Flask):
+
+def require_login(func):
+    def wrapper(*args, **kwargs):
+	    if not user_logged_in():
+		   return "Access Denied"
+		return func(*args, **kwargs) 
+	return wrapper 
+	
+Apply to route:
+
+@app.route("/dashboard")
+@require_login 
+def dash_board():
+    return "Welcome!"
+	
+def emoji_decorator(func):
+   def wrapper():
+       print("smile emoji",end=" ")
+	   func()
+	   print(" smile emoji")
+   return wrapper 
+   
+@emoji_decorator 
+def welcome():
+    print("Welcome to Python!",end="")
+
+welcome() 
+
+*************************************************************************************************************
+
+
+Concept 10: Context Manager (with keyword) 
+
+What is a Context Manager?
+A,
+A context manager is used to manage resources(like files, DB connections) safetly and automatically -
+without forgetting to close or clean up.
+
+Basic Syntax:
+
+with open("file.txt","r") as f:
+    data = f.read() 
+
+As soon as the block ends, the file is automatically closed - even if there's an error. 
+
+Without with (not safe):
+f = open("file.txt","r")
+data=f.read()
+f.close() # You must remember to close 
+
+If you program crashes before .close() the file stays open!
+
+Safe way with with:
+with open("file.txt","r") as f:
+   print(f.read()) 
+Even if an error occurs inside the block, Python closes the file. 
+
+Used in Read Life For:
+Resource Type  - Example 
+File handling - with open(...)
+DB connection - with db.connect() as conn:
+Lock(thread) - with lock 
+Temporary files - with tempfile.TemporaryFile() 
+
+How it Works internally:
+When you use with, Python looks for two special methods:
+. __enter__  - What to do when block starts
+. __exit__ - What to do when block ends 
+
+Example with your own class:
+
+class MyManager:
+  def __enter__(self):
+     print("Start")
+     return self 
+ 
+  def __exit__(self,exc_type,exc_val,exc_tb):
+     print("End") 
+	 
+with MyManager():
+    print("Doing work")
+	
+with MyManager():
+   print("Doing work")
+   
+Output:
+Start 
+Doing work 
+End 
+
+Try this:
+with open("sample.txt","w") as f:
+    f.write("Learning Python Context manager!\n")
+
+Then open simple.txt to confirm
+
+
+*********************************************************************************************************************************************************************
+*********************************************************************************************************************************************************************
+*********************************************************************************************************************************************************************
+Core Python Concepts 
+
+1, Variables and Data Types (int, float, str, list, tuple, dict, set)
+2, Conditional Statements (if, elif, else)
+3, Loops (for, while,break, continue)
+4, Functions (def, *args, **kwargs)
+5, List/Dict comprehensions
+6, Exception Handling (try, except, finally, raise)
+7, string manipulation 
+8, Type Hints (for better code readbility and tooling) 
+
+Object Oriented Programming (OOP) 
+
+1, Classes and Objects
+2, Inheritance (single, multiple)
+3, Encapsulation, Abstractions
+4, Polymorphism
+5, __init__, __str__,__repr__,__eq__,and other magic methods
+6, Property decorators ( @property, @classmethod, @staticmethod) 
+
+Advanced Python 
+
+1, Decorators
+2, Generators and yield 
+3, Closures and Lamdbas 
+4, Context Managers (with,custom context managers)
+5, Iterators and Iterable 
+6, *args,**kwargs usage in depth 
+
+Modules and Packages 
+
+1, Organizing code into packages.
+2, __init__.py, module, importing 
+3, Buit-in modules: os, sys, math, datetime, json, logging 
+4, Third=party libraries: requests, pandas,numpy, etc 
+
+File Handling 
+
+1, Reading and Writing text, CSV, and JSON files 
+2, File I/O moudles: r,w,a,rb,wb 
+3, Using with open(...) as f: for safe file handling 
+
+Data Structure 
+
+1, Lists, Tuples, Sets, Dictionaries 
+2, Stack, Queue(via collections.deque)
+3, Heap (via heapq), PriorityQueue 
+4, Tree,Graphs (via custom classes or external libraries like network)
+5, Searching & Sorting algorithm 
+
+Design Principles 
+
+1, SOLID Principles 
+2, DRY (Don't Repeat Yourself), KISS(Keep it Simple, Stupid) 
+3, Clean Code pratices 
+4, Modular Design 
+5, Separation of Concerns 
+
+Design Pattern 
+1, Singleton, Factory, Observer, Strategy,Command 
+2, MVC or MVVM (commonly used in frameworks like Django)
+3, Decorator Pattern
+4, Adapter and Facade Patterns 
+
+Concurrencly and Parallelism 
+1, threading module 
+2, multiprocessing module 
+3, asyncio, await, async def 
+4, Thread safety, GIL, process pool 
+
+UnitTesting and Mocking 
+1, unittest,pytest,nose2 
+2, mock, patch
+3, writing testable and modular code 
+4, Test coverage tools 
+
+Web development 
+1, Flask/Django/FastAPI 
+2, RESTful API development 
+3, Middleware, routing, request/response lifecycle 
+4, JSON serialization, schema validation 
+
+Database Interaction
+1, SQL (via sqlite3,psycopg2,etc.)
+2, ORMs: SQLAlchemy, Django ORM 
+3, Connection pooling, migrations
+4, CRUD operations 
+
+API development & Integration
+1, REST APIs using Flask/FastAPI
+2, API versioning, authentication, error handling 
+3, Consuming external APIs using requests 
+4, JWT/OAuth2 authentication 
+
+Logging and Debugging 
+1, Python logging module 
+2, log levels (DEBUG,INFO,WARNING,CRITICAL)
+3, Profiling with cProfile 
+4, Debugging with pdb, logging, IDEs 
+
+DevOps & Deployment 
+1, Virtual Envirnoments (venv, pipenv, conda)
+2, Dockerizing Python applications
+3, Git for version control 
+4, CI/CD (jenkins, GitHub Actions)
+5, Hosting on AWS, Azure or GCP 
+
+Popular Libraries 
+1, requests - HTTP requests
+2, pandas, numpy - Data manipulation
+3, matplotlib, seaborn - visualization 
+4, sqlalchemy - ORM 
+5, pytest - Unit testing 
+6, asyncio - Asynchronous programming 
+
+System Design & Scalability 
+1, Designing scalable Python systems.
+2, Microservices architecture 
+3, Load balance, caching (Redis, Memcached)
+4, Asynchronous task queues ( Celery + RabbitMQ) 
+
+**********************************************************************************************************
+
+What is Dictionary Comprehension?
+
+- it's a quick way to create a dictionary using a loop in one line.
+
+1, Basic Syntaxt 
+
+{key: value for item in iterable}
+
+2, Example 1: Create a dict from a list 
+
+Task: You have a list of fruits. You want to create a dictionary where key = fruit name, value = length of the fruit name.
+
+fruits = ['apple','banana','cherry'] 
+fruits_length = { fruit: len(fruit) for fruit in fruits} 
+print(fruits_lengths)
+
+Output:
+
+{'apple': 5, 'banana': 6, 'cherry':6} 
+
+3, Example 2: Square numbers using dict 
+
+Task: From numbers 1 to 5, create a dictionary with key = number, value = square of number 
+
+squares = {num: num**2 for num in range(1,6)}
+print(square)
+
+Output:
+
+{1:1, 2:4, 3:9, 4:16, 5:25}
+
+4, Example 3: Use condition (if) 
+
+Task: Create a dict from mumbers 1 to 10, but only inlcude even numbers 
+
+even_squares = {num: num**2 for num in range(1,11) if num % 2 == 0}
+
+Output:
+{2: 4, 4:16, 6:36, 8:64, 10: 100}
+
+5, Example 4: Swap keys and values 
+
+Task: you have a dictionary. Flip it so that keys become values and values become keys. 
+
+original = {'a': 1, 'b': 2, 'c' : 3}
+flipped = { v: k for k,v in original.items()}
+print(flipped) 
+
+Output:
+{ 1:'a',2:'b'',3:'c'}
+
+6, Example 5:  Change values in a dict 
+
+Task: Increase the salary of each employee by 1000.
+
+salaries = {'John': 4000, 'Alice': 5000, 'Bob': 3000}
+update = { name : salary + 1000 for name,salary in salaries.items() }
+print(updated)
+
+Output:
+{'John': 5000, 'Alice': 60000, 'Bob': 40000}
+
+7, Example 6: Filter Items in a dict 
+
+Task: Keep only items where salary is greater than or equal to 4000
+
+salaries = {'John':4000, 'Alice':5000, 'Bob':3000}
+filtered  = { name : salary for name,salary in salaries.item() if salary >= 4000 }
+print(filtered) 
+
+Output:
+
+{'John': 4000, 'Alice': 5000}
+
+******************************************************************************************************************
+
+Python Type Hints (also called type annotations). 
+Tye hints help you write cleaner, readable, and safter code.
+
+What are Type Hints?
+
+- Type hints tell Python (and other developer + IDEs) what type of value a variable, function parameter, or return value should have. 
+
+# wihtout type hint 
+def greet(name):
+    return "Hello " + name 
+	
+# With type Hint 
+def greet(name: str) -> str:
+    return "Hello " + name 
+	
+1, Hint for variables
+
+name: str = "Alice"
+age: int = 30 
+height: float = 5.0 
+is_active: bool = True 
+
+Now, if you accidentlayy do:
+age="thirty"
+Your IDE or a type checker like mypy will warn you.
+
+2, Hint for Functions:
+
+Simple example:
+
+def add(a: int,b: int) -> int: 
+    return a + b
+	
+Meaning: 
+- a should be an int 
+- b should be an int 
+- Returns an int 
+
+Try calling:
+
+print(add(2,3)) # OK 
+print(add("2","3")) # IDE will warn: wrong type 
+
+3, Functions with Different Types 
+
+def full_name(first: str, last:  str) -> str
+    return first + " " + last 
+	
+4, Optional Parameter 
+
+Sometimes a parameter can be None.
+
+from typing import None 
+
+def greet(name: Optional[str]) -> str:
+    if name:
+	    return "Hello" + name 
+	return  "Hello there"
+	
+Meaning: name can be str or None 
+
+5, List, Tuple, Dict in Type Hints 
+
+List of integers:
+
+from typing import List 
+
+def total(number: List[int]) -> int:
+    return sum(numbers)
+	
+Dictionary (str->int):
+
+from typing import Dict 
+def show_scores: Dict[str, int]]) -> None:
+    for name, score in scores.items():
+	    print(f"{name} got {score}") 
+		
+Typle of fixed types:
+
+from typing import Tuple 
+
+def get_user() -> Tuple[str,int]:
+    return ("Alice", 30)
+	
+6, Return Nothing (None)
+
+def log(message: str) -> None:
+    print("LOG:", message) 
+	
+7, Any Type (Use only when needed) 
+
+If the type can be anything:
+
+from typing import Any 
+def print_value(x: Any) -> None:
+    print(x) 
+	
+8, Union ( Multiple allowed types) 
+
+If the type can be anything:
+
+from typing import Union 
+def square(x: Union[int, float])
+    return x * x 
+	
+- x can be int or float 
+
+9, Callable (for passing functions) 
+
+from typing import Callable 
+
+def apply_operation(x: int, y: int, operation: Callable[[int, int], int]) -> int:
+    return operation(x,y) 
+	
+#Example usage 
+result = apply_operation(2,3,lambda a,b: a + b)
+print(result)
+
+10, Type Aliases 
+Give a custom name to complex types 
+
+from typing import List, Tuple 
+Coordinates = List[Tuple[int,int]]
+
+def draw_path(path: Coordinates) -> None:
+    for x,y in path:
+        print(f"Go to ({x},{y})") 
+
+*********************************************************************************************		
+
+What is raise?
+
+- raise is used to manually throw an exception (an error)
+- It lets you stop the program if something goes wrong or if you want to force an error. 
+
+1, Raise a Basic Error 
+
+raise ValueError("This is a value error")
+
+This will stop the program and print 
+
+ValueError: This is a value error 
+
+2, Raise Error Inside a Function 
+
+Task: Don't allow negative age 
+
+def set_age(age):
+    if age < 0:
+	   raise ValueError("Age cannot be negative")
+	print("Age set to:", age) 
+	
+	set_age(20) # OK 
+	set_age(-5) # will raise an error 
+
+Output:
+Age set to: 25 
+ValueError: Age cannot be negative 
+
+3, Raise Custom Exceptions
+
+You can create your own exception class.
+
+class TooYoungError(Exception):
+    pass 
+	
+def vote(age):
+    if age < 18:
+	   raise TooYoungError("You must be at least 18 to vote")
+	print("You can vote!")
+
+vote(20) # OK 
+vote(15) # will raise TooYoungError 
+
+4, Using raise with try/except 
+
+You can catch an error and raise another one. 
+
+try:
+    x = int("abc") # this will raise valueError 
+    except ValueError:
+	   raise RunTimeError("Conversion failed") 
+Output:
+RunTimeError: Conversion failed 
+
+5, Re-raising the same exception 
+
+Sometimes, you just want to catch and re-throw the same error:
+
+try:
+    num = int("abc")
+except ValueError as e:
+     print("Caught ValueError:",e)
+	 raise  # Re-throws the same ValueError 
+	 
+6, Raise TypeError if wrong input 
+
+def multiply_by_two(x):
+    if not isinstance(x,int):
+	     raise TypeError("Only integers allowed")
+	return x * 2 
+	
+print(multiple_by_two(5)) # 10 
+print(multiply_by_two("5")) # TypeError 
+
+********************************************************************************************************
+ 	
+What is __repr__ in Python?
+
+- It's a special method used to define how your object is represented (displayed) when printed or inspected.
+- It tells Python what to show when you do 
+ 
+  print(my_object)
+  repr(my_object)
+  
+Think of __repr__ as:
+- A string version of the object that is meant for developer/debugging.
+
+1. Basic Example without __repr__
+class Dog:
+    def __init__(self,name):
+	    self.name = name
+
+dog = Dog("Bruno")
+print(dog)
+
+Output:
+<__main__.Dog object at 0x00001A>
+
+That's not helpful at all!
+
+2, With __repr__ Method 
+
+class Dog:
+    def __init__(self,name):
+	    self.name = name 
+	
+	def __repr__(self):
+	    return f"Dog(name='{self.name}')" 
+		
+dog = Dog("Bruno")
+print(dog)
+
+Output:
+Dog(name='Bruno')
+
+- Much better! Now when you print(dog), it tells you exactly what it is 
+
+3. Why use __repr__?
+
+Use Cases - Explanation 
+Debugging - Helps developer see what's inside
+Logging - Easy to log object state 
+Shell Inspection - Looks clean when printed in Python shell 
+Copy-pasteable - Can recreate the object if designed well 
+
+4. __repr__ vs __str__ 
+
+Method - Used For - Purpose 
+__repr__ - Developer View - Precise & Unambiguous 
+__str__  - User-friendly View - Readable for end users 
+
+if __str__ is not defined, Python uses __repr__ as fallback. 
+
+Example with Both:
+
+class Dog:
+   def __init__(self,name):
+       self.name = name 
+	   
+   def __repr__(self):
+       return f"Dog(name='{self.name}')"
+   
+   def __str__(self):
+       return f"My dog's name is {self.name}"
+	   
+dog = Dog("Rocky")
+pring(dog)  # Uses __str__ 
+print(repr(dog)) # Uses __repr__ 
+
+5. Best Practice for __repr__
+Your __repr__ string should:
+- Be unambigous 
+- Show important attributes 
+- Optionally, be copy-pasteable code 
+
+Bonus: Custom Class Example 
+
+class Book:
+   def __init__(self,title,author):
+       self.title = title 
+	   self.author = author 
+  	
+   def __repr__(self):
+       return f"Book(title='{self.title}', author='{self.author}')"
+	   
+book = Book("Harry Potter","J.K. Rowling")
+print(book) 
+
+Output:
+Book(title='Harry Potter', author='J.K. Rowling') 
+
+Summary 
+
+Thing to Remember - Value 
+What is __repr__?  - Developer-friendly object view 
+When is it called? - repr(obj) or print(obj) if __str__ not defined 
+Return value? - Must return a string 
+
+****************************************************************************************************************************
+
+What is __eq__ in Python?
+
+__eq__ is a special method that tells Python how to compare two objects using the == operator.
+
+Think of it like this:
+__eq__ answers the question: Are these two objects equal? 
+
+Default behaviour without __eq__
+class Dog:
+    def __init__(self,name):
+	    self.name = name 
+		
+dog1 = Dog("Bruno")
+dog2 = Dog("Bruno")
+
+print(dog1 == dog2)
+
+Output:
+False 
+
+Why?
+Because by default, Python checks if they are the same object in memory, not if their values are equal.
+
+Let's fix that with __eq__
+
+class Dog:
+    def __init__(self,name):
+	    self.name = name 
+		
+	def __eq__(self,other):
+	    return self.name == other.name 
+		
+dog1 = Dog("Bruno")
+dog2 = Dog("Bruno")
+
+print(dog1 == dog2)
+
+Output:
+True 
+Now Python knows: If two dogs have the same name, they are equal 
+
+A Better Example with Multiple Attributes 
+
+class Book:
+    def __init__(self,title,author):
+	    self.title = title 
+		self.author = author 
+		
+	def __eq__(self,other):
+	    return self.title == other.title 
+		
+book1 = Book("Harry Potter", "J.K. Rowling")
+book2 = Book("Harry Potter", "J.K. Rowling") 
+book3 = Book("Percy Jackson", "Rick Riordan") 
+
+print(book1 == book2) # True 
+print(book1 == book3) # False 
+
+Bonus: Add __repr__ for Better Display 
+
+class Book:
+    def __init__(self, title, author):
+	    self.title = title 
+		self.author = author 
+	
+	def __eq__(self,other):
+	    return self.title == other.title 
+		
+	def __repr__(self):
+	    return f"Book(title='{self.title}', author='{self.author}')"
+		
+	print(Book("Harry", "Auther A") == Book("Harry","Author A"))  # True 
+	
+Summary Table 
+Feature - What it Does 
+__eq__ - Defines how == compares two objects 
+Without __eq__ - Compares memory addresses (false)
+With __eq__ - Compares attributes or values 
+Return type - Must return True or False 
+
+Common Mistake 
+
+Don't forget to check that the object types match:
+
+def __eq__(self,other):
+    if not isinstance(other, Book):
+	   return False 
+	return self.title == other.title 
+	
+*****************************************************************************************************
+
+What are Magic Methods in Python?
+
+Magic methods are special methods that start and end with double underscore.
+They are also called:
+- Dunder methods(short for Double UNDerscore)
+- Special methods 
+- Unsed to customize object behaviour 
+
+Think of them like:
+- Hidden switches that let your class interact with Python's built-in features.
+
+Magic Methods in Python :
+
+1, __init__ - Called when object is created 
+2, __str__  - Print-friendly string 
+3, __repr__ -  Debug string 
+4, __len__ - Length of object 
+5, __eq__ - Equally check 
+6, __add__ - Add objects 
+7, __getitem__ - Index access 
+8, __call__ - Call object like a function 
+9, __del__ - When object is deleted. 
+
+
+******************************************************************************************************
+
+The @property decorator in Python is used to define a method that behaves like an attribute.
+It allows you to define getter.setter and deleter functions for a class attribute in an elegant and Pythonic way. 
+
+Use case: Why Use @property?
+When you want:
+1, Attribute-like access (e.g,. obj.attr) with additional logic.
+2, To hide internal data (encapsulation).
+3, To control access  to class attributes(validation, computation).
+
+Basic Example with Line-By-Line Explanation:
+Let's look at a complete example of a class using @property, @<property>.setter, and @<property>.deleter.
+
+Example: Temperature Converter (Celsius <-> Fahrenheit) 
+
+class Temperature:
+// Defines a class named Temperature.
+    def __init__(self, celsisus):
+	// The __init__method initialze the class with a temperature in Celslus.
+	    self._celsisus = celsisus 
+		// _celsius is a private-like variable (conventionally prefixed with _ to include internal use). 
+	  
+	@property
+	def celsisus(self):
+	    """Getter with validation"""
+		return self._celsisus 
+	// @property turns the method celsius() into a getter
+	// Now you can do: temp.celsius instead of temp.celsius().
+	// This allows attribute style access while still using a method internally. 
+		
+	@celsius.setter 
+    def celsisu(self, value):
+	    """Setter with validation"""
+		if value < -273.15:
+		   raise ValueError("Temperature below -273.15 C is not possible.")
+        self._celsisus = value 		
+	// The @celsisus.setter defines a setter method for celsius.
+	// You can now do temp.celsisus = 25, and it will run the logic.
+	// It validate the input and only then updates _celisus 
+	
+    @property
+    def fahrenheit(self):
+        """Computed property, no setter defined"""
+        return (self._celsius * 9/5) + 32 
+    // This is another computed property.
+    // It does not have a setter, so temp.fahrenheit = 90 will raise an error.
+    // Every time you access temp.fahrenheit, it computes it from _celsius.
+	
+	Usage:
+	temp = Temperature(25)  # Set initial temperature  
+	print(temp.celsius)     # Accesses the @poperty getter 
+	temp.celsisus = 30      # Calls the @property setter 
+	print(temp.fahrenheit)  # Calls the @property method -> 86.0 
+	temp.celsius = -300     # Raises ValueError (because of validation) 
+	
+Benefits of Using @property 
+Feature - with @property 
+Clean attribute syntax - obj.attr 
+Built-in validation - Yes 
+Computed values - Yes(@property) 
+Encapsulation Easy via _attr
+
+Summary
+- Use @property when you want to add logic to attribute access without changing the syntax. 
+- Helps enforce encapsulation and validation while keeping your API user-friendly.
+- You can define 
+   - @property -> getter 
+   - @<property>.setter 
+   - @<property>.deleter -> deleter 
+   
+ *********************************************************************************************************************** 
+	
+What is @classmethod?
+
+- @classmethod is a decorator used to define a class-level method.
+- Unlike a regular method (which takes self), a class method takes cls as the first parameter.
+- It can access or modify class state(i.e., class variables) but not instance state directly.
+- It is commonly used for:
+  - Alternative constructors 
+  - Factory methods 
+  - Modifying class variables.
+  
+Example: Alternate Constructor Using @classmethod 
+
+class Employee:
+// Defines a class named Employee. 
+     raise_percentage = 1.05 
+	 // A class variable shared among all instances of the class. 
+	 
+	 def __init__(self,name,salary):
+	     self.name = name 
+		 self.salary = salary 
+	// Constructor method to initialze name and salary. 
+		 
+	 def apply_raise(self):
+	     self.salary *= self.raise_percentage 
+	// Regular instance method that uses the class variable raise_percentage to update the salary. 
+		 
+	 @classmethod 
+	 // This tells Python that the method that follows is a class method, not an instance method 
+	 def from_string(cls, emp_str):
+	     ""Alternatvie constructor to create an object from a string.""" 
+		 name, salary = emp_str.split("-")
+		 return cls(name, float(salary)) 
+	 // cls refers to the class itself,not an instance. 
+	 // The method parses the input string (like "Alice-50000") and returns a new instance of the class using cls(...).
+	 // This is a common alternative constructor pattern 
+	 
+Usage Example: 
+    emp1 = Employee("John", 60000)
+	emp2 = Employee.from_string("Alice-50000")
+	
+	print(emp1.name,emp2.salary) #John 60000 
+	print(emp2.name,emp2.salary) #Alice 50000
+	
+	emp2.apply_raise()
+    print(emp2.salary) 
+	
+When to use @classmethod? 
+
+Use Case   -   Example 
+Alternative constructor - from_string() 
+Factory methods - create_employee() 
+Modifying class variables - change_raise_percentage()
+Singleton/shared state creation - get_instance() 
+
+Comparsion: @staticmethod vs @classmethod vs instance method 
+
+Feature - Instance Method - Class Method - Static Method 
+
+Decorator - None - @classmethod - @staticmethod 
+
+First argument- self(object) - cls(class) 
+
+Access Instance? = Yes - No 
+
+Access class? - Yes (indirectly) - Yes - Yes 
+
+Use Case - Behaviour per object - Alternative constructors - Utility/helper method 
+
+************************************************************************************************************************
+
+What is a Stack?
+
+A Stack is a data structure where:
+- The last item added is the first one to come out.
+- This is called LIFO: Last in, First Out. 
+
+Think of it like: A stack of plates - you can only take the top plate first.
+
+Operations in Stack:
+
+- There are 2 main operations:
+
+1, Push(Item) -> Add item to the top.
+2, pop() -> Remove the top item.
+
+Ohters(optional):
+3, peek() -> Look at the top item.
+4, is_empty() -> Check if the stack is empty.
+
+Use Cases of Stack:
+
+- Undo feature in apps(last change removed first)
+- Backtracking (games, puzzles)
+- Function calls (when a function calls another, and so on)
+- Expression parsing (like (a + b)*c)
+- Browser history (go back to the last page)
+
+How to implement to Stack in Python?
+
+Method 1 : Using Python List 
+
+stack = [] 
+#push elements 
+stack.append(10)
+stack.append(20)
+stack.append(30)
+print("Stack after pushes:", stack)
+
+#pop elements 
+top_item = stack.pop()
+print("Top item now:" , top_item) 
+
+# Peek to top 
+if stack:
+   print("Top item now:", stack[-1]) 
+   
+# Is stack empty?
+print("Is stack empty?",len(stack) == 0) 
+
+Output:
+Stack after pushes:[10,20,30]
+Popped item: 30 
+Top item now: 20
+Is stack empty? False 
+
+Method 2: Create a Stack Class (for better understanding)
+
+class Stack:
+    def __init__(self):
+	    self.item = [] 
+	
+	def push(self,item):
+	    self.item.append(item) 
+		
+	def pop(self):
+	    if not self.is_empty():
+		   return self.items.pop()
+		return None 
+		
+    def peek(self):
+	    if not self.is_empty():
+		   return self.itemss[-1] 
+		return None 
+		
+	def is_empty(self):
+	    return len(self.items) == 0 
+		
+#Example usage 
+stack = Stack()
+stack.push("A")
+stack.push("B")
+stack.push("C")
+print("Top item:", stack.peek())
+print("Popped: ", stack.pop())
+print("Is empty?",stack.is_empty()) 
+
+Real-world Example: Brower History 
+
+history = Stack()
+history.push("Home page")
+history.push("About Us")
+history.push("Contact")
+
+print("Going back from:", history.pop()) # Back from "Contect" 
+print("Now at:", history.peek()) # Should show "About" 
+
+
+******************************************************************************************************************************	
+
+What is a Queue?
+
+A queue is a data structure where:
+- The first item added is the first one to come out.
+- This is called FIFO: First In,First Out
+Think of it like: People standing in a line: The person who comes first, leaves first.
+
+Operations in Queue:
+1, enqueue(item) -> Add item at the end of the queue.
+2, dequeue() -> Remove item from the front.
+
+Optional:
+3, peek() -> See the item at the front.
+4, is_empty() -> Check if the queue is empty.
+
+Use Cases of Queue:
+- Print Queue(printer prints first request first)
+- Customer Service Queue 
+- Task scheduling (like CPU task queue)
+- Breadth-First Search in algorithms
+- Data streaming (process oldest data first) 
+
+How to implement a Queue in Python?
+
+Method1: Using collections.deque (Best practice)
+
+from collections import deque 
+queue = deque() 
+#Enqueue (Add)
+queue.append("A")
+queue.append("B")
+queue.append("C")
+print("Queue afer enqueues:", queue)
+
+#Dequeue (Remove)
+front_item = queue.popleft()
+print("Dequeued item:", front_item)
+
+#Peek at front
+if queue:
+   print("Front item now:", queue[0]) 
+   
+#Is queue empty?
+print("Is queue empty?", len(queue) == 0)
+
+Output:
+Queue after enqueues : deque(['A','B','C'])
+Dequeued item : A
+Front item now: B
+Is queue empty? False 
+
+Method2 : Create a Queue Class 
+
+from collections import deque 
+
+class Queue:
+     def __init__(self):
+	     self.items = deque()
+		 
+	 def enqueue(self,item):
+	     self.items.append(item)
+		 
+	 def dequeue(self):
+	     if not self.is_empty():
+		    return self.items.pop()
+		 return None 
+		 
+	 def peek(self):
+	     if not self.is_empty():
+		    return self.items[0] 
+	     return None 
+ 
+     def is_empty(self):
+         return len(self.items) == 0
+		 
+# Example usage 
+queue = Queue()
+queue.enqueue("Sai")
+queue.enqueue("Siran")
+queue.enqueue("Support")
+print("Front item:", queue.peek()) 
+print("Dequeued:", queue.dequeue()) 
+print("Now front:", queue.peek()) 
+print("Is empty?", queue.is_empty()) 
+
+Real-world Example : Call Center Queue 
+
+call_queue = Queue()
+call_queue.enqueue("Caller 1")
+call_queue.enqueue("Caller 2")
+call_queue.enqueue("Caller 3")
+
+print("Serving:", call_queue.dequeue()) # First caller served 
+print("Next caller:", call_queue.peek()) # Peek next 
+
+***********************************************************************************************************
+
+1. What is a Heap?
+
+- A heap is a special tree-based data structure that satisfies the heap property:
+  1, Min-Heap: Parent node <= child nodes 
+  2, Max-Heap: Parent node >= child nodes 
+
+- Python's built-in module heapq implements min-heap 
+
+2.  Min-Heap using heapq 
+
+import heapq 
+
+heap = [] 
+
+#Insert into heap 
+heapq.heappush(heap,10)
+heapq.headpush(heap,1)
+heapq.headpush(heap,5) 
+
+#Extract min 
+min_elem = headq.headpop(heap) 
+print("Min element:", min_elem) 
+
+#Peek (without removing)
+print("Top element:", heap[0]) 
+
+Output:
+Min element: 1
+Top element: 5 
+
+3. Max-Heap using heapq (trick)
+
+- Python doesn't have a built-in max-heap, but you can simulate it using negative values:
+
+import heapq 
+max_heap = []
+
+#Push negative values 
+heapq.heappush(max_heap, -10)
+heapq.heappush(max_heap, -1)
+heapq.heappush(max_heap, -5)
+
+#Pop and convert back 
+max_val = heapq.headpop(max_heap(
+print("Max element:", max_val)
+
+4, Heapify an existing list 
+
+nums = [5,2,8,1]
+heapq.heapify(nums)
+print("Heapified list:", nums) 
+
+5, Custom Objects in Heap 
+
+You can use a tuple where the first element is the priority:
+
+import heapq
+tasks = [] 
+heapq.heappush(tasks,(2,'do laundry'))
+heapq.heappush(tasks,(1, 'write code'))
+heapq.heappush(tasks, (3, 'read book')) 
+ 
+while tasks:
+    print(heapq.heappop(tasks)) 
+
+6. Manual Heap implementation (Optional) 
+
+Here's a simple min-heap class without using heapq: 
+
+class MinHeap:
+    def __init__(self):
+       self.heap = []
+
+    def insert(self, val):
+       self.heap.append(val)
+	   self._heapify_up(len(self.heap)-1) 
+	   
+	def pop(self):
+	   if len(self.heap) == 0:
+	      return None 
+	   self._swap(0, len(self.heap)- 1)
+       min_val = self.heap.pop()
+       self._heapify_down(0)
+       return min_val 
+ 
+    def _heapify_up(self, index):
+        parent = (index - 1) // 2 
+        if index > 0 and self.heap[index] < self.heap[parent]:
+           self._swap(index,parent)
+           self._heapify_up(parent) 
+
+    def __headify_down(self,index):
+        left = 2 * index + 1 
+       right = 2 * index + 2 
+       smallest = index 
+        
+       if left < len(self.heap) and self.heap[left] < self.heap[smallest]:
+	       smallest = left 
+		   
+	   if right < len(self.heap) and self.heap[right] < self.heap[smallest]:
+	       smallest = right 
+		   
+	   if smallest != index:
+	       self._swap(index, smallest)
+		   self._heapify_down(smallest)
+		   
+	def _swap(self, i, j):
+	    self.heap[i],self.heap[j] = self.heap[j], self.heap[i] 
+		
+Feature - Built-n - Custom Class 
+Min Heap - Easy and fast - You can build your own 
+Max Heap - Use -value trick - Implement directly 
+Custom Logic - With tuple priority - Full control 
+
+**************************************************************************************************************
+
+In Python, a priority queue can be implemented in several ways. 
+Here's a complete guide with code examples using:
+
+1. heapq (Fastest, Lightweight) 
+- Priority queues are best implemented using the heapq module.
+
+Example:
+
+pq = [] 
+heapq.heappush(pq, (2,"Write report")) # (priority, task) 
+heapq.heappush(pq, (1,"do laundry")) 
+heapq.heappush(pq, (3, "attend meeting")) 
+
+while pq:
+   priority, task = heapq.heappop(pq) 
+   print(f"{task} (priority: {priority})) 
+   
+Output:
+do laundry (priority: 1)
+write report (priority 2)
+attend meeting (priority: 3)
+
+- Min-priority by default (lowest number = highest priority) 
+
+2. queue.PriorityQueue(Thread-Safe) 
+
+pq = PriorityQueue()
+pq.put((2, "write report"))
+pq.put((1, "do laundry"))
+pq.put((3, "attend meeting")) 
+
+while not pq.empty():
+    priority, task = pq.get() 
+	print(f"{task} (priority: {priority}") 
+	
+- Slower than heapq due to thread locks 
+
+3. Max-Priority Queue (using heapq) 
+
+Python's heap is min-heap by default, so far for max-priority, use negative values:
+
+import heapq 
+
+pq = [] 
+heapq.heappush(pq, (-2,"Write report"))
+heapq.heappush(pq, (-1, "do laundry")) 
+heapq.heappush(pq, (-3, "attend meeting")) 
+
+while pq:
+    priority, task = heapq.heappop(pq) 
+	print(f"{task} {priority: {-priority})")
+	
+4, Custom Object in Priority Queue 
+
+- You can customize comparsion by wrapping data in a tuple (priority, count, data) to avoid tie-breaker issues. 
+
+import heapq 
+import itertools 
+
+pq = []
+counter = itertools.count()
+
+heapq.heappush(pq, (1,next(counter),"do laundry")) 
+heapq.heappush(pq, (2,next(counter),"Write code"))
+heapq.heappush(pq, (3,next(counter),"read book")) 
+
+while pq:
+    priority, _, task = heapq. heappop(pq) 
+	print(f"{task} (priority: {priority})") 
+	
+Summary:
+
+Use Case - Method - Notes 
+
+Fastest prioirty Queue - heapq - Min-heap only, use tuple (priority, item) 
+Thread-safe priority queue - queue.PriorityQueue - Use in multithreaded apps 
+Max-heap behaviour - heapq with -priority - Simulates max-priority 
+Custom objects / tie-breaker - Add count or comparator - Useful when priorities are equal 
+
+Real-World Applications of Priority Queue:
+
+Use Case - Description 
+
+Task Scheduler - Run high-priority jobs first (as shown above) 
+Operating System - CPU process scheduling 
+Networking - Packet transmission prioritization (QoS) 
+Search Algorithms - A* algorithm (priority = cost + heuristic) 
+Event Handling in Games - Handle high-prioirty events like collisions or powerups 
+Customer Support Systems - Respond to high-priority (e.g., VIP) tickets first 
+
+
+**********************************************************************************************************************************
+          	   
+How to implement and use trees in Python-starting from basic tres structures to binary trees and more advanced types lie binary search tree (BST) 
+
+1, Basic Tree Node Structure 
+
+Simple Tree (Generic Tree-n-ary) 
+
+class TreeNode:
+    def __init__(self, value):
+	    self.value = value 
+		self.children = [] 
+	
+	def add_child(self, child_node):
+	    self.children.append(child_node) 
+		
+	def display(self, level = 0):
+	    print(" " * level * 2 + str(self.value))
+		for child in self.children:
+		    child.display(level + 1) 
+			
+Example :
+
+root = TreeNode("A")
+child1 = TreeNode("B")
+child2 = TreeNode("C")
+
+root.add_child(child1)
+root.add_child(child2) 
+
+child1.add_child(TreeNode("D"))
+child2.add_child(TreeNode("E"))
+
+root.display 
+
+Output:
+A 
+ B
+  D
+  E 
+ C 
+  F 
+  
+2. Binary Tree (Each node has <= 2 children) 
+ 
+Binary Tree Node:
+
+class BinaryTreeNode: 
+   def __init__(self,value):
+       self.value = value 
+	   self.left = None 
+	   self.right = None 
+	   
+Example Tree:
+#Creating nodes 
+root = BinaryTreeNode(1) 
+root.left = BinaryTreeNode(2)
+root.right = BinaryTreeNode(3) 
+root.left.left = BinaryTreeNode(4)
+root.left.right = BinaryTreeNode(5) 
+
+3. Tranversals 
+
+Inorder(Left, Root, Right) 
+
+def inoder(node):
+    if node:
+	     inorder(node.left)
+		 print(node.value, end=" ")
+		 inorder(node.right) 
+		 
+Preorder (Root,Left,Right) 
+
+def preorder(node):
+    if node:
+	     print(node, value, end=" ")
+		 preorder(node.left)
+		 preorder(node.right) 
+		 
+		 
+Postorder (Left, Right, Root)
+
+def postorder(node):
+    if node:
+	   postorder(node.left)
+	   postorder(node.rigth)
+	   print(node.value,end=" ")
+	   
+4, Binary Search Tree (BST) 
+
+BST Insert and Search 
+
+class BSTNode:
+    def __init__(self,value):
+	    self.value = value 
+		self.left = None 
+		self.right = None 
+		
+	def insert(self, val):
+	   if val < self.value:
+	       if self.left:
+		      self.left.insert(val) 
+		   else 
+		      self.left = BSTNode(val) 
+	   else: 
+	      if self.right:
+		       self.right.insert(val) 
+		  else: 
+		       self.right = BSTNode(val) 
+			   
+def search(self,value):
+    if val == self.value:
+	   return True 
+	elif val < self.value:
+	   return self.left.search(val) 
+	else:
+	   return self.right.search(val) 
+	   
+bst = BSTNode(10)
+bst.insert(5)
+bst.insert(20)
+bst.insert(8) 
+
+print(bst.serach(8)) # True 
+print(bst.search(15)) # False
+
+Real-World Use Cases for Trees:   
+
+Tree Type - Use Case 
+
+General Tree - File system, HTML DOM tree 
+Binary Tree - Expression evaluation, Huffman encoding 
+Binary Search Tree - Fast lookup/sort of data(maps, sets)
+Trie - Auto-complete, spell-check 
+AVL/Red-Black -  Balance BST for consistent O(log n) performance 
+Segment Tree - Range query problems (min, sum, max over subarrays)  
+
+*****************************************************************************************************************
+
+1. What is a Graph?
+
+A, A graph is a collection of: 
+. Nodes ( also called vertices)
+. Edges (connections between nodes)
+
+There are different types:
+. Directed / Undirected 
+. Weight / Unweighted 
+
+2. Graph Representations in Python 
+
+A. Adjacency List (Most common) 
+graph = {
+    'A': ['B','C'],
+	'B': ['D'],
+	'C': ['D'],
+    'D': []
+}
+
+B. Adjacency Matrix 
+nodes = ['A','B','C']
+graph = [
+   [0,1,1], # A->B, C 
+   [0,0,1], # B -> C 
+   [0,0,0], # C 
+]
+
+3. Graph Class in Python ( Adjacency List)
+
+class Graph:
+    def __init__(self):
+	    self.adj = {} 
+	
+	def add_node(self,node):
+	    if node not in self.adj:
+		   self.adj[node] = [] 
+		   
+	def add_edge(self, u, v):
+	    self.add_node(u) 
+		self.add_node(v)
+		self.adj[u].append(v) # Directed graph 
+		
+    def display(self):
+	    for node in self.adj:
+		    print(f"{node} -> {self.adj[node]}") 
+			
+Usage:
+   g = Graph()
+   g.add_edge('A','B')
+   g.add_edge('A','C')
+   g.add_edge('B','D')
+   g.add_edge('C','D')
+   g.display() 
+   
+4. Graph Traversals 
+
+A. Depth-First Search (DFS) 
+
+def dfs(graph, start, visited=None):
+    if visited is None:
+	   visited = set() 
+	visited.add(start) 
+	print(start,end= ' ')
+	for neighbor in graph[start]:
+	    if neighbour not in visited:
+		   dfs(graph, neighbor, visited)
+		   
+B. Breadth-First Search (BFS) 
+
+from collections import deque
+
+def bfs(graph, start):
+    visited = set() 
+    queue = deque([start]) 
+    while queue:
+        node = queue.popleft() 
+        if node not in visited:
+            print(node, end=' ')
+            visited.add(node) 
+            queue.extend(graph[node]) 
+
+5. Weighted Graph (Using Tuple Pairs) 
+
+weighted_graph = {
+   'A': [('B', 3),('C',1)],
+   'B': [('D',4)],
+   'C': [['D',2)],
+   'D': []
+}			
+	
+6, Using NetworkX (External Library) 
+
+Install it with:
+
+pip install networkx matplotlib 
+
+import networkx as nx 
+import matplotlib.pyplot as plt 
+
+G = nx.DiGraph() 
+G.add_Edge("A","B")
+G.add_edge("A","C")
+G.add_edge("B","D") 
+G.add_edge("C","D")
+nx.draw(G, with_labels=True)
+plt.show() 
+
+Real-World Use Case of Graphics:
+
+Use Case - Graph Type 
+
+Route finding (maps) - Weighted directed 
+Social networks - Undirected 
+Web crawling - Directed 
+Job sheduling - Directed Acyclic Graph 
+Recommendation systems - Bipartite graphs 
+
+Summary: 
+
+Concep - Description 
+Graph structure - Nodes + edges 
+Adjacency list - Efficient for spare graphs 
+DFS/BFS - Traversal algorithms 
+Weighted graph - For shortedst paths, like Dijkstra 
+NetworkX - Powerful graph library for Python 
+
+********************************************************************************************************************	
+
+Searching 
+
+Binary Search ( Unordered or Ordered List) 
+
+Algorithm : Transverse each element and check for a match 
+
+Code: 
+def linear_search(arr, target):
+    for i, value in enumerate(arr):
+        if value == target:
+           return i 
+    return -1
+
+Example: print(linear_search([10,20,30,40],30)) # Output: 2 
+
+Time Complexity: O(n) 
+
+2, Binary Search ( Only on sorted lists) 
+
+Algorithm:
+- Divide the list in half repeatedly.
+- Compare mid element to the target 
+
+Iterative Version:
+
+def binary_search(arr,target):
+    left, right = 0, len(arr)-1
+	while left <= right:
+	   mid = (left + right) // 2 
+	   if arr[mid] == target:
+	      return mid 
+	   elif arr[mid] < target:
+	      left = mid + 1 
+	   else 
+	      right = mid -1 
+	return -1 
+	
+Example:
+print(binary_search([1,3,5,7,9],7)) #Output: 3 
+
+Time Complexity: O(log n)
+
+3, Ternary Search ( On sorted arrays - divides into 3 parts) 
+
+Code:
+
+def ternary_search(arr, left, right, target):
+     if left <= right:
+	    mid1 = left + (right - left) // 3
+		mid2 = right - (right - left) // 3 
+		if arr[mid1] == target:
+		   return mid1 
+		if arr[mid2] == target:
+		   return mid2 
+		if target < arr[mid1]:
+		    return ternary_search(arr, left, mid1-1, target) 
+		elif target > arr[mid2]:
+		    return ternary_search(arr, mid2+1, right, target) 
+		else 
+		    return ternary_search(arr,mid1+1, mid2-1, target) 
+			
+	 return -1 
+	 
+Example:  
+arr = [1,3,5,7,9,11,13]
+print(ternery_search(arr,0,len(arr)-1,9)) # Output: 4 
+
+Time Complexity: O(log3 n) 
+
+4, Jump Search (Sorted array - jump ahead and then linear search) 
+
+Code:
+
+import math 
+
+def jump_search(arr, target):
+    n = len(arr) 
+	step = int(math.sqrt(n))
+	prev = 0 
+	
+	while prev < n and arr[min(step,n)-1] < target:
+	     prev = step 
+		 step += int(math.sqrt(n))
+		 if prev >= n:
+		    return -1 
+	
+	for i in range(prev, min(step,n)):
+	    if arr[i] == target:
+		   return i
+		   
+	return -1 
+	
+Time Complexity: O{sqrt-root n) 
+
+5, Exponential Search (For unbounded/infinite - size arrays) 
+
+def exponential_search(arr,target):
+    if arr[0] == target:
+	   return 0 
+	i = 1 
+	while i < len(arr) and arr[i] <= target:
+	   i *= 2 
+	return binary_Search(arr[:min(i,len(arr))] 
+	
+// Combine with binary search 
+
+6, Interpolation Search (Improved binary search - sorted & uniformly distributed) 
+
+def interpolation_search(arr, target):
+    low, high = 0, len(arr) - 1 
+	
+	while low <= high and arr[low] <= target <= arr[high]:
+	    pos = low + ((high -low) * (target - arr[low]) // (arr[high] - arr[low]))
+	
+	    if arr[pos] == target:
+		   return pos 
+		elif arr[pos] < target:
+		   low = pos + 1 
+		else:
+		   high = pos - 1 
+	return -1
+	
+Time Complexity: O(log log n) best, O(n) worst 
+
+7. Search in a 2D Matrix 
+
+Binary Search on flattened matrix:
+
+   def search_matrix(matrix, target):
+       if not matrix:
+	      return False 
+	   rows, cols = len(matrix), len(matrix[0])
+	   left, right = 0, rows * cols - 1 
+	   
+	   while left <= right:
+	      mid = (left + right) // 2 
+		  r, c = divmod(mid, cols)
+		  if matrix[r][c] == target:
+		     return True 
+		  elif matrix[r][c] < target:
+		     left = mid + 1 
+		  else:
+		     right = mid - 1 
+	   return False 
+	   
+Comparison Table: 
+
+Search Type - Best Use Case - Time Complexity - Requires Sorted?
+
+Linear Search - Small or unsorted data - O(n)  -  No 
+Binary Search - Sorted Arrays - O(log n) - Yes 
+Jump Search - Sorted arrays, better than linear - O(squareroot n)  - Yes 
+Ternary Search - Sorted arrays - O(log3 n)
+Interpolation Search - Sorted & uniformly disturbed data - O(log log n) - Yes 
+Exponential Search - Unbounded/spare array  - O(logn n) - Yes 
+
+
+**************************************************************************************************************
+
+       
+Python's Bulit-in Sorting Algorithm:
+
+Sorted() and .sort() use Timsort: 
+
+- TimSort is a hybrid algorithm derived from MergeSort and Insertion Sort.
+- Time Compexity:
+    Best: O(n) (nearly sorted)
+	Average: O(n log n)
+	Worst: O(n log n) 
+- Stable: Yes(maintains order of equal elements)
+
+  numbers = [4, 2, 7, 1, 3]
+  sorted_numbers = sorted(numbers)
+
+Implementing Common Sorting Algorithms:
+
+Bubble Sort:
+
+def bubble_sort(arr):
+    n = len(arr) 
+    for i in range(n):
+       for j in range(n-i-1):
+           if arr[j] > arr[j+1]:
+               arr[j],arr[j+1] = a[j+1],arr[j]
+return arr 
+
+Time: O(n2) 
+Best for: Learning purposes only 
+
+Selection Sort:
+
+def selection_sort(arr):
+    n = len(arr)
+    for i in range(n):
+       min_idx = i 
+       for j in range(i+1,n):
+           if arr[j] < arr[min_idx] 
+              min_idx = j 
+       arr[i], arr[min_idx] = arr[min_idx],arr[i] 
+    reurn arr 
+
+Time: O(n2) 
+Best for: Simple data or education use 
+
+Insertion Sort:
+
+def insertion_sort(arr):
+    for i in range(1,len(arr)):
+       key = arr[i]
+       j = i - 1 
+       while j >= 0 and arr[j] > key:
+          arr[j+1] = arr[j] 
+          j -= 1 
+       arr[j+1] = key
+    return arr 
+
+Time:
+Best: O(n) (if already sorted)
+Worst: O(n2) 
+Good for: Small or nearly sorted lists 
+
+Merge Sort:
+
+def merge_sort(arr):
+    if len(arry) <= 1:
+        return arr 
+    mid = len(arr)//2 
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:]) 
+    return merge(left,right) 
+
+def merge(left, right):
+    result = []
+    i = j = 0 
+    while i < len(left) and j < len(right):
+        if left[i] <= right[i]:
+            result.append(left[i])
+            i += 1  
+        else:
+            result.append(right[j])
+            j += 1 
+    result.extend(left[i:])
+    result.extend(right[j:])
+
+Time: O(n log n)
+Space: O(n)
+Stable: Yes 
+Best for: Recursively sorted large data 
+
+Quick Sort:
+
+def quick_sort(arr):
+    if len(arr) <= 1:
+       return arr 
+    pivot = arr[0]
+    less = [ x for x in arr[1:] if x <= pivot]
+    greater = [ x for x in arr[1:] if x > pivot]
+    return quick_sort(less) + [pivot] + quick_sort(greater) 
+
+Time: 
+- Best: O(n log n)
+- Worst: O(n2) (unbalanced pivot)
+- In-place version is more memory efficient. 
+
+Performance Comparsion:
+Algorithm - Time Complexity (Best)
+Timsort(built-in) - O(n)
+Bubble Sort - O(n) 
+Selection sort - O(n2) 
+Insertion Sort - O(n)
+Merge Sort - O(n log n)
+Quick Sort - O(n log n)
+
+Real-World Applications:
+
+Algorithm - Real Use Case 
+
+TimSort - Python, Java (Arrays.sort), Android SDK
+Merge Sort - External sorting (huge files), Linked Lists 
+Quick Sort - In-memory sorting, Randomized algorithms 
+Insertion Sort - Small datasets, partically sorted data 
+Bubble/Selection - Teaching purposes only 
+
+*******************************************************************************************************************************
+
+The SOLID principles are five foudational design principles that help developers write cleaner, more maintainable, 
+and scalable software - regardless of the language.
+
+1, S - Single Responsibility Principle (SRP) 
+- A class should have only one reason to change. 
+
+Python Example:
+class Report:
+   def __init__(self,content):
+       self.content = content 
+	   
+   def generate(self):
+      return f"Report: {self.content}" 
+	  
+class ReportPrinter:
+    def print(self, report: Report):
+	    print(report.generate()) 
+		
+USe Case: Separating report generation from report presentation. 
+
+Real-World Scenario: In a billing system, the logic tha calculates an invoice shouldn't also be responsible for sending it via email. 
+
+2. O - Open/Closed Principle (OCP) 
+- Software entities should be open for extension but closed for modification. 
+
+Python Example:
+from abc import ABC, abstractmethod 
+
+class PaymentProcessor(ABC):
+   @abstractmethod 
+   def pay(self, amount): pass 
+   
+class PayPal(PaymentProcessor):
+   def pay(self, amount):
+       print(f"Paid {amount} using PayPal.")
+	   
+class Stripe(PaymentProcessor):
+   def pay(self,amount):
+       print(f"Paid {amount} using Stripe.")
+
+def process_payment(processor: PaymentProcessor, amount):
+   processor.pay(amount) 
+
+USe Case: Easily add new payment methods without touching existing logic. 
+
+Real-World Scenario: Adding a new crypto payment option to an e-commerence platform without breaking current code.
+
+3. L - Liskov Substitution Principle (LSP)
+- Derived classses must be substitutable for their base classes. 
+
+Python Example:
+class Bird:
+   def fly(self):
+       pass 
+	   
+class Sparrow(Bird):
+   def fly(self):
+       print("Sparrow flying")
+
+#Wrong 
+class Ostrich(Bird):
+   def fly(self):
+      raise NotImplmentedError("Ostrich can't fly") 
+	  
+Use Case: Avoid designing hierarchies where child classes break parent expectations. 
+Real-World Scenario: Avoid creating APIs that allow invalid subsitutions (e.g., a mute speaker in a sound system hierarchy).
+
+4. I - Interface Segregation Principle (ISP)
+- Clients should not be forced to depend on interfaces they do not use. 
+- Python Example using Abstract Base Classes:
+
+Abstract Base Classes:
+
+class Printer(ABC):
+   @abstractmethod 
+   def print(self): pass 
+   
+class Scanner(ABC):
+   @abstractmethod 
+   def scan(self): pass 
+   
+class AllInOnePrinter(Printer,Scanner):
+   def print(self):
+       print("Printing...")
+   def scan(self):
+       print("Scanning...")
+	   
+class SimplePrinter(Printer):
+     def print(self):
+	     print("Just printing...") 
+		 
+Use Case: Avoid bloated interfaces; break them into smaller ones. 
+Real-World Scenario: Don't force a basic printer to implement scan or fax features in an office device manager system. 
+
+5, D - Dependency Inversion Principle (DIP)
+- Depend on abstractions, not on concretions. 
+
+Python Example:
+
+class EmailService:
+     def send(self, message):
+	     print(f"Sending email: {message}") 
+		 
+class Notification:
+     def __init__(self, service):
+         self.service = service 
+
+     def notify(self, message):
+         self.service.send(message)
+
+- Now you can inject any message service:
+
+class SMSService:
+      def send(self, message):
+	      print(f"Sending SMS: {message}") 
+		  
+Use Case: Allow injecting different services at runtime(Email, SMS, Push).
+Real-World Scenario: In a notification system, let the user choose between email,Slack, or SMS for alerts.
+
+
+***********************************************************************************************************************************************************************
+
+DRY in Software: DRY = Don't Repeat Yourself 
+
+Definition: DRY is a software developement principle aimed at reducing duplication of code, logic, or data. 
+
+"Every piece of knowledge must have a single, unambiguous, authoritative representation within a system". 
+
+Goal:
+Avoid repetition to:
+
+- Improve maintainability 
+- Reduce bugs 
+- Make code cleaner and more modular.
+- Enable reuse 
+
+Why is repetition bad?
+- Changes must be made in multiple places, increasing chances of mistakes.
+- Duplicated logic leads to inconsistent behaviour. 
+- More code means more testing and debugging. 
+
+Example in Python:
+
+Without DRY:
+
+def get_user_details():
+    #Connect to database 
+	conn = connect_to_db()
+	cursor = conn.cursor()
+	#Fetch user 
+	cursor.execute("SELECT * FROM users")
+	return cursor.fetchall() 
+	
+def get_order_details():
+    #Connect to database 
+    conn = connect_to_db() 
+    cursor = conn.cursor() 
+    # Fetch orders 
+    cursor.execute("SELECT * FROM orders")
+    return cursor.fetchall() 
+
+With DRY:
+
+def fetch_data(query):
+     conn = connect_to_db()
+     cursor = conn.cursor()
+     cursor.execute(query)
+     return cursor.fetchall() 
+
+#Reuse:
+users = fetch_data("SELECT * FROM users")
+orders = fetch_data("SELECT * FROM orders") 
+
+Real-World Use Cases:
+
+Use Cases - DRY Application 
+
+Web APIs - Common request handlers (eg., authentication, error handling) resued via decorators or middleware 
+
+Frontend forms - Form validation logic abstracted into reusable functions.
+
+Game development - Physics or rendering engines reused across characters or levels 
+
+DevOps - Common shell scrpts, Jenkins pipeline stages, or Docker configs templated instead of duplicated. 
+
+Techiques to Apply DRY:
+
+- Functions and Classes (encapsulate repeated logic)
+- Inheritance/Composition(reuse behaviour)
+- Loops (avoid repeated blocks of similar code)
+- Decorators (reusable wrappers in Python)
+- Templates (HTML,emails,YAML, etc.)
+- Configuration files (avoid harcoded values)
+- Modules and packages (sharedf code across projects)
+
+Be Careful of:
+- Over-abstraction following DRY too aggressively can lead to unreadable or over engineered code.
+- False duplication - sometimes things just look similar but serve different purposes(use caution before refactoring).
+
+DRY vs WET 
+
+DRY - Don't Repeat Yourself 
+WET - Write Everything Twice/ We Enjoy Typing (bad practice) 
+
+***********************************************************************************************************************************
+	 
+KISS Principle in Software Development 
+
+KISS - Keep it Simple, Stupid 
+
+Definition: The KISS principle emphasizes that simplicity should be a key goal in design, and that unnecessary complexity should be avoided. 
+
+Most systems work best if they are kept simple rather than made complex 
+
+Goal:
+
+Write code that is:
+- Easy to undersand 
+- Easy to maintain
+- Easy to test and debug 
+- Less prone to bugs 
+
+Why KISS Matters:
+
+Complex Code - Simple Code 
+
+Hard to debug - Easier to trace logic 
+
+Harder to onboard new devs - New devs can contribute quickly 
+
+Prone to duplication and errors - Clean, consistent logic 
+
+Hard to extend or refactor - Easier to evolve 
+
+Examples in Python:
+
+without KISS:
+
+def compute(x):
+    if x > 10:
+	    if x < 100:
+		   return x * 2 
+		else:
+		   return x * 3 
+    else:
+	   if x > 5:
+	      return x * 4
+		else:
+		  return x * 5 
+		  
+With KISS:
+     def compute(x):
+	    if 10 < x < 100:
+		   return x * 2 
+		elif x > 100:
+		   return x * 3 
+		elif 5 < x <=10:
+		   return x * 4 
+		else:
+		   return x * 5 
+		   
+Real-World Scenarios:
+
+Domain - KISS Application 
+
+Web APIs - Keep endpoints clear and minimal. Avoid over-engineered request handling.
+CI/CD - Jenkins pipelines or GitHub Actions kept clean and modular. Avoid complex shell logic inline.
+Game Dev - Don't over-engineer that input system or game loop. Keep logic modular.
+Data Pipelines - Split ETL into small, testable, and pluggable steps.
+
+How to Apply KISS:
+- Break large functions into smaller ones.
+- Use meanful variable and function names
+- Avoid unnecessary abstraction.
+- Prefer standard libraries over writing custom logic.
+- Write comments only when the code isn't self-explanatory.
+- Use design patterns only when needed. 
+
+KISS in Design:
+
+Bad:
+class Manager:
+   def __init__(self,employee,department,salary,hours):
+       # 20+ lines of logic 
+	   
+Better:
+   class Manager:
+      def __init__(self,employee):
+	      self.employee = employee 
+	
+	  def assign_department(self,dept):
+	      self.employee.department = dept 
+		  
+Tip: Simplicity is the soul of efficieny 
+
+*****************************************************************************************************************************
+
+Here's a Python-focused clean code guide - tuned to Python's style, conventions, and pythonic mindset 
+
+1, Follow PEP 8 (Python Style Guide)
+- Use 4 spaces for indentation (never tabs).
+- Keep line <= 79 characters.
+- Use blank lines to separate functions and classes.
+- Name variables and functions in snake_case classes in PascalCase 
+- Constants go in UPPER_CASE 
+
+Example:
+#Good 
+def get_user_data(user_id):
+    pass 
+	
+#Bad 
+def GetUserData(UserId)"
+    pass 
+
+2, Use Meaningful Names
+- Be explicit, not cryptic.
+- Names should describe what something is, not how it works 
+
+#Good 
+user_birth_year = 1990 
+
+#Bad 
+uby = 1990 
+
+3, Keep Functions Short and Focused 
+- Each function should do one thing.
+- Avoid large blocks of code.
+	
+#Good 
+def validate_user(user):
+    pass 
+	
+def save_user(user):
+    pass 
+	
+#Bad 
+def validate_and_save_user(user):
+    pass 
+	
+4, Leverage Python's Built-ins & Comprehensions 
+- Prefer list/dict/set comprehensions over loops when they are readable.
+- Avoid unnecssary for loops. 
+
+#Good 
+squares = [ x**2 for x in range(10)]
+
+#Bad 
+squares = []
+for x in range(10):
+   squares.append(x**2) 
+   
+5, Use Python's Truthy Values 
+- Python allows concise conditions.
+
+#Good 
+if items:
+   print("List is not empty")
+   
+#Bad 
+if len(items) > 0:
+   print("List is not empty") 
+   
+6, Avoid Magic Numbers & Strings 
+- Use constants or enums instead of hardcoding.
+
+MAX_RETRIES = 3
+
+if retries > MAX_RETRIES:
+   break 
+   
+7, Write DocStrings (PEP 257)
+- Use triple quotes to document modules, classes, and functions.
+- Explain purpose, parameters, and return values.
+
+def calculate_area(radius):
+    """ calculate area of a circle .
+	Args:
+	     radius(float): Circle radius.
+	Returns:
+	     float: Area of the circle.
+	""" 
+	return 3.14 * radius ** 2 
+	
+8, Handle Exceptions Explicitly 
+- Catch only what you expect.
+- Avoid except: without specifying an exception type. 
+
+#Good 
+try:
+    value = int(user_input)
+except ValueError:
+    print("Invalid number")
+
+#Bad 
+try:
+    value = int(user_input) 
+except:
+    print("Error")
+	
+9, Avoid Mutable Default Arguments 
+- Using mutable types (list,dict) as default arguments can cause unexcepted bugs.
+
+#Good 
+def add_item(item, item_list=None):
+    if item_list is None:
+	   item_list = [ ]
+	item_list.append(item)
+	return item_list 
+	
+#Bad 
+def add_item(item, item_list=[]):
+    item_llist.append(item)
+	return item_list 
+	
+10, Use with for Resource Management 
+- Ensures files. sockets, and DB connections are closed properly.
+
+   with open("data,txt") as file:
+       content = file.read()
+
+11, Keep Imports Clean 
+ - Group imports: standard library -> third-party -> local modules.
+ - Avoid wilecard imports (from module import *).
+
+ import os 
+ import sys 
+ import requests 
+ from myapp.utils import logger 
+
+12, Use Type Hints (PEP 484) 
+- Helps with readbility and static analysis tools like mypy.
+
+def greet(name: str) -> str:
+    return f"Hello, {name}"
+	
+13, Test your code 
+
+- use pytest or unitest 
+- write unit tests for each function's core logic.
+
+def test_add():
+    assert add(2,3) == 5 
+	
+14. Refactor Regularly 
+- Break large classes into smaller ones.
+- Remove dead code.
+- Rename unclear variables.
+
+15. Golden Python Rule:
+- Write code that reads like english and works like python. 
+
+**********************************************************************************************************************************
+
+In python, modular design means breaking your program into small, independent, reusable modules instad of one gaint script. 
+- Each module as a single, well-defined purpose, makeing your code easier to maintian, test and extend.
+
+1, Why Modular Design?
+A, Readability - Smaller files are easier to understand 
+   Reusability - Modules can be reused in other projects.
+   Maintainability - Changes in one module don't break unrelated parts.
+   Testability - Modules are easier to unit test. 
+   
+2. How to Design Modules in Python?
+A, 
+a) Use the Single Responsibility Principle 
+- Each module should handle one concern 
+  
+#file: db_manager.py 
+def connect_to_db():
+    pass 
+
+def save_data(data):
+    pass 
+
+#file: report_generator.py 
+def generate_report(data):
+    pass 
+
+b) Group Related Functions and Classes 
+- Put related functions together.
+- Avoid utility.py dumping grounds unless they're truly shared helpers.
+
+c) Use Packages for Large Projects
+- A package is just a folder with an __init__.py file.
+
+my_app/
+   __init__.py 
+   db/
+     __init__.py 
+	 connection.py 
+	 queries.py 
+  reports/
+     __init__.py
+	 generator.py
+     formatter.py 
+
+d) Control What's Public 
+Use __all__ in 
+__init__.py to expose only intended symbols.
+
+__all__ = ["connect_to_db", "save_data"] 
+
+e) Avoid Circular import 
+
+Bad:
+# db.py imports reports.py 
+# reports.py imports db.py 
+
+Fix by:
+- Moving shared code to separate module.
+- Passing objects instead of importing back.
+
+f) Keep Config Separate 
+- Put constants and configurations in a separate file:
+
+#config.py 
+DB_HOST = "localhost"
+DB_PORT = 5432 
+
+g) Import Explicitly 
+Good:
+from db.connection import connection_to_db 
+
+Bad:
+from db.connection import * 
+
+
+3. Example Modular Project 
+
+Folder Structure
+    ecommerence/
+	    __init__.py 
+		products/
+		    __init__.py 
+			models.py 
+			services.py 
+		orders/
+		    __init__.py
+			models.py 
+			services.py 
+		utils/
+		    __init__.py 
+			logger.py 
+			
+Usage:
+
+from ecommerence.products.services import list_all_products 
+from ecommerence.orders.servides import create_order 
+
+4, Best Pratices:
+- one module = one responsbility.
+- Keep modules under 500 lines where possible,
+- Write unit tests per module 
+- Document modules with docstrings.
+- Use absolute imports for clarity.
+
+***********************************************************************************************************************
+
+ What is Separation of Concerns (Soc)?
+Separation of concerns is a software design principle wehre a program is divided into distinct sections, each responsible 
+   for one specific functionality or concern.
+   - Each module/class/function does one thing and nothing else. 
+   - Make code cleaner, easiter to maintain, test and extend. 
+   
+Think of it like a restaurant kitchen:
+ - One chef handles appetizers, another desserts, another main course.
+ - They don't all do everything, which avoids confusion and mistakes.
+ 
+
+Example in Python (Simple)
+- Suppose we have program to register a user, save to DB, and send email.
+
+Bad Design (No Soc)
+
+def register_user(name,email):
+   #Validate input 
+   if not name or not email:
+      return "Invalid input"
+	  
+   #Save to database 
+   conn = open_db_connection()
+   conn.execute(f"INSERT INTO users(name,email) VALUES('{name}','{email}')")
+   conn.close()
+   
+   #Send welcome email 
+   send_email(email, "Welcome!", "Thanks for registering")
+   
+Problems:
+- Single function does 3 different things: validation, database, email 
+- Hard to test or reuse parts individually.
+
+Good design (with SOC)
+
+def validate_user(name,email):
+    if not name or not email:
+	    raise ValueError("Invalid input") 
+		
+def save_user_to_db(name,email):
+    conn = open_db_connection()
+	conn.execute(f"INSERT INTO users(name,email)) VALUES('{name}','{email}')")
+	conn.close() 
+
+def send_welcome_email(email):
+   send_email(email, "Welcome!", "Thanks for registering")
+   
+def register_user(name,email):
+    validate_user(name,email)
+	save_user_to_db(name,email)
+	send_welcome_email(email)
+	
+Advantages:
+- Each function handles one concern.
+- Easy to test validate_user() independently.
+- Easy to replace setn_welcome_email() with another emall system
+- Clear, readable, maintaintable code.
+
+
+Use Cases:
+1, Web Applications:
+   - Controller : Handles HTTP requests 
+   - Service/Business Layer : contains business logic 
+   - Data Access Layer : Handles DB queries 
+   - Template/View : Displays data to user 
+   
+2, Data Pipelines 
+   - Exact: Get data from source 
+   - Transform: Clean and proces data 
+   - Load: store into database or data warehouse.
+   
+3, Microservices 
+   - Each service handles one business capability(e.g. Payment service, User service)
+   - Easier to scale, deploy, and maintain
+   
+4, FrontEnd Development :
+   - Components : One UI Component per widget 
+   - State Management: Handles only app state 
+   - API service: Only handles network calls.
+   
+Real Time Scenerio:
+
+Imagine an e-commerence app:
+
+Concern - Example Module/Layer 
+
+User Management - Handles login, registration 
+Product Catalog - Shows products, categories 
+Cart & Checkout - Add to cart, calculate total 
+Payment processing - Handles payment gateway APIs
+Notification - Sends email/SMS for orders 
+
+Key Benefits:
+
+- Maintainability : Change one module without affecting others.
+- Reusability: Use modules in different projects 
+- Testability : Unit test each module separately.
+- Collaboration : Multiple developers work simultaneously.
+- Scalability : Easy to add new features without breaking existing code.
+
+*************************************************************************************************************************
+
+Singleton Design Pattern:
+
+What is it?
+- The singleton pattern ensures that a class has only ONE instance during the entire program.
+- No matter how many times you try to clean an object, you always get the same instance. 
+
+Think of it like:
+- A company has only one CEO. Even if 100 employees say "I want a CEO", they all point to the same person.
+
+Basic Example in Python:
+
+class Singleton:
+     _instance = None # class variable to hold the single instance. 
+	 
+	 def __new__(cls, *args, **kwargs):
+	     if not cls._instance:  # if no instance exists 
+		    cls._instance = super().__new__(cls) # create one 
+	     return cls._instance  # always return the same instance  
+		 
+# Test 
+a = Singleton() 
+b = Singleton() 
+
+print( a is b) # True -> both point to the same object
+
+Output: True 
+
+- With Real Data (Logger Example) 
+
+class Logger:
+    __instance = None 
+	
+	def __new__(cls, *args, **kwargs):
+	    if not cls._instance:
+		   cls._instance = super().__new__(cls)
+		   cls._instance.log_file = "app.log" 
+		return cls_instance
+		
+	def log(self,message):
+	    with open(self.log_file, "a") as f:
+		     f.write(message + "\n")
+			 
+# Test 
+logger1 = Logger()
+logger2 = Logger() 
+
+logger1.log("App started")
+logger2.log("User logged in")
+
+print(logger1 is logger2) # True 
+
+- Even though we created logger1 and logger2, both write to the same log file.
+That's singleton in action. 
+
+- Use Cases in Real-Time Projects:
+1, Logging System -> Only one logger should exist to write logs.
+2, Configuration Manager -> App-Wide setting should be consistent.
+3, Database Connection Pool -> Only one connection manager per BD 
+4, Caching -> A single cache shared across the app.
+5, Thread Pool -> Single manager to handle threads. 
+
+Real-Life Analogy:
+- printer spooler -> Only one spooler manages all print jobs.
+- Windows Task Manager -> Only one instance can run at a time.
+- Operating System Kernel -> Only one kernel running in system memory. 
+
+Pros & Cons 
+Advantages:
+- Ensures a single point of access.
+- Saves memory (no duplicate objects)
+- Useful for shared resources.
+
+Disadvantages:
+- Can hide bad design (global state abuse)
+- Harder to test (mocking is tricky).
+- In multihread environments, need extra care (thread safety). 
+
+***********************************************************************************************************
+
+Thread-Safe Singleton in Python 
+
+Problem in Multi-threading 
+
+Imagine two threads running at the same time:
+  - Thread A checks _instance is None -> True 
+  - Thread B checks _instance is None -> True 
+    -> Both create an object -> You end up with two instances.
+  That breaks the Singleton rule.
+  
+Solution: Use a Locks
+We use Python's threading.Lock() to ensure only one thread can create the instance at a time.
+
+Example: Thread-Safe Singleton 
+
+import threading 
+
+class Singleton:
+    _instance = None 
+	_lock = threading.Lock() # Lock object 
+	
+	def __new__(cls, *args, **kwargs):
+	   if not cls._instance:
+	      with cls._lock: #Only one thread enters here at a time.
+		      if not cls._instance: # Double-check inside lock 
+			      cls._instance = super().__new__(cls) 
+	   return cls._instance 
+	   
+	#Test with threads 
+	def create_singleton():
+	   obj = Singleton()
+       print(f"Object ID: {id(obj)}") 
+
+    threads = [] 
+  	for i in range(5):
+        t = threading.Thread(target=create_singleton)
+        threads.append(t)
+        t. start() 
+
+    for t in threads:
+      t.join()
+
+Output:
+    Object ID : 1400781 
+ 	Object ID : 1400781
+    Object ID : 1400781
+	Object ID : 1400781
+	Object ID : 1400781
+	
+- No matter how many threads try, only one object is created. 
+
+Real-World Scenarios for Thread Safe Singleton:
+1, Database Connection Pool 
+   - If multiple threads try to connect, you want one connection manager.
+2, Logger 
+   - Logs from different threads should go to the same log.
+3, Configuration Loader 
+   - All threads must use the same config object. 
+   
+Alternative: Singleton with @decorator 
+Python's flexibility lets us simplify Singleton using a decorator:
+
+def singleton(cls):
+    instances = {}
+	lock = threadking.Lock() 
+	
+	def get_instance(*args,**kwargs):
+	    if cls not in instances:
+		   with lock:
+		        if cls not in instances:
+				    instances[cls] = cls(*args,**kwargs)
+		return instance[cls] 
+     return get_insance 
+
+@singleton 
+class Logger:
+   def __init__(self):
+       self.log_file = "log.log"
+Now logger() will always return the same object safely, even with threads.
+
+At a point, you know:
+1, Basic Singleton 
+2, Real-World Singleton use cases 
+3, Thread-Safe Singleton 
+4, Decorator-based Singleton. 
+
+***************************************************************************************************************************
+
+Factory Method Pattern
+
+What is it?
+- Factory method is a creational design pattern.
+- Instead of creating objects directly using ClassName(), you can a factory method that decides which object to create.
+
+It's like a Pizza Shop - you don't directly make pizza yourself. You ask the factory (pizza shop), and it gives your the right type of pizza. 
+
+Without Factory (Naive Way)
+
+class Dog:
+    def speak(self):
+	    return "Woof!" 
+		
+class Cat:
+    def speak(self):
+	    return "Meow!" 
+		
+#Client code 
+pet_type = "Dog"
+
+if pet_type == "dog":
+   pet = Dog() 
+elif pet_type == "cat":
+   pet = Cat() 
+else:
+   raise ValueError("Unknown pet type") 
+ 
+ print(pet.speak()) 
+ 
+ Problem: The client code (if/else) knows all the details 
+ if we add a new animal (e.g., Bird), we must change this code.
+ That violates Separation of Concerns & Open/Closed Principles.
+ 
+#Factory 
+With Factory Method 
+We move object creation into a factory class/function 
+
+class Dog:
+   def speak(self):
+       return "Woof!"
+
+class Cat:
+   def speak(self):
+       return "Meow!"
+	   
+#Factory 
+class PetFactory:
+   @staticmethod 
+   def get_pet(pet_type):
+       if pet_type == "dog":
+	      return Dog()
+	   elif pet_type == "cat":
+	      return Cat() 
+	   else:
+	      raise ValueError("Unknown pet type") 
+
+#Clien type 
+pet = PetFactory.get_pet("dog")
+print(pet.speak()) 
+
+Now if we add Bird, we only update the factoyr, not the client code.
+
+Real-World Example: Database Connector 
+
+- Image a project that can use MySQL or PostgreSQL
+- Instead of hardcoding connecion logic everywhere , we use a factory.
+
+class MySQLDatabase:
+   def connect(self):
+      return "Connect to MySQL" 
+	 
+class PostgresDatabase:
+   def connect(self):
+      return "Connected to PostgreSQL" 
+	  
+class DatabaseFactory:
+   @staticmethod 
+   def get_database(db_type):
+       if db_type == "mysql":
+          return MySQLDatabase() 
+       elif db_type == "postgres":
+          return PostgreDatabase() 
+       else:
+          raise ValueError("Unknown database type")
+
+#client code 
+db = DatabaseFactory.get_database("postgre")
+print(db.connect()) # Connected to PostgreSQL
+- The client code doesn't care hwo the object is created. 
+
+Use Cases in Real-Time Projects:
+1, Database connections -> Choose DB at runtime.
+2, UI Widgets - A factory gives buttons/sliders for different OS (Windows, Mac, Linux)
+3, Payment Gateway - Factory decides whether to return PayPal, Stripe, or CreditCard processor. 
+4, Message Queue Client - Factory provides kafka, RabbitMQ, or SQS client 
+5, File Parser - Factory returns JSONParser, XML Parser, or CVS Parser 
+
+Pros &  Cros:
+Advantages: 
+1, Removes  if/else clutter from client code.
+2, Makes code extensible (easier to add new types)
+3, Follows Open/Closed Principle (open for extension, closed for modification).
+Disadvantages:
+1, More classes -> Slightly more complexity
+2, For every small projects, it may be overkill.
+
+Quick Anaology:
+- Without factory - You cook pizza yourself, handling dough, sauce, toppings.
+- With factory - You just say "Give me a Pepperoni pizza" and the shop handles the rest. 
+
+Combine Factory + Singleton 
+
+*******************************************************************************************************************************
+		  
+Observer Pattern:
+
+What is it?
+- Observer is a behavioural design pattern.
+- It defines a one-to-many relationship between objects.
+- When one object (Subject) changes state, all its dependents (Observers) are notified automatically.
+
+Think of it like YouTube Subscribers:
+- You (The subject) upload a new video.
+- All subscribers (Observers) get nodifired immediately.
+
+With out Observer (Naive way):
+
+class NewsAgency:
+    def __init__(self):
+        self.news = None 
+
+    def set_news(self, news):
+        self.news = news 
+        print(f"News Agency: {news}") 
+
+        #Directly notify channels (bad!)
+        tv = TVChannel() 
+        tv.update(news)
+        paper = Newspaper()
+        paper.update(news) 
+
+class TVChannel:
+     def update(self,news): 
+         print(f"TV Channel shows: {news}") 
+
+class NewsPaper:
+     def update(self,news):
+         print(f"{Newspaper prints: {news}")
+
+agency = NewsAgency()
+agency.set_news("New policy annoucned!") 
+
+Problem: NewsAgency is hardcoded to know about TVChannel and Newspaper.
+- if we add MobileApp, we must modify NewsAgency - > Violates Open/Closed Principle. 
+
+With Observer Pattern 
+- We decouple them using Subject + Observers 
+
+class NewAgency:
+    def __init__(self):
+      self.observers = [] #List of subscribers 
+      self.news = None 
+    
+    def add_observer(self,observer): 
+        self.observers.append(observer) 
+  
+    def remove_observer(self,observer):
+        self.observers.remove(observer)
+  
+    def set_news(self,news):
+       self.news = news
+       self.notify_all() 
+
+    def notify_all(self):
+       for observer in self.observers:
+           observer.update(self.news) 
+   
+$Observer Interface 
+class Observer:
+   def update(self,news):
+      pass 
+
+#Concrete Observers
+class TVChannel(Observer):
+   def update(self, news):
+     print(f"TV Channel shows: {news}") 
+
+class Newspaper(Observer):
+   def update(self,news):
+     print(f"Newspaper prints: {news}") 
+
+#Client code 
+agency = NewsAgency()
+tv = TVChanngle() 
+paper = Newspaper() 
+
+agency.add_observer(tv)
+agency.add_observer(paper) 
+
+agency.set_news("New policy annoucned!") 
+agency.set_news("Sports event today!") 
+
+-> Now NewsAgency doesn't know who is lisenting.
+-> Observers can join/leave dynamically. 
+
+Real-World Use Cases:
+
+1, Event Listeners in GUI - Button click notifies listeners.
+2, Stock Market App - Stock price (Subject) notifies investors (Observers1)
+3, Chat Application - When a user send a message, all participants get it. 
+4, Microservices - Services subscribe to events (like Kafka, RabbitMQ).
+5, Logging/Monitoring - App triggers events, multiple logger/monitors observer them.
+
+Advantages & Disadvantages:
+Pros:
+1, Loose coupling between Subject and Observers.
+2, Easily extensible (new observers can be added without changing Subject).
+3. Implements real-time event handling.
+
+Cons:
+1, if too many observers -> Performance overhead.
+2, Debugging can be tricky when many observers are chained. 
+
+Analogy:
+- Without Observer - You call each friend indiviaully to tell them news.
+- With Observer - You post on WhatsAPP groupm and everyone automaticially. 
+
+Stock Market Observer - Mini Project example 
+
+**************************************************************************************************************************
+
+	 
+
+
+
+	   
+
+	 
+
+ 
+	 
+	 
+	
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+   
+
+	
+    
+
+
+	
+			  
+
+
+
+
+	
+	 
+
+
+
+
+
+	
+
+	 
+	
+		 
+	  
+		 
+	 
+    
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+ 
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+        		
+		
+
+		 
+
+		 
+	
+	
+
+
+	
+
+			
+ 
+
+
+   
+	   
+	
+
+
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+	
+		
+	
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			
+
+
+	
+
+
+
+
+
+
+
+
+   
+
+ 
+
+
+
+
+
+
+	
+
+
+
+
+	
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+ 
+	
+
+
+
+
+
+
+
+
+
+		  
+ 
+   
+
+		
+		
+		
+	
+	
+
+
+
+
+ 	
+   
+	
+
+	
+
+
+
+   
+ 
+   
+
+
+   
+   
+

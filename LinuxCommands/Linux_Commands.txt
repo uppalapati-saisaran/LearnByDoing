@@ -1,0 +1,374 @@
+
+System Adminstration:
+
+1, top/htop - Monitor system performance and resource usage. 
+2, df -h - check disk space usage in human-readable format.
+3, du -h - summarize disk uaage of files/folders.
+4, journalctl - view system logs (especially on systems using systemd).
+5, systemctl - manage services (start,stop, enable, disable) 
+6, crontab -e = schedule tasks using cron jobs.
+7, useradd, usermod, passwd - Manage user accounts and permissions.
+
+
+DevOps & CI/CD 
+
+1, docker - Manage containers (e.g,, docker ps, docker exec -it).
+2, kubectl - interact with kubernetes clusters.
+3, git = version control (e.g., git clone, git pull, git commit)
+4, rsync - Efficient file synchronization and backups.
+5, scp/sftp - secure file transfer between servers.
+6, ansible/terraform - infrastructure as code tools (often run via CLI)
+
+Cybersecurity & Networking
+
+1, nmap - network scanning and host discovery.
+2, netstat/ss - view network connections and listening ports.
+3, iptables/ufw - confgure firewall rules.
+4, tcpdump - capture and analyze network traffic.
+5, who, w, last - Monitor user logins and activity.
+
+Package & Software Management 
+
+1, apt, yum, dnf, zypper - Install and manage packages depending on the distro.
+   - Example: sudo apt update && sudo apt upgrade 
+2, snap/flatpack - Manage sandboxed applications.
+
+File & Process Management 
+
+1, ls,cd,mv,cp,rm - Basic file operations.
+2, find/grep/awk/sed - Powerful text and file searching/editing.
+3, ps aux/kill/pkill/nice - Manage processes.
+4, chmod,chown - set file permissions and ownership.
+
+Data Science & Automation 
+
+1, Python, R, Jupyter - Run Scripts and notebooks.
+2, Cron + scripts - Autmomate data pipelines.
+3, screen/tmux - run long processes in detachable sessions.
+
+Useful Utilities:
+
+1, curl/wget - Fetch data from URLs.
+2, tar,zip,unzip - Archive and compress files.
+3, alias - Create shortcuts for frequently used commands.
+4, env, export - Manage environment variables.
+
+
+1, top/htop 
+
+- top -u <<username>>  -> show processes for a specific user.
+- top -p <PID>  -> Monitor specific process ID(s) 
+- top -n <count> -> Run top for a specific number of iterations and then exit.
+- top -d <seconds> -> Set delay between updates(e.g., top -d 2 updates every 2 seconds).
+
+Interactive Commands (while top is running):
+
+- M - Sort by memory usage.
+- P - Sort by CPU usage. 
+- K - Kill a process by PID 
+- u - Filter by user 
+- r - Renice a process
+- q - Quit 
+
+htop - Enhanced interactive Monitor 
+
+- htop is more user-friendly and visually rich than top.
+
+Popular Features:
+- Mouse support -> You can click to select or kill processes.
+- Tree view -> Shows process hierarchy (toggle with F5)
+- color-coded metrics - CPU, memory, swap usage.
+
+Commonly Used Options:
+- htop -u <username> -> Show processes for a specific user.
+- htop -p <PID> => Monitor specific process ID(s).
+- htop --sort-key <column> -> Sort by a specific columnn (e.g., %MEM,%CPU).
+
+Interactive Keys:
+- F2 - Setup/configure display 
+- F3 - Search for a process
+- F4 - Filter processes
+- F5 - Tree View 
+- F6 - Sort by Column 
+- F9 - Kill process 
+- F10 - Quit 
+
+2, df -h  
+
+1, df -h -> Human readable disk usage (most common).
+         -> Shows sizes in GB, MB, KB instead of blocks. 
+2, df -hT -> Human readable + filesystem type 
+          -> Displays the type of filesystem (ext4, xfs, etc.). 
+3, df -hi -> Inode usage in human-readable format.
+          -> Shows inode usage instead of block usage.
+4, df -h --total -> Add a total summary line.
+                 -> Adds a a line with total usage usage summary.
+5, df -ah -> Includes all filesystems.
+          -> Includes pseudo and temporary filesystems. (like /proc) 
+6, df -h -t <type> -> Show only specific file system type 		  
+   df -h -t ext4 -> Displays only filesystems of a specific type.
+   
+7, df -h -x <type> -> Exclude specific filesystem type.
+   df -h -x tmpfs -> Hides certain filesystem types. 
+                  -> tmpfs : A temporary filesystem stored in RAM.  
+
+Filesystem - Device or partition name - /dev/sda1, tmpfs - Identifies the disk or virtual filesystem.
+Size - Total capacity - 50G - Total size of that filesystem.
+Used - Used space - 30G - Amount of disk space currently in use.
+Avail - Available space - 18G - Space left for new data (available to non-root users).
+Use% - Percentage used - 63% - Shows how full the filesystem is.
+Mounted on - Mount point - /,/home,/run - The directory where the filesystem is attached in the system.
+
+1, /dev/sda1 -> The Disk or Partition 
+- /dev means device - it's where Linux lists hardware devices (like disks, USB drives, etc.).
+- sda1 breaks down as:
+  - sd -> "SCSI disk" (even SSDs and SATA drives use this nameing).
+  - a -> the first disk (b would be the second disk, and so on).
+  - 1 -> the first partition on that disk.
+So:
+  - /dev/sda -> the entire physical drive.
+  - /dev/sda1 -> The first partition on that drive.
+  - /dev/sdb1 -> The first partition on the second drive.
+
+Example:  If your computer has one main hard drive, it's usally /dev/sda1, which stores your Linux system.
+
+2, tmpfs - Temporary Filesystem (in Memory) 
+- tmpfs stands for Temporary File System.
+- It's not stored on your hard drive - It's stored in RAM.
+- Used for very fast, temporary data storage(like cache, runtime files, etc)
+- It disappears when you reboot.
+- Common mount points for tmpfs:
+  . /run 
+  . /tmp
+  . /dev/shm 
+  - These are used by the system for speed - they help Linux run smooother.
+
+3, Mounted on - The Mount Point 
+- This tells you where the filesystem is connected in the directory tree.
+- In Linux, everything (disks,devices,USBs) is attached (mounted) to a folder.
+- Mount Point Meaning 
+  / -> Root filesystem (main system area - like C:\in Windows).
+  /home -> Where user data lives (documents, downloads, etc).
+  /boot -> Stores files needed for booting Linux 
+  /mnt or /media -> where external drives or USBs are mounted.
+  /run or /tmp -> Temporary runtime files (usually in memory).
+  
+3, du -h 
+
+- du stands for Disk Usage - it shows how much disk space files and directories use.
+- The -h option means human-readable, so insead of showing bytes, it shows:
+  KB(Kilobytes)
+  MB(Megabytes)
+  GB(Gigabytes) 
+  
+- Mostly used options with du -h
+  du -h -> Shows the size of all files and folders in current directroy(in readable format).
+  du -sh -> Summary only - shows total size of current folder (Most used).
+  du -sh * -> Shows size of all items (file/folders) in current directory.
+  du -ah -> Shows size of each file and directory(includeing files).
+  du -ch -> Adds a grand total line at the end.
+  du -h -max-depth=1 -> Shows size of each top-level folder, not subfolders.
+
+-> du -sh * | sort -hr     
+   -> du -sh * - shows the size of every file/folder(human-readable)
+   -> sort -hr - Sorts by human readable numbers, in reverse order (largest first). 
+
+4, journalctl 
+
+- journalctl is used to view system logs collected by the systemd journal.
+- it shows logs from services, the kernel, and boot processes. 
+
+Mostly used journalctl commands 
+- Here are the most common and useful ones - with simple explanations 
+  
+  journalctl -xe - shows recent logs with errors and extra details - when something fails or crashes.
+  journalctl -f - follow logs live (like tail -f) - To watch logs as they happen.
+  journalctl -b - logs from current boot - To see what happened since the last restart.-
+  journalctl -u servicename - Logs for a specific systemd service - To debug a service (e.g., journalctl -u nginx)
+  journalctl -u servicename -f - Follow logs of that service in real-time - To monitor one service live.
+  journalctl --since "2025-10-18 09:09" - Logs since a specific time - To check recent activity.
+  journalctl --since yesteraday - Logs from yesteraday onwards - Quick daily review.
+  journalctl --disk-usage - shows total disk space used by logs - to check if logs are taking too much space.
+  journalctl --vaccum-time=7d - Deletes logs older than 7 days - To clean up old logs safetly.
+  journalctl -p err..alert - shows logs of error priority and highter - to see only critical issues.
+  
+5, systemctl 
+
+- system control - used to start,stop, enable, disable, and check status of services and system states.
+
+Mostly used systemctl commands:
+- Here's a clean and simple table of the most common and useful ones.
+
+-> systemctl status servicename - shows the status,logs, and PID of a service  - to see if a service is running or failed.
+-> systemctl start servicename - starts a service immediately - To manually start a stopped service.
+-> systemctl stop servicename - stops a running service - to temporarily stop it.
+-> systemctl restart servicename - restarts a service - To apply config changes.
+-> systemctl reload servicename - Reloads config without stopping - For services that support reload.
+-> systemctl enable servicename - Enables a service to start at boot - To make it run automatically.
+
+- See logs if failed 
+   journalctl -u nginx -xe 
+   
+- if you forget the exact service name;
+  systemctl list-units --type-service | grep nginx 
+  -  this shows all services containing the work nginx 
+ 
+ 
+6, what is crontab?
+A, 
+- crontab is used to schedule repetitive tasks - like bsckups, cleanups, data sync, etc.
+- Every user can have their own crontab. The system has one too (usually found in /etc/crontab)
+
+- Mostly used crontab commands.
+
+-> crontab -e - Edit the current user's crontab - To add or modity cron jobs.
+-> crontab -l -> List current user's crontab - See all scheduled jobs.
+-> crontab -r -> remve the current user's crontab - Delete all jobs at once.
+-> crontab -u username -e -> Edit crontab of another user (sudo needed) - Sysadmin edit another user's crontab.
+-> crontab -u username -l -> List crontab of another user -> Check another user's scheduled jobs.
+
+-> cron Time Format Refresher 
+
+Minute(0-59) Hour(1-12) Day of Month(1-31) Hour(0-23) Day of Week(0-6,Sun = 0) 
+ 
+Special Keywords:
+@reboot - run once at system startup - @reboot /home/user/startuo_task.sh
+@daily - Once per day (midnight) - @daily /home/user/cleanup.sh 
+@hourly - Once per hour - @hourly /home/user/log.sh 
+@weekly - Once per week - @weekly /home/user/weekly_backup.sh 
+
+7, What is useradd?
+A, 
+useradd is a low-level command-line tool used to create new user accounts in Linux systems.
+It handles creating the user in the system database, setting up their hoem directory, and setting details.
+
+-m -> Create a home directory for the user - useradd -m john 
+-d -> Specify a custom home directory -  useradd -d /custom/home john 
+-s -> Set login shell (like /bin/bash) - useradd -s /bin/bash john 
+-g -> Set the primary group - useradd -g develoeprs john 
+-G -> Add to additional groups - useradd -G sudo,devops john 
+-u -> Specify user ID (UID) - useradd -u 1050 john 
+-p -> Set encrupted password for user - useradd -p $(openssl passwd -1 'Password123') john
+-c -> Add a comment/full name - useradd -c "John Doe" john 
+-e -> Set account expirty date - useradd -e 2025-12-31 john 
+-r -> Create a system account (no login, no home) - useradd -r backcupuser 
+
+-> Let's create a new user named alic who -
+   - Has a home directory  
+   - Uses /bin/bash shell
+   - Is part of the developers group 
+   
+   sudo useradd -m -s /bin/bash -g developers alice 
+   - That creates /home/alice, setups up bash for login and assigns her to developers.
+
+-> Create user with custom home and sudo access 
+ 
+  sudog useradd -m -d /opt/alice_home -s /bin/bash -G sudo alice 
+
+-> After adding the user.
+   sudo passwd alice - This will prompt you to enter a new password. 
+   
+-> Remove a User completely (incl. home)
+   sudo userdel -r alice 
+   -r deletes home directory and mail spool along with user. 
+
+-> Check user details -> you can view user information using:
+   id alice 
+   getent passwd alice 
+
+8, What is usermod/
+- Usermod lets you change properties of an existing user account. 
+- Example uses:
+  - Change username.
+  - Add/remove from groups.
+  - Modify home directory 
+  - change login shell.
+  - Lock/UnLock account 
+
+-> -aG -> Add user to additional group (append) - usermod -aG sudo,devops alice 
+-> -g -> change primary group - usermod -g developers alice 
+-> -d -> change home directory - usermod -d /new/home alice 
+-> -m -> Move home directory contents to new location - usermod -d /new/home -m alice 
+-> -l -> change login name (username) - usermod -l newname oldname 
+-> -s -> change login shell - usermod -s /bin/zsh alice 
+-> -c -> change user's comment (e.g., full aname) - usemod -c "Alice johnson" alice 
+-> -L Lock user account (disable login) - usermod -L alice 
+-> -U Unlock user account - usermod -U alice 
+-> -e Set account expiration data - usermod -e 2025-12-31 alice 
+-> -u change user ID (UID) - usermod -u 1100 alice 
+
+1, Adding Existing User to Sudo group 
+   sudo usermod -aG sudo john 
+   - Adds john to the sudo group without affecting exising groups.
+   
+2, Move home directory to New location 
+   sudo usermod -d /data/john -m john 
+   - changes home directory to /data/john and moves all files from old home folder.
+   
+3, change Username   
+   sudo usermod -l johnny john 
+   Renames user from John -> Johhny   
+   
+4, Lock and UnLock a User Account 
+   Lock account (disable login)
+   sudo usermod -L alice 
+   
+   UnLock account 
+   sudo usermod -U alice 
+   
+5, Change Login Shell 
+   sudo usermod -s /bin/zsh alice 
+   - Alice wil lnow use ZSH when she logs in.
+   
+Notes:
+- Always use -a with -G, otherwise it replaces the user's existing groups.
+- If you change home directory, use the -m flag to move content.
+- changing username doesn't update the home folder automatically. 
+
+
+What is passwd?
+- passwd is used to set,change,lock,unlock, and expire user passwords in Linux.
+- It works on your own account, other users(with sudo/root) , Password policies.
+
+Mostly used passwd options (Simple Table)
+
+passwd - Change your own passward -  passwd 
+passwd username - set/change password of another user - sudo passwd alice 
+-l - lock a user's password - suod passwd -l alice 
+-u - Unlock a locked password - sudo paswd -u alice 
+-d - Delete password (user can login without password) - sudo passed -d testuser 
+-e - Expire passwd immeditetly (force change on next login) - sudo passwd -e alice 
+-S - show password status - passwd -5 alice 
+-n DAYS - Set minimum password age (user cannot change before X days) - sudo passwd -n 7 alice 
+-x DAYS - Set maximum password age (must change after X days) - sudo passwd -X 90 alice 
+-w DAYS - Warn user before password expires - sudo passwd -w 5 alice 
+
+Bonus Tip : Combine Policies 
+- To set a 90 day cycle with warning:
+sudo passwd -X 90 -w 5 alice 
+- if you want, I can also explain change (password aging), userdel, groupmod, or /etc/shadow details - Just tell me!
+
+
+
+
+   
+
+   
+
+
+
+  
+
+  
+  
+  
+   
+
+
+
+
+
+
+
+
+

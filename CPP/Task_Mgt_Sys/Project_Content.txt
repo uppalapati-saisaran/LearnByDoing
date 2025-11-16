@@ -1,0 +1,561 @@
+Project Idea : Task management System (Console-based)
+
+You can think of it like a mini version of a To-Do list, but more organized:
+
+- Create tasks with title, due date, priority.
+- View, Update, and delete tasks.
+- Group tasks by status ( Pending, Completed) 
+
+Modern C++ Concepts We'll use 
+
+
+auto,nullptr                 C++ 11   Cleanear type usage 
+
+Range-based for loop         C++ 11   Iterate over containers
+
+enum class                   C++ 11   Strongly typed enums 
+
+std::unique_ptr              C++ 11   Smart memory management 
+
+Lambda expressions           C++ 11   For custom sort/filter 
+
+std::chrono                  C++ 11   Due date/time 
+
+std::optional                C++ 17   Return optional result 
+
+if constexpr                 C++ 17   Compile time decisions 
+
+std::filesystem              C++ 17   (optional) save taks to the file 
+
+concepts(type checks)        C++ 20    Enforce constriants on template 
+
+Ranges libray                C++ 20    (optional) Filter/transform containers
+
+
+Step1 : Setup and Basic Structure 
+
+We'll start with just defining a basic Task class using C++ 11 features.
+
+File 1 : task.hpp 
+
+#pramga once 
+#include<string>
+#include<chrono>
+
+enum class Status { Pending, Completed };
+enum class Priority { Low, Medium, High };
+
+class Task {
+public:
+      Task(std::string title, std::chrono::system_clock::time_point due, Priority priority);
+	  
+	  std::string getTitle() const;
+	  std::chrono::system_clock::time_point getDueDate() const;
+	  Priority getPriority() const;
+	  Status getStatus() const;
+	  
+	  void markCompleted();
+	  void updateTitle(const std::string& newTitle) 
+	  
+private:
+     std::string title_,
+	 std::chrono::system_clock::time_point dueDate_;
+	 Priority priority_;
+	 Status status_;
+};
+
+
+Explanation:
+- Using enum class for Status and Priority ensures type-safety.
+- Using std::chrono::system_clock::time_point for due dates(modern time handling)
+- Header guards are replaced with #pragma once 
+
+Roadmap for our Modern C++ Mini Project:
+
+Phase1 : Core Classes (C++ 11 - 14 )
+- Create the Task class (model a task)
+- Manage tasks in memory (TaskManager with std::vector)
+- Build CLI menu with operations (add,view,update,delete) 
+
+Phase2 : Improve Design with Modern C++ (C++ 17-20) 
+- Use std::optional to safely find tasks.
+- use lamdbas for filtering/sorting.
+- Use chrono and filesystem to manage dates and save to file 
+- Use concepts to constrain templates.
+
+File 2: task.cpp 
+
+#include "task.hpp"
+
+Task::Task(std::string title,std::chrono::system_clock::time_point due, Priority priority)
+     : title_(std::move(title),dueDate_(due),priority_(priority),status_(Status::Pending) {}
+	 
+std::string Task::getTitle() const {
+    return title_; 
+}
+	  
+std::chrono::system_clock::time_point Task::getDueDate() const {
+    return dueDate_;
+}
+
+Priority Task::getPriority() const {
+     return priority_;
+}
+
+Status Task::getStatus() const {
+     return status_;
+}
+
+void Task::markCompleted()  {
+      status_ = Status::Completed;
+}
+
+void Task::updateTitle(const std::string& newTitle) {
+    title_ = newTitle;
+}
+
+What's covered so far?
+
+enum class              Status, Priority 
+std::chrono              Task due date 
+std::move               Constructor efficiency 
+Encapsulation           Getters/Setters 
+RAII                    No raw pointers used 
+
+
+Step 2: Show the Task on Screen (Make it Feel Alive)
+
+Before we build a full task manager, Let's write a main.cpp to:
+- Create a sample Task.
+- Print its contents (title,due_date,status,priority)
+- Practice basic I/O, chrono, and string formatting 
+
+#include<iostream>
+#include<iomanip> // for std::put_time
+#include "task.hpp"
+
+// Helper:: Convert Chrono time_point to readable string.
+std::string formatDate(const std::chrono::system_clock::time_point& tp) {
+   std::time_t time = std::chrono_system_clock::to_time_t(tp); 
+   std::tm* tmPtr = std::localtime(&time);
+   char buffer[100];
+   std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M",tmPtr);
+   return std::string(buffer);
+} 
+
+//Helper:: Convert enums to string for display
+std::string toString(Status status) {
+    return (status == Status::Pending): "Pending" : "Completed" 
+}
+
+std::string toString(Priority  p) {
+     switch(p) {
+	     case Priority::Low: return "Low";
+         case Priority::Medium: return "Medium";
+         case Priority::High: return "High"		 
+	 }
+}
+
+int main() {
+    auto due = std::chrono::system_clock::now() + std::chrono::hours(24);
+	Task task("Finish C++ Project", due , Priority::High);
+	
+	std::cout << "==== Task Details ===\n";
+	std::cout << "Title   :"  << task.getTitle() << '\n';
+	std::cout << "Due Date :" << formatDate(task.getDueDate()) << '\n';
+	std::cout << "Priority :" << toString(task.getPriority()) << '\n';
+	std::cout << "Status :" << toString(task.getStatus() << '\n';
+	
+	return 0; 
+}
+
+What you learned here 
+
+chrono::system_clock::now ()           Gets current time 
+
+chrono::hours(24)                      Adds 24 hours to time 
+
+std::time_t, localtime, strftime       Convert to human-readable time 
+
+Enum to string                         Manual conversion for display 
+
+Separation of concerns                 Logic is split cleanly into reusable helpers.
+
+
+Step 3: 
+
+Building the TaskManager class to handle multiple tasks 
+
+This is where we introduce:
+
+std::vector -  Stores a dynamic list of tasks.
+std::unique_ptr<Task>  - Manages memory safely 
+auto,range-based for loops - Cleaner modern loops 
+
+Step 3.1: Define TaskManager Class 
+
+File 4: task_manager.hpp 
+
+#pragma once 
+#include<vector>
+#include<memory>
+#include< "task.hpp"
+
+class TaskManager {
+public:
+   void addTask(std::unique_ptr<Task> task);
+   void listTasks() const;
+private:
+   std::vector<std::unique_ptr<Task>> task_;
+}; 
+
+File 4: task_manager.cpp 
+
+#include "task_manager.cpp" 
+#include<iostream>
+#include<iomanip>
+#include<ctime>
+
+
+static std::string formatData(const std::chrono::system_clock::time_point& tp) {
+  std::time_t time = std::chrono::system_clock::to_time_t(tp);
+  std::tm* tmPtr = std::localtime(&time);
+  char buffer[100];
+  std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H-%M", tmPtr);
+  return std::string(buffer);
+}
+
+static std::string toString(Status status) {
+     return (status == Status::Pending) ? "Pending" : "Completed";
+}
+
+static std::string toString(Priority p) {
+   switch(p) {
+      case Priority::Low: return "Low";
+	  case Priority::Medium: return "Medium";
+	  case Priority::High: return "High";
+	  default: return "Unknown";
+   }
+}
+
+void TaskManager::addTask(std::unique_ptr<Task> task) {
+    tasks_.emplace_back(std::move(task)); 
+}
+
+void TaskManager::listTasks() const {
+    std::cout << "\n== All Tasks ==\n";
+	if(tasks_.empty()) {
+	   std::cout << "No tasks found.\n";
+	}
+	
+	int index = 1;
+	for(const auto& task : task_) {
+      std::cout << "[" << index++ << "]"
+                << task->getTitle() << " | "
+                << formatData(task->getDueDate()) << " | "
+                << toString(task->getPriority()) << " | "
+                << toString(task->getStatus()) << '\n';				
+	}
+}
+
+Update main.cpp to Use the Manager
+Updated main.cpp 
+
+int main() {
+    TaskManager manager;
+	auto now = std::chrono::system_clock::now();
+	manager.addTask(std::make_unique<Task>("Complete Assignment", now + std::chrono::hours(24), Priority::High));
+	manager.addTask(std::make_unique<Task>("Call Doctor", now + std::chrono::hours(48), Priority::Medium));
+	manager.addTask(std::make_unique<Task>("Buy Groceries", now + std::chrono::hours(72), Priority::Low)); 
+	
+	manager.listTasks();
+	
+	return 0;
+}
+
+
+What you've learned 
+
+Modern C++      How you USed it 
+
+unique_ptr      Memory safe task ownership
+
+emplace_back    Efficient vector insertion 
+
+std::move       Move ownership of tasks 
+
+auto, range-for  Clean iteration 
+
+Step 4:
+
+Interaactive Menu so the user can actually choose options and interact with the task list from the terminal. 
+
+This steps adds:
+
+Concept                            Explanation 
+
+std::cin, getline                 Get User Input 
+switch/menu loop                  Navigation structure 
+std::stoi, std::getline           convert and parse strings 
+std::optional (upcoming)          Handle task search safely 
+
+
+Step 4.1 : 
+
+Update TaskManager with Actions
+
+We'll add:
+
+- markTaskCompleted(int index)
+- removeTask(int index) 
+
+task_manager.hpp additions 
+
+void markTaskCompleted(int index);
+void removeTask(int index);
+int taskCount() const; 
+
+task_manager.cpp additions 
+
+void TaskManager::markTaskCompleted(int index) {
+    if(index >= 0 && index < static_cast<int>(tasks_.size())  {
+	   tasks_[index]->markCompleted();
+	   std::cout << "Task marked as completed.\n";
+	} else {
+       std::cout << "Invalid task number.\n";	
+	}
+}
+
+void TaskManager::removeTask(int index)
+{
+  if(index >=0 && index < static_cast<int>(tasks_.size()) {
+       tasks_.erase(task_.begin(()+index);
+	   std::cout << "Task removed.\n";
+   } else {
+       std::cout << "Invalid task number.\n";
+  }
+}
+
+int TaskManager::taskCount() const {
+    return tasks_.size() 
+}
+
+
+Step 4.2: Build Interactive Menu in main.cpp 
+
+Here's the fully updated main.cpp 
+
+#include "task.cpp"
+#include "task_manager.cpp"
+#include <iostream>
+#include <chrono>
+#include <memory>
+#include <string>
+
+void showMenu() {
+    std::cout << "\n==== Task Manager Menu ====\n";
+	std::cout << "1. Add Task\n";
+	std::cout << "2. List Tasks\n";
+	std::cout << "3. Mark Task as Completed\n";
+	std::cout << "4.Delete Task\n";
+	std::cout << "5.Exit\n";
+	std::Cout << "Choose an option: ";
+}
+
+int main() {
+    TaskManager manager;
+	bool running = true;
+	
+	while(running) {
+	    showMenu();
+		int choice;
+		std::cin >> choice;
+		std::cin.ignore(); // discard leftover newline 
+		
+		switch(choice) {
+		    case 1: {
+			    std::string title;
+				int priorityInput;
+				
+				std::cout << "Enter task title: ";
+				std::getline(std:::cin, title);
+				
+				std::cout << "Enter priority(0-Low, 1-Medium, 2-High): ";
+				std::cin >> prioirtyInput;
+				std::cin.Ignore(); 
+				
+				auto due = std::chrono::system_clock::now() + std::chrono::hours(24);
+				auto priority = static_cast<Priority>(priorityInput); 
+				
+				manager.addTask(std::make_unique<Task>(title, due, priority)); 
+				break; 
+		    }
+			
+			case 2: {
+			     manager.listTasks();
+				 break;
+			}	 
+			case3: {
+			     int index;
+				 std::cout << "Enter task number to mark complete: ";
+				 std::cin >> index;
+				 std::cin.ignore();
+				 manager.markTaskCompleted(index - 1);
+				 break;
+			}
+			case 4: {
+			     int index; 
+				 std::cout << "Enter task number to delete: ";
+				 std::cin >> index;
+				 std::cin.ignore();
+				 manager.removeTask(index-1);
+				 break;
+			}
+			case 5:
+			     running = false;
+				 break;
+			default:
+			     std::cout << "Invalid option.\n";
+		}
+	}
+}	
+
+What you learned:
+
+Concept      Used include
+
+Switch        Menu Options
+
+std::getline  Handle spaces in title 
+
+Smart pointer reuse    Task creation 
+
+Vector operations      Delete, mark complete 
+	 
+
+Step 5.1 : Use std::optional to Safetly Find Tasks (C++ 17) 
+
+- Right now, we access tasks using an index directly. 
+- Let's make it safer using std::optional 
+
+Add findTaskByTitle() to TaskManager 
+
+#include<optional>
+
+std::optional<Task*> findTaskByTitle(const std::string& title);
+
+std::optional<Task*> TaskManager::findTaskByTitle(const std::string& title) {
+    for(const auto& task : task_) {
+       if(task->getTitle() == title) {
+          return task.get();   // Return raw pointer inside options 
+	   }	   
+	}
+    retunr std::nullopt; 	
+} 
+
+Test in main.cpp 
+
+Add this inside switch-case (let's make it option 6): 
+
+case 6: {
+     std::string title;
+	 std::cout << "Enter title to search: ";
+	 std::getline(std::cin, title);
+	 auto result = manager.findTaskByTitle(title);
+	 if(result) {
+	     Task* task = result.value(); 
+		 std::cout << "Task Found\n"
+		           << "- Title: " << task->getTitle() << "\n"
+				   << "- Status: " << toString(task->getStatus()) << "\n";
+	} else {
+	  std::cout << "Task not found\n";
+	}
+     break;  	 
+} 
+
+Step 5.2: Save & Load Tasks (Intro to File I/O)
+
+This will use:
+
+- std::ofstream and std::ifstream (file streams)
+- Text based saving (JSON is next step if desired) 
+
+task_manager.cpp 
+
+void saveToFile(const std::string& filename) const;
+void loadFromFile(const std::string& filename); 
+
+#include<fstream>
+
+void TaskManager::saveToFile(const std::string& filename) const {
+   std::ofstream out(filename);
+   for(const auto& task : task_) {
+       out << task->getTitle() << "|" 
+	       << static_cast<int>(task->getPriority()) << "|"
+		   << static_cast<int>(task->getStatus()) << "\n";
+   }
+   std::cout << "Task saved to " <<  filename << '\n';
+} 
+
+
+void TaskManager::loadFromFile(const std::string& filename) {
+  std::ifstream in(filename);
+  std::string line;
+  while(std::getline(in,line)) {
+       auto sep1 = line.find('|');
+	   auto sep2 = line.find('|',sep1 + 1); 
+	   
+	   std::string title = line.substr(0, sep1);
+	   int priorityInt = std::stoi(line.substr(sep1+1, sep2-sep1-1));
+	   int statusInt = std::stoi(line.substr(sep2 + 1)); 
+	   
+	   auto due = std::chrono::system_clock::now() + std::chrono::hours(24);
+	   auto task = std::make_unique<Task>(title, due, static_cast<Priority>(priorityInt)); 
+	   
+	   if(static_cast<Status>(statusInt) == Status::Completed)
+	     task->markCompleted();
+		 
+	   task_.push_back(std::move(task)); 
+  }
+ 
+  std::cout << "Tasks loaded from " << filename << "\n"; 
+}
+
+In main.cpp - Add Options 7 & 8 
+
+std::cout << "7. Save to file\n";
+std::cout << "8. Load from file\n";
+
+Add Switch cases
+
+case 7: 
+       manager.saveToFile("tasks.txt");
+       break;
+case 8: 
+       manager.loadFromFile("tasks.txt");
+	   break; 
+	   
+What you learned (C++ 17) 
+
+Feature   Use 
+
+std::optional   File read/write 
+ofstream/ifstream   File read/write 
+std::nullopt        Optional empty return 
+Basic Serialization   Text format save/load 
+
+
+
+	   
+   
+
+
+
+
+
+
+
+
+
+
+

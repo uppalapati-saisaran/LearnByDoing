@@ -1,0 +1,186 @@
+1. Log cleanup script (Very common in Production Servers)
+Used For:
+- cleaning logs older than x days.
+- Avoid disk full issues.
+- Cron job runs this automatically.
+
+!#/bin/bash
+LOG_DIR="/var/log/myapp"
+DAYS=7 
+find "$LOG_DIR" -type f -mtime +$DAYS -print -delete 
+
+Spoon-Fed Explanation:
+- LOG_DIR="/var/log/myapp" -> folder where app logs are stored.
+- DAYS=7 -> delete files older than 7 days.
+- find ... -mtime +7 -> searches file older than 7 days.
+- print -> print names before deletion
+- delete -> deletes the files.
+
+Used in: Every real production server (Apache, Tomcat, Nginx, backend apps, microservices)
+
+2. Disk Usage Alert Script 
+
+Used For:
+- Monitoring disk usage.
+- Sending alerts before disk becomes 100%
+
+#!/bin/bash 
+THRESHOLD=80
+USAGE=$(df -h / | awk 'NR==2 {print $5}' | tr -d '%') 
+
+if[ '$USAGE' -ge '$THRESHOLD" ]; then 
+   echo "Disk usage high: $USAGE%" | mail -s "Disk Alert" admin@example 
+fi 
+
+Spoon-Fed Explanation:
+- checks root / usage.
+- Exacts % usage using df,awk,tr.
+- Compares with threshod (80%)
+- Sends email if crossed
+
+Used in: Montoring, SRE, DevOps, TroubleShooting.
+
+3, Service Health Check Script 
+Used For:
+- Checking if a service is running.
+- Restarting if automatically if down.
+
+#!/bin/bash 
+SERVICE="nginx"
+if ! systemctl is-active --quiet "$SERVICE"; then 
+   systemclt reatart "$SERVICE"
+   echo "$(date) - Restarted $SERVICE" >> /var/log/service-restarts.log 
+   
+Spoon-Fed:
+- is-active --quiet -> Checks silently 
+- if not active -> restart 
+- Logs timestamp
+Used in:
+Auto-healing servers, microservices, production enviroments.
+
+4, Backup Script (Database / Files)
+Used For:
+-Automating backups.
+-Running through cron nightly.
+
+#!/bin/bash
+SRC="/ver/www/html'
+DEST="/backup/html-$(date +%F).tar.gz"
+tar -czf "$DEST" "$SRC" 
+
+Spoon-Fed:
+- Takes backup of website folder.
+- Creates a file like html-2025-03-12.tar.gz 
+- tar -czf -> Zip the folder. 
+Used in:
+Web servers, application servers, DB backups.
+
+
+5, Application Deployment Script 
+Used For:
+- Deploying new code to servers.
+- Stopping service -> updating -> starting 
+
+Script:
+#!/bin/bash 
+APP-"/opt/myapp"
+GIT_REPO="/opt/myapp-repo"
+
+cd "$GIT_REPO"
+git pull 
+
+cp -r & "$APP"
+
+systemctl restart myapp.service 
+echo "Deployment completed"
+
+Spoon-Fed:
+- git pull -> get latest code.
+- cp -r -> copy to app folder.
+- restart service 
+Used in:
+DevOps, CI/CD, Production deployments.
+
+
+6, User Creation Script (Used in Linux admin)
+#!/bin/bash 
+USER=$1
+useradd "$USER"
+echo "Welcome123" | passwd --stdin "$USER"
+passwd -e "$USER"
+
+Spoon-Fed;
+- Takes username from argument.
+- Sets default password 
+- Forces password change on next login 
+
+Used in:
+Enterprise servers, onboarding , server access management. 
+
+7, MySQL Backup Script 
+#!/bin/bash 
+mysqldump -u root -pPassword dbname > /backup/db_$(date +%F).sql 
+Spoon-Fed:
+- Dumps DB to file.
+- Appends today's date
+- Used for DB migration, disaster recovery. 
+
+1. Jenkins Job Trigger Script (CI/CD)
+- Used to trigger a Jenkins build from CLI or other automation tools.
+
+Script:
+$!/bin/bash 
+JENKINS_URL = "http://jenkins.example.com"
+JOB_NAME = "deploy-myapp"
+TOKEN="myapitoken123"
+curl -X POST "%JENKINS_URL/job/$JOB_NAME/build?token=$TOKEN"
+
+Spoon-Fed Explanation:
+- curl -X POST -> makes POST request.
+- This triggers Jenkins job.
+- token- is the Jenkins job token from job settings.
+- Used in: CI/CD, Git hooks, crons, build automat. 
+
+2. Script to Trigger Jenkins Job with Parameters 
+#!/bin/bash 
+JENKINS_URL="http://Jenkins.example.com"
+JOB_NAME="deploy-app"
+TOKEN="abc123"
+
+curl -X POST "$JENKINS_URL/job/$JOB_NAME/buildWithParameters" \
+     --data "ENV=dev" \
+	 --data "VERSION=1.0.4" \
+	 --data "token=$TOKEN"
+	 
+Spoon-Fed:
+- Used when we want to deploy specific version or specific environment.
+- These appear as "Build With Parameters" in Jenkins UI.
+- Common in multi-env CI/CD pipelines. 	 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+   
+
+
