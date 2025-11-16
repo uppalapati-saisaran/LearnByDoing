@@ -1184,7 +1184,74 @@ Step 1: The connection between Jenkins and Perforce.
   Behind the scenes, Jenkins uses the Perforce Plugin (P4 Plugin). This plugin connects Jenkins to the Helix Core (P4D) server.
   
   
+**********************************************************************************************************************************************************************************************
+**********************************************************************************************************************************************************************************************
+**********************************************************************************************************************************************************************************************
+
+There are only 3 possible ways a Jenkins build starts in a perforce-based pipeline:
+1, Perforce triggers Jenkins (via webhook/Perforce Trigger Script)
+2, Jenkins triggers itself (via Polling SCM)
+4, A developer triggers manually ("Build Now") 
+
+Method 1 :
+-  Check Build Cause in Console Output (Easiest & Fastes)
+-  Open any build -> Console output 
+   Scroll to the top 
+   You will see a line like:
+   - If perforce Trigger started the build:
+     Started by P4 trigger or Started by upstream SCM trigger: Perforced change detected or Startted by an external SCM trigger.
+   - If Jenkins triggered itself(Polling SCM):
+     started by an SCM change. or Started by timer,
+   - If a developer clicke Build Now.
+     This is most reliable way to see what triggered a build.
+
+Method 2 :
+- Check Job Configuration -> "Build Triggers"
+- Go to: Jenkins Job -> Configure -> Build Triggers 
+- Look for these checkboxes:
+  Option A: "Polling SCM" is enabled.
+            - if you see this checked: Build periodically or Poll SCM 
+			  -> Jenkins checks perforce on a schedule (ex: every minute)
+              -> Jenkins is triggering itself.
+            - This is common when companies don't configure perforce webhooks.
+            Example: H/5 * * * * -> Jenkins polls Perforce every 5 minutes.
+  Option B: "Perforce: Perchange Trigger" or "P4 Trigger" enabled.
+            If you see:
+			 Perforce: Execute build on every changelist.  
+			or 
+             Perforce:P4 Trigger.
+            -> Perfroce is triggering Jenkins on each changelist.
+            -> This appears when your company uses the P4 Trigger Plugin.
+  Option C: No triggers at all
+            -> If both are missing(nothing selected) then:
+            -> Builds only happen when develper clicks Build Now.
+            -> Or If the jenkinsfile includes triggers (rare)
+
+Method 3 : Look in Perforce Server (if you have access)
+- Not all developers have access.
+- But if you do:
+  - In P4V -> Tools -> Adminstration Tool -> Triggers 
+    -> If you see a trigger such as:
+       change-submit //Project/... "P4 triggers build job"
+       Then perforce is calling Jenkins.
+       If this is empty -> no triggers -> Jenkins polls SCM instead. 
+
+Method 4 : Look at the Jenkinsfile (less common, but possible)
+- Open the Jenkinsfile in Perforce and search for:
+  triggers {
+     pollSCM('* * * * *')
+  }  
+  or 
+  pipelineTriggers([pollSCM('H/2 * * * * *')]) 
   
+  if present -> Jenkins is polling 
+  Usually Perforce trigger won't appear inside Jenkinsfile itself. 
+  
+   			
+  			
+   			
+
+	 
   
 
 
