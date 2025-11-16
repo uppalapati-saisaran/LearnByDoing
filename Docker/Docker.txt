@@ -12,7 +12,7 @@ https://www.youtube.com/watch?v=pg19Z8LL06w&t=1416s
 
 # docker pull nginx  ==> pulling the latest verion nginx web server from docker hub. 
 
-# docker pull nginx:1.23 ==> Pulling the specific version of nginx web server from docket hub.
+# docker pull nginx:1.23 ==> Pulling the specific version of nginx web server from docker hub.
 
 # docker images ==> Above pulled image is displayed here.
 
@@ -398,8 +398,49 @@ Manage, scale, heal multiple containers - Kubernetes
 Local orchestration - Docker Compose/MiniKube 
 Production orchestration - Kubernetes on AWS, Azure, GCP, etc. 
 
+***********************************************************************************************************************************************************
 
+Mostly used Dockerfile commands- 
 
+1, FROM - Start from a base image 
+        - Start my container from this base operating system or runtime. 
+   Example: FROM python:3.10-slim  // Give me a light weight OS with Python preinstalled. 
+   Real-World Use:
+         - Picking Python, Node, Java or Ubuntu as base.
+		 - Avoid building everything from scratch. 
+   
+2, WORKDIR - Set the working directory.
+           - This is the folder inside the container where I will work.
+   Example: WORKDIR /app // Everything I do next happens in /app 
+   Why Used:
+         - Avoids writing long paths.
+         - Makes file paths clean. 
+
+3, COPY - copy files from your PC into the container.
+        - Moves files from my laptop into the container's filesystem.
+   Example: COPY . . // Copy everything from current folder -> container's workdir (/app) 
+   Real use:
+        - Copy Project code 
+        - Copy requirement.txt
+        - Copy configs 	
+4, RUN - Execute a command during image build.
+       - Runs this command inside the image while building it.
+   Example: RUN pip install -r requirements.txt  // Install Python Packages now,so they're ready inside the image. 
+   Used for:
+   - Installing dependencies 
+   - Updating Linux packages.
+   - Installing pip packages.
+   - Compiling code 
+   
+   
+      
+
+		
+		
+		   
+
+   
+		
 
 
 
