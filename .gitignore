@@ -1,2 +1,6 @@
 /CPP/TaskManagerApp/.vs
 /CPP/TaskManagerApp/.vs
+/CPP/ModernCppProjects/.vs
+/CPP/ModernCppProjects/out
+
+*.log
