@@ -1,0 +1,643 @@
+
+// program to divide by zero error
+
+# gcc -g -Wall -o infinite infinite.c     // option to generate a coredump 
+
+# gdb infinite <<Core dump file>>
+
+(gdb) bt 
+
+(gdb)list   // 
+
+*********************************************************************************************************************
+
+Misbehavior : All the below are responsible for misbehaviour.  
+
+(01) Memory leaks :
+
+(a) Allocated memory using malloc,new function but it is not freed properly. 
+
+(02) Invalid/Illegal memory accesses ( Segmenation fault) 
+
+(a) Try to access the memory which is not us.
+(b) write to illegal memory or read only memory. 
+(c) free memory and access again.
+(d) Kernel memory access.
+
+(03) Invalid Instruction:
+
+(a) compile with compilers. execute the program on other processer which doesn't support some of the instrutions.
+
+(04) Synchronization issues among the threads or many contexts :
+
+(a) sync global data between these threads or contexts.
+(b) process context or interprocess context or linux context is called.
+
+
+**********************************************************************************************************************
+
+Memory access problem :
+
+$ gcc -m32 sftp.c -o sftp 
+
+-m32 - complie a program using 32 bit compiler. Generate 32 bit executable file. 
+-m64 - compile a program using 64 bit compiler. Generate 64 bit executable file.
+
+-o - name mentioned after that is output file/executable file. 
+ 
+$ file <<Executable file name>> [ i.e, sftp in this file ]
+// it say that the program is ELF 32-bit executable file. 
+
+$ ./<<Executable file>> 
+// Once the program is executed. 
+// it generates a messsage
+
+Segmenation fault(core dumped) 
+
+
+---> Instruction address or Instruction pointer , where the problem is? 
+
+---> what are local variable contain?
+---> what were the parameters to the function?
+---> who has called this function?
+---> what were the data of global variables?
+---> inforamation of the registers ( content of the registers )
+
+
+Instruction pointer ( this contains address of the fault instruction)
+Stack ( we need the whole stack data) : To find what local variables contains or registers or arguments passed contains. 
+Data Segment : To find the what global variables contains. 
+Stack : To find who has called this function or stack trace or back trace
+heap Segement : memory is allocated dynmaically. 
+If we know above 4, we can narrow down the problem.
+All the above 4 information is available in CoreFile.
+Address space of the program is stored in CoreFile. 
+
+Which signal has generated the corefile?
+Which program has generated the corefile?
+
+what information a coredump file contains:
+
+1) Process status : 
+   --> Signal info like signal number, error number.
+   --> Set of pending signals.
+   --> Set of held signals (blocked signals)
+   --> process id, process parent id and..
+   --> set of registers.
+   
+2) Process Information :
+   --> State of the current process.
+   --> State in string like, R,S,Z ...
+   --> Whether the process is in Zombie state.
+   --> Nice value of the process
+   --> process flags
+   --> pid, ppid, ....
+   --> process name
+   --> Command line arguments of the program
+   
+3) Thread specific Info :
+    --> Process status for the thread.
+	
+4) Info of Memory Mapped files:
+   --> Number of files mapped, Name of files mapped, Start address and End address.
+   
+5) Process Address Space:
+   --> Like data segment, stack segment, code segment and heap
+   
+In our program, 
+Try to access NULL pointer.
+CPU tries to find physcial address of particular 0. 
+0 address doesn't consists of any physical address.
+Kernel checks the address in pagefault. if it is not valid then generate a signal called segmentation fault. 
+
+Core file is in format called Executable and linkable format (ELF).
+
+****************************************************************************************************************************************
+
+
+function setrlimit is used to set the limit // set through the program
+$ ulimit -c unlimited ===> No limitation on size. //using bash shell 
+$ ulimit -c 100000 ===> 100000 bytes size  // using bash shell 
+Default size of the corefile will be zero. 
+You have to tell the kernel to generate the corefile of particular size.
+
+*****************************************************************************************************************************************
+
+
+For only some of the signals, corefile will be generated.
+$man signals
+
+In output,  Below the Action column, if the column value is Core for that signal only. Core file will be generated.
+
+*****************************************************************************************************************************************
+
+
+Exectuabale and linkable file (ELF file):  
+It is collection of segments and sections 
+Reloctable object consists of sections and executable object consists of segments.
+
+*****************************************************************************************************************************************
+
+what are segment are in this corefile?
+$ objdump -h core 
+// there are segments but it are show as sections.
+
+
+*****************************************************************************************************************************************
+
+$gdb<space><<Exectuable Program>><space><<CoreFile>
+
+// it show the program generated the core. 
+// it show the signal generated the core.
+// it also tell whether debugging symbols are there or not. It is difficult to debug. with debugging symbols, it is easy to debug. 
+// instruction pointer. where the problem is( function name )? 
+   0x0804852d in functionName 
+   
+(gdb)
+
+if debugging symbols are not present then
+
+(gdb)  disassemble
+  // The line where the arrow is show. Their is a problem.
+  
+=> 0x0804852d <+31>:  mov %dl,(%eax)
+    %dl - register
+	%eax - address where eax is pointing to.
+	
+   quit
+  
+(gdb) print $eax
+$1 = 0   // you are trying to write to zeroth address.
+
+(gdb) print $dl
+$2 = 115 // trying to write is 115
+
+(gdb) print/c $dl
+$3 = 115 's' // trying to write 's'
+
+(gdb) info registers
+// it consists of all the register information at the time of Crash.
+
+eax         0x0      0     ==> eax consists of zero
+
+(gdb) bt or where or info stack
+// which function you come from or called from
+#0    0x0804852d in mystrcpy()  
+#1    0x080485ee in connect()
+#2    0x080486b6 in main() 
+// each function is allocated with stack frame. Here 0,1, and 2 are stack frame number.
+ 
+ 
+(gdb) info frame
+// it shows information about current stack frame.
+// current stack frame is 0
+
+
+It displays following information : 
+// Stack level number or frame (level 0)
+// eip - instruction pointer ( 0x0804852d ) 
+// Arglist - address, where are the arguments to the function are there. (0xffb98a98) 
+// Locals  - address, where are the locals are there. (0xffb98a98) 
+
+connect(argv[1],argv[2],argv[3]) ==> character pointer.
+printf("Connected.\n"); 
+argv[3] is stored into the stack then argv[2],argv[1] 
+next instruction of the connect is pushed to the stack 
+
+    base pointer (BP) - Starting of the current stack frame. ( Previous function base pointer ) 
+	stack pointer (BP) - Ending of the current stack frame. 
+	return address
+	first parameter
+	second parameter
+	third paramter
+	
+	ebp+0  --- previous ebp
+	ebp+4  --- return instruction of the caller
+	ebp+8  --- first parameter
+	ebp+12 --- second parameter
+	ebp+16 --- third parameter 
+	
+(gdb) x/10xw $ebp+4 
+      x - hexa decimal
+      w - word
+      0xffb98a9c:  0x080435ee ( Address where we came from or called from)
+
+(gdb) info symbol 0x080845ee
+connect + 176 in section text of <<Exectutable>>
+// Called from connect function. 
+
+(gdb) x/10xw $ebp+12
+0xffb98aa4:    0xffb99559 
+
+(gdb) print/x (char *)0xffb99559
+$4 = 0xffb99559
+
+(gbd) print/s (char *)0xffb99559
+$5 = 0xffb99559 "sdfsdf"
+	  
+
+(gdb) info files
+
+(gdb) frame 1   ==> frame will be changed to 1
+
+(gdb) print user ==> Global variable printing
+
+(gdb) info args 
+No symbol table info available  
+
+   
+***************************************************************************************************
+
+
+Core was generated by `SpieloGameLauncher -h localhost -p 61000 -t 581869302 -m 0'.
+Program terminated with signal SIGABRT, Aborted.
+#0  0x00007f54635b3c1a in raise () from /lib64/libc.so.6
+
+Diamond64-VLT /tmp/crash # 
+/tmp/crash/core.SpieloGame-Main.1690813748.6.8753
+
+Diamond64-VLT /tmp/crash # file core.SpieloGame-Main.1690813748.6.8753
+core.SpieloGame-Main.1690813748.6.8753: ELF 64-bit LSB core file, x86-64, version 1 (SYSV), SVR4-style, from 'SpieloGameLauncher -h localhost -p 61000 -t 581869302 -m 0', real uid: 0, 
+effective uid: 0, real gid: 0, effective gid: 0, execfn: '/Content/MBLL_115_1/Samurai888/../Common/bin/Release/SpieloGameLauncher', platform: 'x86_64'
+
+Diamond64-VLT /tmp/crash # gdb /tmp/mnt/runtime/iso/Other.MarketWrapper.CheckWin.1.115.2.3.iso/Content/MBLL_115_1/Common/bin/Release/SpieloGameLauncher core.SpieloGame-Main.1690813748.6.8753
+Core was generated by `SpieloGameLauncher -h localhost -p 61000 -t 581869302 -m 0'.
+Program terminated with signal SIGABRT, Aborted.
+#0  0x00007f54635b3c1a in raise () from /lib64/libc.so.6
+
+
+(gdb) disassemble
+=> 0x00007f54635b3c1a <+266>:   mov    -0x8(%rbp),%rax
+(gdb) print $rax
+$1 = 0
+(gdb) print $rbp
+$2 = (void *) 0x7ffdc5a24420
+(gdb) print/c $rbp
+$3 = 32 ' '
+
+
+
+= <+9552>:  callq  <__stack_chk_fail@plt>
+
+
+
+
+
+(gdb) thread info
+Invalid thread ID: info
+(gdb) info frame
+Stack level 6, frame at 0x7ffdc5a24990:
+ rip = 0x7f54641d0020 in GDK_v6_1::GameApp::RunEventLoop (/proj/GDK_V6_1/Common/GDK/Source/GDK/GameApp.cpp:407); saved rip [Instruction Pointer] = 0x556622067dfb 
+ called by frame at 0x7ffdc5a24fb0, caller of frame at 0x7ffdc5a24990
+ source language c++.
+ Arglist at 0x7ffdc5a245c0, args: this=<optimized out>
+ Locals at 0x7ffdc5a245c0, Previous frame's sp is 0x7ffdc5a24990
+ Saved registers:
+ rbx at 0x7ffdc5a24958, rbp at 0x7ffdc5a24980, r12 at 0x7ffdc5a24960, r13 at 0x7ffdc5a24968, r14 at 0x7ffdc5a24970, r15 at 0x7ffdc5a24978, rip at 0x7ffdc5a24988
+
+
+(gdb) info thread
+  Id   Target Id                        Frame
+* 1    Thread 0x7fa1104aee40 (LWP 8458) 0x00007fa10fe58c1a in raise () from /lib64/libc.so.6
+  2    Thread 0x7fa0e806c700 (LWP 8500) 0x00007fa10fdf69db in pthread_cond_wait@@GLIBC_2.3.2 () from /lib64/libpthread.so.0
+  3    Thread 0x7fa108fbc700 (LWP 8470) 0x00007fa10fdf94dd in do_futex_wait.constprop () from /lib64/libpthread.so.0
+  4    Thread 0x7fa10b56c700 (LWP 8465) 0x00007fa10ff19959 in syscall () from /lib64/libc.so.6
+  5    Thread 0x7fa0e8053700 (LWP 8501) 0x00007fa10fdf69db in pthread_cond_wait@@GLIBC_2.3.2 () from /lib64/libpthread.so.0
+quit
+
+
+
+
+(gdb) thread apply all where
+
+Thread 30 (Thread 0x7fa0e8085700 (LWP 8499)):
+#0  0x00007fa10fdf69db in pthread_cond_wait@@GLIBC_2.3.2 () from /lib64/libpthread.so.0
+#1  0x00007fa10f809b2b in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#2  0x00007fa10f7e9668 in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#3  0x00007fa10f7e85ac in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#4  0x00007fa10f7e8ed9 in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#5  0x00007fa10f809029 in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#6  0x00007fa10fdeffa2 in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fa10ff1ee2f in clone () from /lib64/libc.so.6
+
+Thread 29 (Thread 0x7fa1097de700 (LWP 8469)):
+#0  0x00007fa10ff1466d in poll () from /lib64/libc.so.6
+#1  0x00007fa10ee912a6 in (anonymous namespace)::pulse_poll_func(pollfd*, unsigned long, int, void*) () from /usr/lib64/libopenal.so.1
+#2  0x00007fa10a34f499 in pa_mainloop_poll () from /usr/lib64/libpulse.so.0
+#3  0x00007fa10a34fb48 in pa_mainloop_iterate () from /usr/lib64/libpulse.so.0
+#4  0x00007fa10a34fc00 in pa_mainloop_run () from /usr/lib64/libpulse.so.0
+#5  0x00007fa10ee91989 in (anonymous namespace)::PulseMainloop::mainloop_thread() () from /usr/lib64/libopenal.so.1
+#6  0x00007fa11024415f in ?? () from /usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/libstdc++.so.6
+#7  0x00007fa10fdeffa2 in start_thread () from /lib64/libpthread.so.0
+#8  0x00007fa10ff1ee2f in clone () from /lib64/libc.so.6
+
+(gdb) thread 2
+[Switching to thread 2 (Thread 0x7fa0e806c700 (LWP 8500))]
+#0  0x00007fa10fdf69db in pthread_cond_wait@@GLIBC_2.3.2 () from /lib64/libpthread.so.0
+(gdb) bt
+#0  0x00007fa10fdf69db in pthread_cond_wait@@GLIBC_2.3.2 () from /lib64/libpthread.so.0
+#1  0x00007fa10f809b2b in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#2  0x00007fa10f7e9668 in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#3  0x00007fa10f7e85ac in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#4  0x00007fa10f7e8ed9 in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#5  0x00007fa10f809029 in ?? () from /Content/MBLL_115_1/Samurai888/../Common/ThirdParty/lib/libBink2x64.so
+#6  0x00007fa10fdeffa2 in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fa10ff1ee2f in clone () from /lib64/libc.so.6
+
+(gdb) set logging on
+Copying output to gdb.txt.
+Copying debug output to gdb.txt.
+
+********************************************************************************************************************************************
+
+
+/tmp/mnt/runtime/merged/Content/Illinois_108_5/Common/bin/Release/SpieloGameLauncher
+/tmp/mnt/runtime/merged/Content/Illinois_108_3/Common/bin/Release/SpieloGameLauncher
+/tmp/mnt/runtime/iso/Other.MarketWrapperV2.CheckWin.108.7.8.4.iso/Content/Illinois_108_5/Common/bin/Release/SpieloGameLauncher
+/tmp/mnt/runtime/iso/Other.MarketWrapper.CheckWin.108.3.20.4.iso/Content/Illinois_108_3/Common/bin/Release/SpieloGameLauncher
+/Content/Illinois_108_5/Common/bin/Release/SpieloGameLauncher
+/Content/Illinois_108_3/Common/bin/Release/SpieloGameLauncher
+
+Diamond64-VLT ~ # find / -name "SpieloGameLauncher" -print
+/tmp/mnt/runtime/merged/Content/Illinois_108_5/Common/bin/Release/SpieloGameLauncher
+/tmp/mnt/runtime/merged/Content/Illinois_108_3/Common/bin/Release/SpieloGameLauncher
+/tmp/mnt/runtime/iso/Other.MarketWrapperV2.CheckWin.108.7.8.4.iso/Content/Illinois_108_5/Common/bin/Release/SpieloGameLauncher
+/tmp/mnt/runtime/iso/Other.MarketWrapper.CheckWin.108.3.20.4.iso/Content/Illinois_108_3/Common/bin/Release/SpieloGameLauncher
+/Content/Illinois_108_5/Common/bin/Release/SpieloGameLauncher
+/Content/Illinois_108_3/Common/bin/Release/SpieloGameLauncher
+
+
+
+(gdb) bt
+#0  0x0000560fd8cd8a60 in ?? ()
+#1  0x00007f46cf91ae3f in GDKWidgets_v6_1::BinkPlayer::UnRegisterWithUpdateDispatcher() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDKWidgets_v6_1.so
+#2  0x00007f46cf91fbe0 in GDKWidgets_v6_1::BinkPlayer::~BinkPlayer() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDKWidgets_v6_1.so
+#3  0x00007f46cf91fe22 in GDKWidgets_v6_1::BinkPlayer::~BinkPlayer() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDKWidgets_v6_1.so
+#4  0x00007f468797e8ca in boost::detail::sp_counted_base::release (this=0x560fd8ce1350) at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/detail/sp_counted_base_std_atomic.hpp:109
+#5  boost::detail::sp_counted_base::release (this=0x560fd8ce1350) at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/detail/sp_counted_base_std_atomic.hpp:105
+#6  boost::detail::shared_count::~shared_count (this=0x560fe539ea08, __in_chrg=<optimized out>) at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/detail/shared_count.hpp:419
+#7  boost::shared_ptr<GDKWidgets_v6_1::BinkPlayer>::~shared_ptr (this=0x560fe539ea00, __in_chrg=<optimized out>)
+    at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/shared_ptr.hpp:337
+#8  FortuneCoinTigerTopScreenSkin::~FortuneCoinTigerTopScreenSkin (this=0x560fe539e510, __in_chrg=<optimized out>) at ../FortuneCoinTiger/FortuneCoinTigerTopScreenSkin.cpp:103
+#9  0x00007f4687a92b12 in FortuneCoinTigerFreeSpinsTopScreenPaytableSkin::~FortuneCoinTigerFreeSpinsTopScreenPaytableSkin (this=0x560fe539e510, __in_chrg=<optimized out>)
+    at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsTopScreenPaytableSkin.cpp:19
+#10 0x00007f4687a78cbe in FortuneCoinTigerFreeSpinsGame::~FortuneCoinTigerFreeSpinsGame (this=0x560fd7659120, __in_chrg=<optimized out>)
+    at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp:78
+#11 0x00007f4687a78ff2 in FortuneCoinTigerFreeSpinsGame::~FortuneCoinTigerFreeSpinsGame (this=0x560fd7659120, __in_chrg=<optimized out>)
+    at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp:63
+#12 0x00007f468772c2c4 in MarketWrapperV2::BaseWrapperReel::~BaseWrapperReel() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so
+#13 0x00007f468773a8e2 in MarketWrapperV2::MarketWrapperFreeSpin::~MarketWrapperFreeSpin() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so
+#14 0x00007f46d07be469 in GDK_v6_1::BonusRecord::~BonusRecord() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so
+#15 0x00007f46d07be4a2 in GDK_v6_1::BonusRecord::~BonusRecord() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so
+#16 0x00007f46d08314f3 in GDK_v6_1::MarketWrapper::~MarketWrapper() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so
+#17 0x00007f468777b3e2 in MarketWrapperV2::MarketWrapperReel::~MarketWrapperReel() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so
+#18 0x00007f46d07da5e6 in GDK_v6_1::GameApp::~GameApp() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so
+#19 0x0000560fd72f6bdb in boost::checked_delete<GDK_v6_1::GameApp> (x=0x560fd73f8460) at /proj/GDK_V6_1/Common/ThirdParty/include/boost/core/checked_delete.hpp:29
+#20 boost::detail::sp_counted_impl_p<GDK_v6_1::GameApp>::dispose (this=<optimized out>) at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/detail/sp_counted_impl.hpp:78
+#21 0x0000560fd72f7893 in boost::detail::sp_counted_base::release (this=0x560fd73f8760) at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/detail/sp_counted_base_std_atomic.hpp:109
+#22 boost::detail::sp_counted_base::release (this=0x560fd73f8760) at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/detail/sp_counted_base_std_atomic.hpp:105
+#23 0x0000560fd72f2e17 in boost::detail::shared_count::~shared_count (this=<optimized out>, __in_chrg=<optimized out>)
+    at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/detail/shared_count.hpp:419
+#24 boost::shared_ptr<GDK_v6_1::GameApp>::~shared_ptr (this=<optimized out>, __in_chrg=<optimized out>) at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/shared_ptr.hpp:337
+#25 boost::shared_ptr<GDK_v6_1::GameApp>::reset (this=0x7fff861a9bb0) at /proj/GDK_V6_1/Common/ThirdParty/include/boost/smart_ptr/shared_ptr.hpp:668
+#26 main (argc=<optimized out>, argv=<optimized out>) at /proj/GDK_V6_1/Common/GDK/Source/SpieloGameLauncher/Launcher.cpp:474
+
+
+
+
+Diamond64-VLT /mnt/log # vi _backtrace.20240725-105833
+/Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDKBink_v6_1.so(+0x127c0)[0x7fa28e4ea7c0]
+/lib64/libc.so.6(+0x38c90)[0x7fa28e598c90]
+/Content/Illinois_108_5/FortuneCoinTiger/./bin/Release/libFortuneCoinTiger.so(_ZN29FortuneCoinTigerTopScreenSkin20StopCenterCoinPlayerEv+0x13)[0x7fa24628f693]
+/Content/Illinois_108_5/FortuneCoinTiger/./bin/Release/libFortuneCoinTiger.so(_ZN29FortuneCoinTigerTopScreenSkinD1Ev+0x4e)[0x7fa2462912de]
+/Content/Illinois_108_5/FortuneCoinTiger/./bin/Release/libFortuneCoinTiger.so(+0x144e22)[0x7fa246344e22]
+/Content/Illinois_108_5/FortuneCoinTiger/./bin/Release/libFortuneCoinTiger.so(_ZN34FortuneCoinTigerPAPProgressiveGameD1Ev+0x87)[0x7fa246326ab7]
+/Content/Illinois_108_5/FortuneCoinTiger/./bin/Release/libFortuneCoinTiger.so(_ZN34FortuneCoinTigerPAPProgressiveGameD0Ev+0x12)[0x7fa246326da2]
+/Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so(_ZN15MarketWrapperV221MarketWrapperPAPBonusD2Ev+0x68)[0x7fa246057178]
+/Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so(_ZN15MarketWrapperV221MarketWrapperPAPBonusD0Ev+0x12)[0x7fa246057292]
+/Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so(_ZN8GDK_v6_111BonusRecordD1Ev+0x29)[0x7fa28f1a9469]
+/Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so(_ZN8GDK_v6_111BonusRecordD0Ev+0x12)[0x7fa28f1a94a2]
+/Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so(_ZN8GDK_v6_113MarketWrapperD1Ev+0x123)[0x7fa28f21c4f3]
+/Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so(_ZN15MarketWrapperV217MarketWrapperReelD0Ev+0x12)[0x7fa2461163e2]
+/Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so(_ZN8GDK_v6_17GameAppD2Ev+0x26)[0x7fa28f1c55e6]
+SpieloGameLauncher(+0x12bdb)[0x55984dda0bdb]
+SpieloGameLauncher(+0x13893)[0x55984dda1893]
+SpieloGameLauncher(+0xee17)[0x55984dd9ce17]
+/lib64/libc.so.6(__libc_start_main+0x103)[0x7fa28e583d33]
+SpieloGameLauncher(_start+0x2a)[0x55984dd9e28a]
+
+
+set solib-search-path /Content/Common/bin/Release/pathToSymbols 
+(gdb) set solib-search-path /tmp/mnt/runtime/iso/Other.MarketWrapperV2.CheckWin.108.7.8.4.iso/Content/Illinois_108_5/Common/bin/Release/SpieloGameLauncher
+(gdb) info sharedlibrary
+
+(gdb) set solib-search-path /Content/Illinois_108_5/Common/ThirdParty/lib:/Content/Illinois_108_5/Common/bin/Release:/Content/Illinois_108_5/FortuneCoinTiger/bin/Release
+(gdb) show solib-search-path
+
+
+
+Diamond64-VLT /Content/Illinois_108_5/Common/ThirdParty/lib # pwd
+/Content/Illinois_108_5/Common/ThirdParty/lib
+
+Diamond64-VLT /Content/Illinois_108_5/Common/bin/Release # pwd
+/Content/Illinois_108_5/Common/bin/Release
+
+/Content/Illinois_108_5/FortuneCoinTiger/bin/Release/
+
+ 
+(gdb)  break FortuneCoinTigerFreeSpinsGame.cpp:Exit
+No source file named FortuneCoinTigerFreeSpinsGame.cpp.
+Make breakpoint pending on future shared library load? (y or [n]) y
+Breakpoint 1 (FortuneCoinTigerFreeSpinsGame.cpp:Exit) pending.
+
+(gdb) info break
+Num     Type           Disp Enb Address    What
+1       breakpoint     keep y   <PENDING>  FortuneCoinTigerFreeSpinsGame.cpp:Exit
+
+
+(gdb) add-symbol-file /Content/Illinois_108_5/FortuneCoinTiger/bin/Release/libFortuneCoinTiger.so.dbg
+add symbol table from file "/Content/Illinois_108_5/FortuneCoinTiger/bin/Release/libFortuneCoinTiger.so.dbg"
+(y or n) yes
+Reading symbols from /Content/Illinois_108_5/FortuneCoinTiger/bin/Release/libFortuneCoinTiger.so.dbg...
+(gdb) add-symbol-file /Content/Illinois_108_5/FortuneCoinTiger/bin/Release/libFortuneCoinTigerOutcome_v1.so.dbg
+add symbol table from file "/Content/Illinois_108_5/FortuneCoinTiger/bin/Release/libFortuneCoinTigerOutcome_v1.so.dbg"
+(y or n) yes
+Reading symbols from /Content/Illinois_108_5/FortuneCoinTiger/bin/Release/libFortuneCoinTigerOutcome_v1.so.dbg...
+(gdb) info break
+Num     Type           Disp Enb Address            What
+1       breakpoint     keep y   0x00000000001907f0 in FortuneCoinTigerFreeSpinsGame::Exit()
+                                                   at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp:424
+2       breakpoint     keep y   0x00000000001907f0 in FortuneCoinTigerFreeSpinsGame::Exit()
+                                                   at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp:424
+
+(gdb) delete breakpoint 2
+(gdb) info break
+Num     Type           Disp Enb Address            What
+1       breakpoint     keep y   0x00000000001907f0 in FortuneCoinTigerFreeSpinsGame::Exit()
+                                                   at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp:424
+												   
+break FortuneCoinTigerFreeSpinsGame:Start 
+
+
+(gdb) break FortuneCoinTigerTopScreenSkin.cpp:~FortuneCoinTigerTopScreenSkin
+Breakpoint 3 at 0x91370: FortuneCoinTigerTopScreenSkin.cpp:~FortuneCoinTigerTopScreenSkin. (2 locations)
+(gdb) info break
+Num     Type           Disp Enb Address            What
+1       breakpoint     keep y   0x00000000001907f0 in FortuneCoinTigerFreeSpinsGame::Exit()
+                                                   at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp:424
+3       breakpoint     keep y   <MULTIPLE>
+3.1                         y   0x0000000000091370 in FortuneCoinTigerTopScreenSkin::~FortuneCoinTigerTopScreenSkin()
+                                                   at ../FortuneCoinTiger/FortuneCoinTigerTopScreenSkin.cpp:103
+3.2                         y   0x0000000000091ef0 in FortuneCoinTigerTopScreenSkin::~FortuneCoinTigerTopScreenSkin()
+                                                   at ../FortuneCoinTiger/FortuneCoinTigerTopScreenSkin.cpp:103
+										   
+												   
+
+
+#gdb attach <<ProcessId>> 
+
+(gdb) catch throw
+Catchpoint 1 (throw)
+(gdb) break FortuneCoinTigerFreeSpinsGame.cpp:Exit
+Breakpoint 2 at 0x7fb35a2887f0: file ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp, line 424.
+(gdb) info break
+Num     Type           Disp Enb Address            What
+1       catchpoint     keep y                      exception throw
+2       breakpoint     keep y   0x00007fb35a2887f0 in FortuneCoinTigerFreeSpinsGame::Exit()
+                                                   at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp:424
+(gdb) c
+Continuing.
+[Thread 0x7fb325658700 (LWP 9049) exited]
+
+Thread 1 "SpieloGame-Main" hit Breakpoint 2, FortuneCoinTigerFreeSpinsGame::Exit (this=0x55a651b2c530)
+    at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp:424
+424     ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp: No such file or directory.
+(gdb) bt
+#0  FortuneCoinTigerFreeSpinsGame::Exit (this=0x55a651b2c530)
+    at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerFreeSpins/FortuneCoinTigerFreeSpinsGame.cpp:424
+#1  0x00007fb3a311ff1c in GDK_v6_1::MarketWrapper::Exit() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so
+#2  0x00007fb359e7d76c in MarketWrapperV2::BaseWrapper::Exit() ()
+   from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so
+#3  0x00007fb359ff5c53 in MarketWrapperV2::MarketWrapperFreeSpin::Exit() ()
+   from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so
+#4  0x00007fb3a311ff56 in GDK_v6_1::MarketWrapper::Exit() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so
+#5  0x00007fb359e7d76c in MarketWrapperV2::BaseWrapper::Exit() ()
+   from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so
+#6  0x00007fb35a03fb80 in MarketWrapperV2::MarketWrapperReel::Exit() ()
+   from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so
+#7  0x00007fb3a3126443 in GDK_v6_1::MarketWrapper::OnControlEvent(gscore_v6_1::GameTime const&, boost::shared_ptr<gsEvent_v6_1::CtrlEvent>) ()
+   from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so
+#8  0x00007fb3a312348c in GDK_v6_1::MarketWrapper::Update(gscore_v6_1::GameTime const&) ()
+   from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so
+#9  0x00007fb359e81702 in MarketWrapperV2::BaseWrapper::Update(gscore_v6_1::GameTime const&) ()
+   from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libMarketWrapperGSNV0.so
+#10 0x00007fb3a30d6a89 in GDK_v6_1::GameApp::RunEventLoop() () from /Content/Illinois_108_5/FortuneCoinTiger/../Common/bin/Release/libGDK_v6_1.so
+#11 0x000055a6517c5dfb in main (argc=<optimized out>, argv=<optimized out>) at /proj/GDK_V6_1/Common/GDK/Source/SpieloGameLauncher/Launcher.cpp:466
+
+
+(gdb) c
+Continuing.
+[Switching to Thread 0x7fb39c402700 (LWP 9018)]
+
+Thread 10 "API Service" hit Catchpoint 1 (exception thrown), 0x00007fb3a28688b0 in __cxa_throw () from /usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/libstdc++.so.6
+
+
+(gdb) bt
+#0  FortuneCoinTigerTopScreenSkin::~FortuneCoinTigerTopScreenSkin (this=0x55fe40abd450, __in_chrg=<optimized out>)
+    at ../FortuneCoinTiger/FortuneCoinTigerTopScreenSkin.cpp:103
+#1  0x00007f8b29b7a1d2 in FortuneCoinTigerMainTopScreenPaytableSkin::~FortuneCoinTigerMainTopScreenPaytableSkin (this=0x55fe40abd450,
+    __in_chrg=<optimized out>) at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerMain/FortuneCoinTigerMainTopScreenPaytableSkin.cpp:18
+#2  0x00007f8b29b60843 in FortuneCoinTigerMainGame::~FortuneCoinTigerMainGame (this=0x55fe3738f750, __in_chrg=<optimized out>)
+    at ../FortuneCoinTiger/FortuneCoinTiger/FortuneCoinTigerMain/FortuneCoinTigerMainGame.cpp:145
+Backtrace stopped: Cannot access memory at address 0x7fffa473c3a8
+(gdb) frame 0
+#0  FortuneCoinTigerTopScreenSkin::~FortuneCoinTigerTopScreenSkin (this=0x55fe40abd450, __in_chrg=<optimized out>)
+    at ../FortuneCoinTiger/FortuneCoinTigerTopScreenSkin.cpp:103
+103     in ../FortuneCoinTiger/FortuneCoinTigerTopScreenSkin.cpp
+
+(gdb) info frame
+Stack level 0, frame at 0x7fffa473c360:
+ rip = 0x7f8b29a95370 in FortuneCoinTigerTopScreenSkin::~FortuneCoinTigerTopScreenSkin (../FortuneCoinTiger/FortuneCoinTigerTopScreenSkin.cpp:103);
+    saved rip = 0x7f8b29b7a1d2
+ called by frame at 0x7fffa473c380
+ source language c++.
+ Arglist at 0x7fffa473c350, args: this=0x55fe40abd450, __in_chrg=<optimized out>
+ Locals at 0x7fffa473c350, Previous frame's sp is 0x7fffa473c360
+ Saved registers:
+  rip at 0x7fffa473c358Couldn't get extended state status: No such process.
+
+
+(gdb) info thread
+  Id   Target Id                                          Frame
+  1    Thread 0x7fe4d271b780 (LWP 9829) "SpieloGame-Main" Couldn't get registers: No such process.
+(gdb) info threads
+  Id   Target Id                                          Frame
+  1    Thread 0x7fe4d271b780 (LWP 9829) "SpieloGame-Main" Couldn't get registers: No such process.
+(gdb) thread 1
+[Switching to thread 1 (Thread 0x7fe4d271b780 (LWP 9829))]
+Couldn't get registers: No such process.
+
+
+**********************************************************************************************
+
+
+(gdb) where
+#0 foo(i=1) at prog1.cc:4   ==> Stack frame of foo function.
+#1 0x0005555eb in main() at prog1.cc:11  ==> Stack frame of main function.
+
+
+(gdb) disassemble main  ==> Assemble code of the main function. 
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
