@@ -12,7 +12,7 @@ private:
 
 public:
 	//Constructor 
-	Student(const std::string& name, int age, int rollNumber);
+	student(const std::string& name, int age, int rollNumber);
 
 	//Getter amd Setter functions (Encapsulation)
 	std::string getName() const;

@@ -27,7 +27,7 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 if(MSVC)
-   target_compile_options(${PROJECT_NAME} PRIVATE "/w4" "/permissive-" "/Zc:__cplusplus")
+   target_compile_options(${PROJECT_NAME} PRIVATE "/W4" "/permissive-" "/Zc:__cplusplus")
 else()
    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 endif()
