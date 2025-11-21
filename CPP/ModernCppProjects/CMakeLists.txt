@@ -25,6 +25,9 @@ else()
    add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif() 
 
+#NEW: Tell CMake we want SQLite from vcpkg 
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
+
 #Add sub projects
 #line tells CMake to
 # 1. Go inside that folder.
