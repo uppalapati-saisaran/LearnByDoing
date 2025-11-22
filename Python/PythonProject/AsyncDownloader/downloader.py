@@ -9,7 +9,7 @@ from logger import setup_logger
 #============================================
 
 class FileDownloader:
-    """Handles threaded downloading of multiple files. """
+    """Handles threaded downloading of multiple files."""
 
     def __init__(self):
         self.logger = setup_logger()
@@ -23,6 +23,7 @@ class FileDownloader:
     def download_file(self,url):
         """Downloading a single file"""
         try:
+            print("Starting downlaod:", url)
             self.logger.info(f"Starting download: {url}")
             response = requests(url,timeout=10)
             response.raise_for_status() #Raise error for bad responses
@@ -39,11 +40,12 @@ class FileDownloader:
         """Start threaded downloads.""" 
         threads = []
         for url in self.urls:
-            thread=threading.Thread(target=self.download_file,args=(url,1))
+            thread=threading.Thread(target=self.download_file,args=(url,))
             threads.append(thread)
+            print("url :",url)
             thread.start()
         
-        if len(thread) >= config.MAX_THREADS:
+        if len(threads) >= config.MAX_THREADS:
             # Wait for current batch to finish before starting new ones.
             for t in threads:
                 t.join()

@@ -10,22 +10,28 @@ import os
 
 def setup_logger():
    """ Configure and return a logger instance """
-   
-   #Ensure the log directly exists
-   log_dir = os.path.dirname(config.LOG_FILE)
-   if log_dir and not os.path.exists(log_dir):
-      os.makedirs(log_dir)
+   logger = logging.getLogger("downloader_logger")
+   logger.setLevel(logging.INFO)
 
-   #Configure logging format and level
-   logging.basicConfig(
-      filename=config.LOG_FILE,
-      level=getattr(logging,config.LOG_LEVEL),
-      format="%(asctime)s" - %(levelname)s - %(message)s",
-      datefmt='%Y-%m-%d %H:%M:%S'
-   )
+   #Prevent adding handlers multiple times.
+   if not logger.handlers:
+      #---- FILE HANDLER --------
+      file_handler = logging.FileHandler(config.LOG_FILE)
+      file_handler.setLevel(logging.INFO)
 
-   #create and return logger instance 
-   logger = logging.getLogger(__name__)
+      #------CONSOLE HANDLER 
+      console_handler = logging.StreamHandler()
+      console_handler.setLevel(logging.INFO)
+
+      #Formattign for Logs 
+      formatter = logging.Formatter("[%(levelname)s] %(message)s")
+      file_handler.setFormatter(formatter)
+      console_handler.setFormatter(formatter)
+
+      #Add handlers
+      logger.addHandler(file_handler)
+      logger.addHandler(console_handler)
+      
    return logger 
 
 
