@@ -223,7 +223,7 @@ A,
 
 -> crontab -e - Edit the current user's crontab - To add or modity cron jobs.
 -> crontab -l -> List current user's crontab - See all scheduled jobs.
--> crontab -r -> remve the current user's crontab - Delete all jobs at once.
+-> crontab -r -> remove the current user's crontab - Delete all jobs at once.
 -> crontab -u username -e -> Edit crontab of another user (sudo needed) - Sysadmin edit another user's crontab.
 -> crontab -u username -l -> List crontab of another user -> Check another user's scheduled jobs.
 
@@ -232,7 +232,7 @@ A,
 Minute(0-59) Hour(1-12) Day of Month(1-31) Hour(0-23) Day of Week(0-6,Sun = 0) 
  
 Special Keywords:
-@reboot - run once at system startup - @reboot /home/user/startuo_task.sh
+@reboot - run once at system startup - @reboot /home/user/startup_task.sh
 @daily - Once per day (midnight) - @daily /home/user/cleanup.sh 
 @hourly - Once per hour - @hourly /home/user/log.sh 
 @weekly - Once per week - @weekly /home/user/weekly_backup.sh 
@@ -240,7 +240,7 @@ Special Keywords:
 7, What is useradd?
 A, 
 useradd is a low-level command-line tool used to create new user accounts in Linux systems.
-It handles creating the user in the system database, setting up their hoem directory, and setting details.
+It handles creating the user in the system database, setting up their home directory, and setting details.
 
 -m -> Create a home directory for the user - useradd -m john 
 -d -> Specify a custom home directory -  useradd -d /custom/home john 
@@ -263,7 +263,7 @@ It handles creating the user in the system database, setting up their hoem direc
 
 -> Create user with custom home and sudo access 
  
-  sudog useradd -m -d /opt/alice_home -s /bin/bash -G sudo alice 
+  sudo useradd -m -d /opt/alice_home -s /bin/bash -G sudo alice 
 
 -> After adding the user.
    sudo passwd alice - This will prompt you to enter a new password. 
@@ -291,7 +291,7 @@ It handles creating the user in the system database, setting up their hoem direc
 -> -m -> Move home directory contents to new location - usermod -d /new/home -m alice 
 -> -l -> change login name (username) - usermod -l newname oldname 
 -> -s -> change login shell - usermod -s /bin/zsh alice 
--> -c -> change user's comment (e.g., full aname) - usemod -c "Alice johnson" alice 
+-> -c -> change user's comment (e.g., full name) - usemod -c "Alice johnson" alice 
 -> -L Lock user account (disable login) - usermod -L alice 
 -> -U Unlock user account - usermod -U alice 
 -> -e Set account expiration data - usermod -e 2025-12-31 alice 
@@ -318,7 +318,7 @@ It handles creating the user in the system database, setting up their hoem direc
    
 5, Change Login Shell 
    sudo usermod -s /bin/zsh alice 
-   - Alice wil lnow use ZSH when she logs in.
+   - Alice wil know use ZSH when she logs in.
    
 Notes:
 - Always use -a with -G, otherwise it replaces the user's existing groups.
@@ -334,11 +334,11 @@ Mostly used passwd options (Simple Table)
 
 passwd - Change your own passward -  passwd 
 passwd username - set/change password of another user - sudo passwd alice 
--l - lock a user's password - suod passwd -l alice 
--u - Unlock a locked password - sudo paswd -u alice 
--d - Delete password (user can login without password) - sudo passed -d testuser 
+-l - lock a user's password - sudo passwd -l alice 
+-u - Unlock a locked password - sudo passwd -u alice 
+-d - Delete password (user can login without password) - sudo passwd -d testuser 
 -e - Expire passwd immeditetly (force change on next login) - sudo passwd -e alice 
--S - show password status - passwd -5 alice 
+-S - show password status - passwd -S alice 
 -n DAYS - Set minimum password age (user cannot change before X days) - sudo passwd -n 7 alice 
 -x DAYS - Set maximum password age (must change after X days) - sudo passwd -X 90 alice 
 -w DAYS - Warn user before password expires - sudo passwd -w 5 alice 
@@ -347,6 +347,145 @@ Bonus Tip : Combine Policies
 - To set a 90 day cycle with warning:
 sudo passwd -X 90 -w 5 alice 
 - if you want, I can also explain change (password aging), userdel, groupmod, or /etc/shadow details - Just tell me!
+
+
+Docker: 
+
+- Below is a quick list of the most commonly used options with each major Docker command.
+
+1, docker run  - used to start a container 
+
+-d - Run in background (detached) - docker run -d nginx 
+                                  - docker - This calls the Docker CLI.
+								  - run - Create a new container and start it. 
+								  - docker run - Start a container from an image 
+								  
+-p - Port mapping host:container - docker run -p 8080:80 nginx 
+                                 - -p 8080:80 - This is port mapping (host_port : container_port) 
+								 - host machine port - The port on your computer or server.
+								 - conatiner internal port - The port inside the nginx container where nginx actually listens. 
+								 - Simple Explanation: Send all traffic coming to http://localhost:8080 into the container's port 80 (Where nginx is running)."
+								 - nginx - This is the Docker iamge name. (Web server running inside the container)
+								         - Pull it automatically if not available locally.
+										 - Start a container from this nginx image. 
+								 
+--name - Give container a name - docker run --name web nginx 
+
+-e - Set environment variables - docker run -e DB=prod app 
+                               - docker run - Start a new container using an image. Every time you use docker run, a new instance (container) is created.
+							   - -e - Inside the container, create a variable named DB and assign the value prod.
+							   - Why do we use environment variables?
+							     - Because conatiners shouldn't have hard-coded settings.
+								 - Instead, you pass configuration from outside.
+								 - Example use cases: Setting environment (dev, qa, prod) , Passing database URLs, Passing API Keys, Enableing debug mode, Setting username/password 
+							   - Real-time examples:
+                                 -e DB=prod - Tells the app it is running in production.
+                                 -e DEBUG=true - Turn on debug logs.
+                                 -e PORT=5000 - App should be listen on port 5000 
+                                 -e DB_HOST=mysql - Connect to a MYSQL container 
+                               - app - This is name of the Docker image 
+                                     - a local image named app, OR try to pull app from Docker Hub (if available) 							   
+
+-v - Mount volume - docker run -v /data:/app/data app 
+--rm - Auto remove after exit - docker run -rm ubuntu ls 
+-lt - Interactive + terminal - docker run -it unbuntu bash 
+--network - Attach to the network - docker run --network mynet app 
+
+2, docker ps - Show container 
+
+-a - Show all the containers (stopped + running)  - docker ps -a 
+-q - Only show cantainer IDs - docker ps -q 
+
+Combine both:
+
+docker -aq 
+
+3, docker images - List images 
+
+-a - Show ALL images (including intermediate layers)
+-q - Only show image IDs 
+
+Example :  docker images -a 
+
+4, docker logs - Check logs 
+
+-f - Follow live logs 
+-n - show last N log lines.
+
+docker logs -f web 
+docker logs -n 100 web 
+
+5, docker exec - run command inside running container 
+
+-it - Interactive terminal 
+
+docker exec -it web bash 
+
+6, docker stop/start/restart 
+- No Major options, but mostly used like:
+
+docker stop web 
+dcoker start web 
+docker restart web 
+
+7, docker rm - remove container 
+
+-f - Force remove 
+-v - remove attached volumes 
+
+docker rm -f web 
+
+8, docker rmi - Remove image 
+
+-f - Force remove image .
+
+docker rmi -f nginx 
+
+9, docker build - build images 
+
+-t - Tag name - docker build -t myapp .
+-f - Use custom Dockerfile - docker build -f Dockerfile.dev . 
+
+10, docker pull/push 
+
+docker pull nginx 
+doker push myrepo/myapp:latest 
+
+Most Used Docker Commands in Real-Time Jobs 
+
+1, docker run -d -p 8080:80 nginx 
+2, docker ps -a 
+3, docker logs -f container 
+4, docker exec -it container bash 
+5, docker build -t myapp . 
+6, docker stop, docker start, docker restart 
+7, docker rm -f container 
+8, docker rmi -f image 
+9, docker compose up -d (VERY common) 
+10, docker compose logs -f 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
