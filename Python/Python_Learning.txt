@@ -239,7 +239,11 @@ if __name__ == "__main__":
     start = time.time()
     run_processes() 
     print(f"Multiprocessing took {time.time() - start:.2f} seconds")
+	
+output:
 
+Threading took 3.54 seconds
+Process took 3.10 seconds
 
 *********************************************************************************************************************************************** 27-07-2025 
 
@@ -269,6 +273,9 @@ A, Changing a class or module behaviour at runtime.
 
 import math 
 math.sqrt = lambda x : "Hacked!" 
+print(math.sqrt(2)) 
+
+Output: Hacked! 
 
 ********************************************************************************************************************************************** 27-07-2025 
 
@@ -277,6 +284,18 @@ math.sqrt = lambda x : "Hacked!"
 with open('file.txt') as f:
    data = f.read() 
 #No need to close() 
+
+try:
+    with open('file.txt') as f:
+        data = f.read() 
+except (ValueError,TypeError,FileNotFoundError) as e:
+    print(f"File not found Error : {e}")
+
+try:
+    with open('file.txt') as f:
+        data = f.read() 
+except FileNotFoundError as e:
+    print(f"File not found Error : {e}")
 
 ********************************************************************************************************************************************* 27-07-2025 
 
@@ -326,18 +345,13 @@ pass: does nothing (placeholder)
 a = [1,2,3]
 b = a
 b.append(4)
-print("a :")
-print(a)
-print("b :")
-print(b)
+print("a :",a)
+print("b :",b)
 
 
 Answer: 
-a :
-[1, 2, 3, 4]
-b :
-[1, 2, 3, 4]
-
+a : [1, 2, 3, 4]
+b : [1, 2, 3, 4]
 b = a means b and a refer to the same list in a memory. so appending to b also changes a.
 
 ****************************************************************************************************************************************** 27-07-2025 
@@ -379,8 +393,9 @@ Default mutable arguments are created only once, not every time the function is 
 ****************************************************************************************************************************************** 27-07-2025 
    
 28, Lamba function to multiply two numbers
-   multiply = lambda a,b: a*b 
-   print multiply(2,5);
+multiply = lambda a,b: a*b 
+print(multiply(2,5))
+
 A, 10 
 
 ****************************************************************************************************************************************** 27-07-2025 
@@ -394,6 +409,17 @@ print(next(x))
 A, 
 0
 1
+
+x = (i*i for i in range(3))
+while True:
+    try:
+        value = next(x)
+        print(value,end=" ") 
+    except StopIteration:
+        # the generator is exhausted 
+        break
+	
+output : 0 1 4
 
 - This is a generator expression. It lazily computes i*i 
 - First next(x) gives 0*0 = 0 
