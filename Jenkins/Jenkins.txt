@@ -1247,6 +1247,145 @@ Method 4 : Look at the Jenkinsfile (less common, but possible)
   if present -> Jenkins is polling 
   Usually Perforce trigger won't appear inside Jenkinsfile itself. 
   
+**********************************************************************************************************************
+
+What 'Poll SCM" Means (Spoon-fed explanation)
+
+Jenkins checks perforce periodically.
+For example every: 1 minute, 2 minutes, 10 minutes 
+The schedule looks like: H/5 * * * * 
+That means: Every 5 minutes Jenkins asks perforce: Any new changelist? Any new check-in?
+
+If Jenkins detects a new perforce changelist -> It triggers a build automatically.
+Perforce is not sending any event to Jenkins:
+No Webhook, No triggers, No direct integration, Just Jenkins checking constanlty.
+
+Open any recent build -> Console output.
+The top will say:  STarted by an SCM change. 
+That mesns: Jenkins detected a change while polling perforce.
+
+**********************************************************************************************************************
+
+Explain Poll SCM Schedule:
+
+When you see this in Jenkins: Poll SCM: H/5 * * * *
+This is a Jenkins cron schedule.
+It tells Jenkins: Check perforce every 5 minutes for changes.
+Let's break the meaning column by column: 
+H/5 Minutes (every 5 minutes) * Hour (every hour) * Day of Month (every day) * Month (every month) * Day of week (every day)
+
+So H/5 means: H = hash value(spread out load), /5 = every 5 mintues.
+
+Examples you might see: H H * * *  - Once every day.
+
+When Jenkins see this:
+1, It sleeps 
+2, Every X minutes, it wakesup and checks SCM (perforce)
+3, if it finds new changelists -> it starts a build.
+
+*******************************************************************************************************************
+
+How Jenkins Detects Perforce Changes During Polling 
+- this is the part most developers NEVER understand - but you will now. 
+- when your Jenkins job does Poll SCM, Jenkins performs these steps:
+
+Step1 - Jenkins remembers last build changelist 
+Last build used changelist: 89231
+Jenkins stores this number internally. 
+
+Step 2 - Polling time arrives 
+Example:
+- Poll every 5 minutes.
+- Next polling at 12:05, 12:10, 12:15...
+At the polling moment, Jenkins asks perforce 
+Do you have any changelists newer than 89221?
+
+Step 3: Jenkins run a Perforce Query (internally)
+- It uses the P4 plugin and internally executes a command like:
+  p4 changes //your/stream/path/... @lastBuiltChangelist,now 
+  This means: List all changes between the last build and now.
+  Example result:
+  change 89232 by dev1 on 2025/11/23
+  change 89233 by dev2 on 2025/11/23 
+  
+Step 4: If new changelists exist -> build triggers
+if results is NOT empty:
+- New changelist detected.
+- Jenkins says:
+  Started by an SCM change.
+- Jenkins syncs new files.
+- Jenkins runs pipeline (Jenkinsfile)
+
+Step 5: If no changelists -> No build 
+if Perforce returns nothing:
+No changes since last build 
+Then Jenkins sleeps again until next polling interval.
+
+Developer Checklist: How to know who triggered the build.
+
+Started by an SCM change - Jenkins polling 
+Started by timer - jenkins polling 
+Started by p4 trigger - Perforce trigger 
+Started by user - Manual build 
+Started by upstream project - Pipeline chaining 
+
+************************************************************************************************************************************
+  
+How to check in Jenkins where is perforce plugin?
+
+- Here are all the ways a developer can check where the perforce plugin is configured in Jenkins.
+- There aer three places where the perforce plugin shows up in Jenkins. 
+
+1, Job level (Most important for Developers)
+- This is the place You can access without admin permissions.
+- Step 1 : Go to your Jenkins job 
+- step 2 : Click configure 
+- Step 3 : Look at the sections 
+A) "Source Code Management" section 
+   If your job uses perforce, you will see: Perforce software (P4) 
+   
+B) "Build Triggers" section 
+   If your perforce plugin is being used for triggering:
+   you may see options like: 
+   Poll SCM 
+   Perforce: Per-change trigger 
+   
+2, Jenkins global configuration (Requires admin access)
+   if you have admin access
+   Step 1: Go to the left menu -> Manage Jenkins 
+   Step 2: Click Configure System 
+   Step 3: Scroll down to find a section like:
+           Perforce software | p4 Plugin configuratin 
+   Inside the section you will see:
+   - Perforce server URL.
+   - P4 trust settings.
+   - Global credentials 
+   - Connection test buttons.
+  
+3, Jenkins Plugin Manager (If you only want to check plugin installed) 
+   if your permissions allow you to see plugins:
+   Step1 : Go to Manage Jenkins 
+   step2 : click Manage Plugins or Plugins 
+   step3 : Go to installed tab. Then search for "perforce","p4","helix".
+           The plugin's official name is usually: p4 plugin or perforce plugin 
+		   
+		   
+*****************************************************************************************************************************************
+  
+		   
+
+
+
+
+
+
+
+
+
+
+
+
+
    			
   			
    			
