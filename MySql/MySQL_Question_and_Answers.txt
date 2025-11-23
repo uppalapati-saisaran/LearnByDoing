@@ -76,7 +76,7 @@ SELECT department, COUNT(*)
 
 means: For each department, show the department name and how many employees ( who earns > $3000) are in it.
 
-5, Only show departments tht have more than 5 such employees.
+5, Only show departments that have more than 5 such employees.
 This 
 HAVING COUNT(*) > 5 
 means: Don't show department unless they have more than 5 employees making over $3000
@@ -863,6 +863,14 @@ VALUES(1,'Sai') ;
 
 ALTER TABLE employee add department VARCHAR(100); 
 ALTER TABLE employee add salary DECIMAL(7,2);
+ALTER TABLE employee DROP COLUMN department;
+ALTER TABLE employee MODIFY COLUMN department INT;
+
+ALTER TABLE employee ADD department INT;
+ALTER TABLE employee 
+ADD CONSTRAINT fk_depart 
+FOREIGN KEY(department) 
+REFERENCES department(dep_id) ON UPDATE CASCADE;
 
 UPDATE employee set department='Marketing',salary=2000
 where id=1;
@@ -873,8 +881,6 @@ SELECT department,COUNT(*) FROM employee
 WHERE salary > 3000 GROUP BY department HAVING COUNT(*) >= 1;
 
 DELETE FROM employee;
-
-ALTER TABLE employee MODIFY COLUMN department INT;
 
 CREATE TABLE department(dep_id INT PRIMARY KEY,dept_name VARCHAR(100));
 
