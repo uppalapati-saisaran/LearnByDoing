@@ -1,4 +1,4 @@
-1, What is Git, and how is it different from SVN (or other VCS)?
+                                           1, What is Git, and how is it different from SVN (or other VCS)?
 A. 
 - Git is distributed version control system. Every developer has a full copy of the repository on every developer's machine, so they can work offline and commit locally. 
 - Git is distributed verions control system that tracks code changes, allows collaboration, and enables branching/merging. 
@@ -1101,6 +1101,185 @@ Congrats: you've now done complete Git workflow.
 - Made commits.
 - Linked to GitHub 
 pused your code online. 
+
+Step 14: Making More Changes ( Day-to-Day Workflow) 
+
+Every time you work on the project.
+
+1, Modify or create files.
+2, Check what changes 
+   git status 
+   
+3, Stage them 
+   git . 
+   
+4, Commit with a messsage 
+   git commit -m "Describe what you did"
+   
+5, Push the Github 
+   git push 
+
+That's your every day Git cycle 
+
+Step 15: If you work on Another computer 
+
+When you switch computers or a teammate changes code.
+git pull origin main 
+- Pull downloads new commits from GitHub and merges them with our local files. 
+
+Bonus: See Everything clearly 
+git log --oneline -graph -decorate -all 
+- Shows a colorful, tree like history of your commits and branches.
+
+That's it - you now know the entire Git beginner flow. 
+
+Step 16: Understand what a Branch is (in Human Words)
+Think of branches like:
+- Main branch (main) - clean, stable code.
+- Feature branch -> you playground to work on new features.
+- when you're done,you merge the feature branch back into main.
+
+Real-world example:
+- You want to add a login button.
+- Instead of changing files directly on main, you create a branch.
+main + stable code 
+new-login-feature + your work here 
+When finished, you merge the branch into main 
+
+
+step 17: check your Current Branch 
+
+In your project folder:
+git branch 
+You'll see 
+* main 
+the * means you're on that branch.
+
+Step 18: createa a new branch 
+Let's create a branch where we'll add a new feature.
+git branch new-feature 
+Check again:
+git branch 
+You'll see 
+main
+* new features 
+
+Step 19: Switch to the New Branch 
+
+Tell Git:"I want to work on that branch"
+Use either command:
+git switch new-feature
+OR
+git checkout new-feature 
+Your terminal will now show you're on:
+(new-feature)
+
+Meaning: Any edits you do now stay in the new-feature branch only and don't touch main.
+
+Step 20: Make a change in the Branch 
+Let's add a new line:
+echo "This line is part of the NEW FEATURE" >> hello.txt 
+check status:
+git status 
+You'll see:
+modified:hello.txt 
+
+Step 21: Commit This Work (But ONLY in this Branch)
+1, Stage it 
+git add hello.txt 
+2, Commit it:
+git commit -m "Added new feature line"
+3, Check history:
+git log --online 
+You now have a commit on the new-feature branch.
+
+Step 22: Switch Back to Main 
+git switch main
+Open the file:
+cat hello.txt 
+You'll notic:
+The feature line in NOT there:
+Because the work lives only in the new-feature branch - This the power of branching.
+
+Step 23: Merget the Branch Into Main 
+Now that you feature is complete, merge it into main.
+git merge new-feature 
+
+If everything goes well,you'll see:
+update:abc128..def456
+Fast-forward 
+hello.txt | 1+ 
+Now open the file again:
+cat hello.txt 
+- Now the new line is included in main.
+
+Step 24: Delete the feature branch
+- After merging, the branch isn't needed.
+git branch -d new-feature 
+Git will say:
+Deleted branch new-feature 
+This keeps your repo-clean 
+
+Step 25; Push the Updated Main Branch to GitHub 
+git push 
+And because you merged:
+GitHub will now include the new line too. 
+
+Step 26: (Bonus) Push a Branch to GitHub 
+Real-World: sometimes you want the branch online too.
+Let's recreate and push a branch:
+
+git checkout -b new-ui 
+echo "New UI work" >> hello.txt 
+git add ui.txt 
+git commit -m "UI Changes"
+git push -u origin new-ui 
+
+Now GitHub will show 2 branches:
+- main 
+- new-ui 
+This is how companies do Pull requests (PRs) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**************************************************************************************************
+
+   
+
+
 
 ****************************************************************************************************************************************
 
