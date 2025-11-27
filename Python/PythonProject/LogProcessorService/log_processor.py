@@ -42,4 +42,8 @@ class LogProcessor(Process):
             if message == "STOP":
                 Logger.info(f"{current_process().name} stopping.")
                 break 
+                #-> Real systems send stop commands, instead of killing the process. 
             self.analyze_log(message)  
+            # -> This performs the CPU-heavy logic.
+            # -> Timing decorator logs execution time.
+            
