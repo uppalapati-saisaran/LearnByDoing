@@ -178,14 +178,13 @@ gc.collect()
 
 13, What are generators? How are they different from iterators?
 A, Generators are iterators that yield items lazily using yield. They use less memory.
-   A generator is a function that yield values one at a time uing yield instead of returning all at once.
+   A generator is a function that yield values one at a time using yield instead of returning all at once.
    It saves memory and is useful for large datasets or streams. 
 
 def gen():
         yield 1 
         yield 2
-        
-g = gen() 
+ 
 try:
     value = gen()
     print(next(value))
@@ -472,13 +471,25 @@ try :
     print(next(it)) 
     print(next(it)) 
 except Exception as e:
-    print("Error occured reading the list")
+    print("Error occured reading the list", {e})
 
 Output:
 1
 2
 3
-Error occured reading the list
+Error occured reading the list {stopIteration()}
+
+lst1 = [1,2,3]
+it =iter(lst1)
+while True:
+    try:
+        val=next(it)
+        print(val)
+    except StopIteration:
+        break
+		
+Output: 1 2 3
+
 
 ****************************************************************************************************************************************** 03-08-2025
 
@@ -788,7 +799,7 @@ print("a" in my_dict) #True
 my_dict.pop("b") 
 
 #keys, values, items
-print(my_dict.key()) # dict_keys(['a']) 
+print(my_dict.keys()) # dict_keys(['a']) 
 print(my_dict.values()) # dict_values([1]) 
 print(my_dict.items()) # dict_items([('a',1)])
 
@@ -861,15 +872,11 @@ from functools import lru_cache
 @lru_cache 
 def fib(n):
     if n<=1:
-        if(n == 1):
-            print("0","1",end=" ")
+        print("0","1",end=" ")
         return n
-    else: 
-        print(fib(n-1) + fib(n-2),end=" "); 
-        return fib(n-1) + fib(n-2) 
-
-
-fib(10)
+    else:
+        print(fib(n-1) + fib(n-2), end=" ")
+        return fib(n-1) + fib(n-2)
 
 Output:
 0 1 1 2 3 5 8 13 21 34 55 
@@ -956,7 +963,7 @@ def decorator(func):
     return wrapper
 
 @decorator
-def great() : print("Hi") 
+def greet() : print("Hi") 
 
 great()
 
@@ -6945,7 +6952,138 @@ Stock Market Observer - Mini Project example
 
 **************************************************************************************************************************
 
-	 
+What is Exception handling?
+
+Exceptions - Errors that stop your program.
+Exception handling allows your program to:
+- NOT Crash
+- Handle errors gracefully.
+- Retry operations 
+- Show meanful messages.
+- Log issues
+
+Syntax:
+
+try:
+    #risk operation
+except SomeSpecificError:
+    #handle that error 
+except:
+    #handle all other errors.
+else:
+    #runs if no error 
+finally:
+    # runs ALWAYS (cleanup) 
+	
+Simple Example:
+try:
+   x = 10/0
+   except ZeroDivisionError:
+      print("Cannot divide by zero!")
+	  
+Real-World Example:
+
+import requests
+
+def get_weather(city):
+    try:
+	    response = requests.get(f"https://api.weather.com/{city}",timeout=3)
+		return response.json()
+	except requests.exceptions.Timeout:
+        return {"error": "API timeout, please try again"} 
+    except requests.exception.ConnectionErro:
+        return {"error": "No internet connection"}
+
+Used everywhere: mobile apps, websites, internal tools.
+
+Real world Case Study - Payment Gateway 
+Scenerio:
+A customer pays with a credit card.
+API might fail due to:
+- Timeout 
+- Server down 
+- Invalid card 
+- Network issue 
+
+Here is how real systems handle it:
+
+def process_payment(card):
+    try:
+        confirmation = call_payment_api(card)
+        return {"status": "success", "id": confirmation}
+
+    except TimeoutError:
+        log("Retry payment due to timeout")
+        return retry_process(card) 
+
+    except InvalidCardError:
+        return {"status" : "failed", "reason": "Invalid card details"}
+
+    except Exception as e:
+        log(f"Unexcepted error: {e}")
+        return {"status": "failed","reason": "System error"}
+
+This is Exactly how banks and fintech companis build system.
+
+Why Exception Handling is CRITICAL in real projects?
+
+Reason #1 - External systems fail 
+APIs, DBs, payment gateways go down.
+
+Reason #2 - Network failures 
+Wifi drops -> exceptions.
+Cloud servers lag -> exceptions 
+
+Reason #3 - User mistakss 
+Invalid file, wrong input, bad date -> exceptions 
+
+Reason #4 - Logging for production debugging 
+if you don't log exceptions -> impossible to find bugs.
+
+Advanced Real-World Pattern - Retry mechanism 
+
+import time 
+
+def retry(operation, retries = 3):
+    for i in range(retries):
+	    try:
+		    return operation() 
+		except Exception:
+            print(f"Retry {i+1}/{retries}"}
+            time.sleep(1)
+    return "Failed after retries" 
+
+Used in: Cloud systems, Payment processing, Microservices, Message queues.
+
+Summary:
+
+Why used? - Example 
+Avoid program crash -  API call fails 
+Graceful error handling - Invalid input 
+Retry - Payment failure 
+Cleanup - Closing DB connections
+Logging - Production debugging 
+
+
+
+
+
+
+	
+
+
+
+
+
+
+    		
+
+
+
+
+
+
+ 
 
 
 
