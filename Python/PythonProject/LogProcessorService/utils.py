@@ -1,6 +1,10 @@
 import time 
+# time -> measure execution time.
 from functools import wraps
+# wraps -> keeps original function name in decorators
 from typing import Callable, Any, TypeVar 
+# typing -> professional code standard
+# TypeVar -> allows decorators to return any type
 
 T = TypeVar("T")  # Generic type for decorators.
 
@@ -39,3 +43,25 @@ def retry(times: int = 3,delay: float = 1.0):
             raise Exception(f"Function {func.__name__} failed after {times} retries.")
         return wrapper 
     return decorator 
+
+#3. Context Manager 
+class SafeFileWriter:
+    """
+    Context manager that safely writes text to a file.
+    Ensures file closes even if error happens.
+    """
+    def __init__(self,filename: str):
+        self.filename = filename 
+        self.file = None 
+
+    def __enter__(self):
+        self.file = open(self.filename,"a")
+        return self.file 
+    
+    def __exit__(self,exc_type,exc,traceback):
+        if self.file:
+            self.file.close() 
+        return False # propagate errors 
+    
+
+    
