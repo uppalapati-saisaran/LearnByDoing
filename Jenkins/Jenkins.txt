@@ -1373,6 +1373,117 @@ B) "Build Triggers" section
 *****************************************************************************************************************************************
   
 		   
+"Build Triggers" section 
+If your perforce plugin is being used for triggering:
+you may see options like: 
+Poll SCM 
+Perforce: Per-change trigger 
+
+Your Jenkins build is triggered by Jenkins polling perforce, NOT perforce.
+Now let's go deeper -> you want to know where the perforce plugin in configured.
+Since you already found Poll SCM, now follow this:
+
+Step by Step : Where to see the perforce plugin in your job.
+
+Go to: Jenkins -> Your Job -> Configure 
+Scroll until you see: Source code Management - Inside that section, you will see one of these two options.
+
+Option A: You see "Perforce Software (P4) 
+Then you perforce plugin in HERE. 
+You will see: Workspace Mapping, Stream codeline, populate method, Cleanup behaviour, Perforce credentials. 
+This confirms perforce plugin is installed and configured for this job.
+
+Option B: You see "None"
+This happens only if the pipeline uses Jenkinsfile stored in Perforce.
+In this case: SCM is configure inside pipeline section -> Defintion : 'Pipeline script from SCM"
+Scroll to the Pipeline section:
+
+It will say:
+Definition: Pipeline script from SCM 
+SCM: Perforce 
+If you expand "SCM:Perforce", you will see: Workspace, Stream, Credentials, View, Populate options.
+
+Summary : What you now know.
+Poll SCM is ticketd.
+This means:
+- Jenkins polls perforce for changes.
+- Perforce plugin is actively being used.
+- The Perforce configuration is either:
+  - Under Source Code Management, OR 
+  - Under Pipeline -> Definition -> SCM: Perforce
+  
+You now only need one more step.
+Open your job -> configure -> Scroll to Pipeline section. Check if it says: "Pipeline script from SCM".
+
+1, Definition -> SCM -> This simply means your Pipeline Jenkinsfile is stored in Perforce, not inside jenkins.
+2, Perforce Credentials -> These are credentials Jenkins uses to connect to Perforce(p4).
+                           Usually created by DevOps team under : Manage Jenkins -> Credentials 
+						   
+3, Workspace Behaviour: 
+   - this defines How Jenkins creates the Perforce client workspace each time it builds.
+   Common options:
+   - Static Workspace - Always uses same workspace name.
+   - Client Workspacd (recommands) - Jenkins creates a fresh workspaces each build.
+   - Manual - You specify the entire client spec.
+   - Streams (for Perforce Stream Depots) 
+     -> Use this if your repo uses Perforce Streams (most modern setups)
+     -> You choose the stream from dropdown, such as:
+        stream: //Project/MAIN 
+     Then Jenkins automatically generates:
+     - a workspace/client spec.
+     - with correct view mappings.
+     - based on the stream definition.
+     This is the simplest and most correct option for Stream depots.
+	 - Jenkins creates a workspace tied to the stream.
+	 - It syncs all files defined in that stream.
+	 - You don't need to manually specify views. 
+	 - If your company uses a "stream codeline" field -> this is the mode being used.
+   - Tempaltes (for classic depots)
+     Use this when Perforce repo uses non-stream depots, or if you team wants custom view mappings,
+     A "template" workspace is:
+     - an existing Perforce client.
+     - created manually by someone.
+     - with desired mappings.
+     Example: Template workspace: build_template_workspace 
+	 Jenkins will:
+     - copy this tempalte client spec.
+     - modify only the client name.
+     - use it as a temporary workspace.
+     Why templates exist:
+	 Because classic perforce depots don't provide automatic mappings.
+	 When companies use templates:
+	 - When custom include/excluse mappings are needed.
+	 - when big mono-repos are used.
+	 - when non=stream layout is used.
+	 
+4, Character Set 
+- Perforce supports Unicode.
+- Common values:
+  none -> ASCII code 
+  utf8 -> Unicode repo (most companies use this)
+  You normally don't change this.
+  
+5, Stream codeline:
+this is your perforce stream root path.
+Example: //ProductX/main 
+Meaning:
+- This is the branch(stream) where your Jenkins job pulls code from
+- You are building whatever is inside this stream.
+If this path contains source code => YES, this is your code branch. 
+	 
+   	 
+	 
+	 
+
+
+
+	 
+
+
+  
+
+
+
 
 
 

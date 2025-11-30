@@ -1241,6 +1241,121 @@ Now GitHub will show 2 branches:
 This is how companies do Pull requests (PRs) 
 
 
+********************************************************************************************************************
+
+What is a merge conflict?
+- A merge conflict happens when git does not know which version of a file to keep.
+- This occurs when:
+  - Two branches changed the same lines in the same file.
+  - Or one branch deleted something the other modified.
+  - Or both added content to the exact same place.
+
+- Git tries automatic merging, but if changes clash, it stops and asks you.
+
+Step 1: Setup a conflict scenario.
+Let's use your existing repository.
+Start on main:
+git switch main 
+
+Open your file:
+echo "Line from MAIN" >> conflict.txt 
+git add conflict.txt 
+git commit -m "Main adds a line"
+
+Now create a brach:
+
+git checkout -b feature-branch 
+Modify the SAME file, SAME location:
+
+echo "Line from FEATURE brach" >> conflict.txt 
+git add conflict.txt 
+git commit -m "Feature adds a line"
+
+Now Switch back to main:
+git switch main 
+
+Make Another change in main:
+echo "Another line from MAIN" >> conflict.txt 
+git add conflict.txt 
+git commit -m "Main adds another line"
+
+Step 2: Merge the feature branch into main 
+Now the conflict occurs:
+git merge feature-branch 
+
+Git will say something like:
+Auto merging conflict.txt 
+CONFLICT (content): Merge conflict in conflict.txt 
+Automatic merge failed; fix conflicts and then commit the result. 
+
+This is GOOD - We triggered the conflict.
+
+Step 3: Understand what a conflict looks like in the file.
+Open conflict.txt 
+cat conflict.txt 
+
+We will see this structure:
+<<<<<<< HEAD 
+Line from MAIN 
+Another line from MAIN 
+=================
+Line from FEATURE BRANCH 
+>>>>>>>>> feature branch 
+
+Let's break this down spoon-fed:
+<<<<<< HEAD 
+Everything under this is the verion from MAIN.
+======
+Divider.
+Above = main version 
+Below = feature branch version 
+>>>>>>>> feature-branch 
+
+This marks the end of feature branch changes.
+So git is literally saying:
+Here is main's version:
+Here is feature branch's version.
+you decide which one to keep.
+
+Step 4: Resolve the conflict 
+You manually edit the file to what you want. 
+For example, if you want to keep BOTH:
+The key point: Delete the conflict markers:
+<<<<<<< HEAD 
+============
+>>>>>>> feature-branch 
+
+Step 5: After fixing, stage the file.
+git add conflict.txt 
+
+Step 6: Complete the merge 
+git commit 
+Git will auto-generate a commit message like:
+Merge branch 'feature-branch' 
+Now the merge is complete.
+
+Step 7: Push to GitHub 
+git push 
+
+Bonus: The EASIEST way to solve conflicts (GUI option)
+- If you want even simpler conflict resolution using a tool:
+
+git mergetool 
+
+or use GUI apps:
+- VSCODE (auto highlights conflicts)
+- GitKraken 
+- Sourcetree 
+
+Just open the file in VS Code - it shows big buttons:
+
+Accept current 
+Accept Incoming 
+Accept Both 
+Compare Changes 
+
+
+*******************************************************************************************************************
 
 
 
@@ -1271,17 +1386,10 @@ This is how companies do Pull requests (PRs)
 
 
 
+  
 
 
 
-
-**************************************************************************************************
-
-   
-
-
-
-****************************************************************************************************************************************
 
 
 
