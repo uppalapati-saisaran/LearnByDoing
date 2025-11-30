@@ -176,7 +176,7 @@ Clean up Docker:
 Docker - What it is?
 
 - purpose : Used to create, package, and run containers (isolated environments that include your app + dependencies)
-- Main focus : Developement and deployment of single-container appliations.
+- Main focus : Developement and deployment of single-container applications.
 - Usage:
   - Building container images ( Dockerfile )
   - Running containers (docker run, docker-compose)
@@ -194,7 +194,7 @@ Kubernetes - What it is
 - Main  Focus : Deployment, scaling, load balancing and self-healing of containerized applications.
 - Usage:
   - Automates container deployment.
-  - Handling scaling (add/remoe containers based on load)
+  - Handling scaling (add/remove containers based on load)
   - Restrats failed containers automatically.
   - Manages rolling updates.
 - Example:
@@ -431,6 +431,37 @@ Mostly used Dockerfile commands-
    - Updating Linux packages.
    - Installing pip packages.
    - Compiling code 
+   
+5, WORKDIR - Set the working directory 
+
+   Layman meaning: This is the folder inside the container where I will work.
+   Why used? 
+     - Avoids writing long paths.
+     - Makes file paths clean.
+   Example: WORKDIR /app  // Everything I do next happens in /app 
+   
+6, COPY - Copy files from your PC into the container 
+   Layman Meaning: Move files from my laptop into the container's filesystem. 
+   Real use:
+   - Copy project code.
+   - Copy requirements.txt 
+   - Copy configs 
+   Example:  COPY . .  // Copy everything from current folder -> container's workdir (/app) 
+   
+7, RUN - Execute a command during image build. 
+   Layman Meaning: Run this command inside the image while building it.
+   Used for:
+   - Installing dependencies , updating linux packages, installing pip packages, compiling code.
+   Example : RUN pip install -r requirements.txt // Install python packages now, so they're ready inside the image.
+   
+ 8, CMD - Start the main application when container runs 
+    Layman Meaning: when some one runs the container, execute this as the main program.
+	Real Use: Start Flask, Node, SpringBoot, Go app, etc.
+	Example: CMD ["Python","app.py"]  // when the container starts, run python app.py 
+	
+   
+   	 
+ 
    
    
       

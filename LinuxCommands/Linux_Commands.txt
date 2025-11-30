@@ -365,7 +365,7 @@ Docker:
 								 - host machine port - The port on your computer or server.
 								 - conatiner internal port - The port inside the nginx container where nginx actually listens. 
 								 - Simple Explanation: Send all traffic coming to http://localhost:8080 into the container's port 80 (Where nginx is running)."
-								 - nginx - This is the Docker iamge name. (Web server running inside the container)
+								 - nginx - This is the Docker imgae name. (Web server running inside the container)
 								         - Pull it automatically if not available locally.
 										 - Start a container from this nginx image. 
 								 
