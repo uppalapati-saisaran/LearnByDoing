@@ -296,9 +296,11 @@ deployment.yaml
 apiVersion: apps/v1 
 - What it is: The API group and version for this resource.
 - Why it matters: Deployement lives under apps/v1 in current kubernetes versions. if this is wrong kubectl will reject the file. 
+
 kind: Deployment 
 - What it is: The resource type. A deployment manages a ReplicaSet which manages Pods.
               Use it when you want controlled rolling updates, scaling, self-healing, etc.
+  
 metadata:
 - Container for resource metadata(name,labels,annotations)
    name: myapp-deployment 

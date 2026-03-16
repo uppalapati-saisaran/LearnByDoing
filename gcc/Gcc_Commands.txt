@@ -14,25 +14,20 @@
 Misbehavior : All the below are responsible for misbehaviour.  
 
 (01) Memory leaks :
-
-(a) Allocated memory using malloc,new function but it is not freed properly. 
+    (a) Allocated memory using malloc,new function but it is not freed properly. 
 
 (02) Invalid/Illegal memory accesses ( Segmenation fault) 
-
-(a) Try to access the memory which is not us.
-(b) write to illegal memory or read only memory. 
-(c) free memory and access again.
-(d) Kernel memory access.
+	(a) Try to access the memory which is not us.
+	(b) write to illegal memory or read only memory. 
+	(c) free memory and access again.
+	(d) Kernel memory access.
 
 (03) Invalid Instruction:
-
-(a) compile with compilers. execute the program on other processer which doesn't support some of the instrutions.
+     (a) compile with compilers. execute the program on other processer which doesn't support some of the instrutions.
 
 (04) Synchronization issues among the threads or many contexts :
-
-(a) sync global data between these threads or contexts.
-(b) process context or interprocess context or linux context is called.
-
+	(a) sync global data between these threads or contexts.
+	(b) process context or interprocess context or linux context is called.
 
 **********************************************************************************************************************
 
@@ -66,8 +61,8 @@ Segmenation fault(core dumped)
 
 Instruction pointer ( this contains address of the fault instruction)
 Stack ( we need the whole stack data) : To find what local variables contains or registers or arguments passed contains. 
+                                      : To find who has called this function or stack trace or back trace
 Data Segment : To find the what global variables contains. 
-Stack : To find who has called this function or stack trace or back trace
 heap Segement : memory is allocated dynmaically. 
 If we know above 4, we can narrow down the problem.
 All the above 4 information is available in CoreFile.

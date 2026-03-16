@@ -1,11 +1,27 @@
 1, What are Python's key features?
-A, Easy to learn and read, Interpreted language, dynamically typed, object-oriencted and functional, huge standard library, platform independent.
+A,
+- Easy to learn and read, 
+- Interpreted language, 
+- dynamically typed, 
+- object-oriencted and functional, 
+- huge standard library, 
+- platform independent.
 
 ************************************************************************************************************************************************** 25-07-2025 
 
 2, Difference between a list and a tuple?
-A, List  : Mutable, declared with [], slower.   my_list = [1,2,3] 
-   Tuple : Immutable, declared with (), faster my_tuple = (1,2,3) 
+A, 
+List  : 
+- Mutable, 
+- declared with [], 
+- slower.   
+  my_list = [1,2,3] 
+
+Tuple : 
+- Immutable, 
+- declared with (), 
+- faster 
+  my_tuple = (1,2,3) 
    
 ************************************************************************************************************************************************** 25-07-2025
    
@@ -124,6 +140,7 @@ print("Deep Copy Changed original :",deep)
 Shallow Copy : [1, 2, 3]
 Changed Original : [1, 2, 3, 4]
 Shallow Copy Changed original : [1, 2, 3]
+
 Deep Copy : [4, 5, 6]
 Changed Original : [4, 5, 6, 7]
 Deep Copy Changed original : [4, 5, 6]
@@ -1076,7 +1093,9 @@ Output:
 Reversing the linklist :
  -> 10  -> 20  -> 30 
  
-2, Check if two strings are anagrams:
+***********************************************************************************************************************
+
+49, Check if two strings are anagrams:
    
 def is_anagram(s1,s2):
     return sorted(s1) == sorted(s2)
@@ -1091,7 +1110,8 @@ else:
 Output:
 sai and Sai are not anagram	
 
-3, Binary Search 
+***********************************************************************************************************************
+50, Binary Search 
 
 def binary_search(arr,target):
     left = 0
@@ -1108,8 +1128,6 @@ def binary_search(arr,target):
             
     return -1     
 
-
-
 arr = [1,3,5,7,9,11,13]
 target = 7 
 
@@ -1125,7 +1143,7 @@ Found at index 3
 	   
 *****************************************************************************************
        	   
-49, Functions and Lamdba 
+51 , Functions and Lamdba 
 
 - Modular code using functions.
 - Lamdba for one-line anonymous functions.
@@ -1138,7 +1156,7 @@ Output:
 
 *****************************************************************************************
 
-50, Exception Handling 
+52, Exception Handling 
 
 - Handle runtime errors gracefully.
 
@@ -1154,7 +1172,7 @@ Can't divide by zero.
 ****************************************************************************************
 	
 	
-51, REST APIs (With Flask or FastAPI)
+53, REST APIs (With Flask or FastAPI)
 
 - Real time services or microservices.
 
@@ -1167,7 +1185,7 @@ def home():
 	
 ******************************************************************************************
 	
-52, Unit Testing 
+54, Unit Testing 
 
 - Write tests using unittest or pytest.
 
@@ -1183,10 +1201,12 @@ tm.test_add()
 Output:
 Nothing printed on screen.		
 		
-******************************************************************************************		
+**************************************************************************************************		
 		
 		
-53, The Python concepts across software developement life cycle from design to deployment and maintence.
+The Python concepts across software developement life cycle from design to deployment and maintence.
+***************************************************************************************************
+***************************************************************************************************
 
 
 a, Requirements and Design phase:
@@ -1343,7 +1363,7 @@ tasks.append("deploy")
 user = {"name":"Sai","role","Developer");
 print(user["role"]); # Developer 
 
-#set : unique elements
+#set : unique elements and unordered
 unique_ids = {101,102,103}
 unique_ids.add(104) 
 
@@ -7064,7 +7084,7 @@ Retry - Payment failure
 Cleanup - Closing DB connections
 Logging - Production debugging 
 
-
+*******************************************************************************************************
 
 
 

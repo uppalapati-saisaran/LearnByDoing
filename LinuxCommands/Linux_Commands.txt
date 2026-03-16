@@ -3,12 +3,11 @@ System Adminstration:
 
 1, top/htop - Monitor system performance and resource usage. 
 2, df -h - check disk space usage in human-readable format.
-3, du -h - summarize disk uaage of files/folders.
+3, du -h - summarize disk usage of files/folders.
 4, journalctl - view system logs (especially on systems using systemd).
 5, systemctl - manage services (start,stop, enable, disable) 
 6, crontab -e = schedule tasks using cron jobs.
 7, useradd, usermod, passwd - Manage user accounts and permissions.
-
 
 DevOps & CI/CD 
 
@@ -23,14 +22,14 @@ Cybersecurity & Networking
 
 1, nmap - network scanning and host discovery.
 2, netstat/ss - view network connections and listening ports.
-3, iptables/ufw - confgure firewall rules.
+3, iptables/ufw - configure firewall rules.
 4, tcpdump - capture and analyze network traffic.
 5, who, w, last - Monitor user logins and activity.
 
 Package & Software Management 
 
 1, apt, yum, dnf, zypper - Install and manage packages depending on the distro.
-   - Example: sudo apt update && sudo apt upgrade 
+                         - Example: sudo apt update && sudo apt upgrade 
 2, snap/flatpack - Manage sandboxed applications.
 
 File & Process Management 
@@ -43,16 +42,15 @@ File & Process Management
 Data Science & Automation 
 
 1, Python, R, Jupyter - Run Scripts and notebooks.
-2, Cron + scripts - Autmomate data pipelines.
-3, screen/tmux - run long processes in detachable sessions.
+2, Cron + scripts - Autmomate data pipelines.  
+3, screen/tmux - run long processes in detachable sessions.  
 
 Useful Utilities:
 
 1, curl/wget - Fetch data from URLs.
 2, tar,zip,unzip - Archive and compress files.
 3, alias - Create shortcuts for frequently used commands.
-4, env, export - Manage environment variables.
-
+4, env, export - Manage environment variables. 
 
 1, top/htop 
 
@@ -183,7 +181,7 @@ Mostly used journalctl commands
   
   journalctl -xe - shows recent logs with errors and extra details - when something fails or crashes.
   journalctl -f - follow logs live (like tail -f) - To watch logs as they happen.
-  journalctl -b - logs from current boot - To see what happened since the last restart.-
+  journalctl -b - logs from current boot - To see what happened since the last restart.
   journalctl -u servicename - Logs for a specific systemd service - To debug a service (e.g., journalctl -u nginx)
   journalctl -u servicename -f - Follow logs of that service in real-time - To monitor one service live.
   journalctl --since "2025-10-18 09:09" - Logs since a specific time - To check recent activity.
@@ -211,7 +209,7 @@ Mostly used systemctl commands:
    
 - if you forget the exact service name;
   systemctl list-units --type-service | grep nginx 
-  -  this shows all services containing the work nginx 
+  -  this shows all services containing the word nginx 
  
  
 6, what is crontab?
@@ -276,7 +274,7 @@ It handles creating the user in the system database, setting up their home direc
    id alice 
    getent passwd alice 
 
-8, What is usermod/
+8, What is usermod?
 - Usermod lets you change properties of an existing user account. 
 - Example uses:
   - Change username.
@@ -425,7 +423,7 @@ docker exec -it web bash
 - No Major options, but mostly used like:
 
 docker stop web 
-dcoker start web 
+docker start web 
 docker restart web 
 
 7, docker rm - remove container 
@@ -449,7 +447,7 @@ docker rmi -f nginx
 10, docker pull/push 
 
 docker pull nginx 
-doker push myrepo/myapp:latest 
+docker push myrepo/myapp:latest 
 
 Most Used Docker Commands in Real-Time Jobs 
 
@@ -464,6 +462,217 @@ Most Used Docker Commands in Real-Time Jobs
 9, docker compose up -d (VERY common) 
 10, docker compose logs -f 
 
+Kubectl 
+
+1, kubectl get  
+- used to check current state of cluster resources.
+- cluster in kubernetes is : A group of computers working together as one big system to run your applications. 
+- Real-Life Example:
+   Image a company office:
+     - Manager -> decides who does that.
+	 - Employees -> actually do the work.
+	 - Office building -> where work happens.
+	 In kubernetes:
+	 - Manager computer = control plane.
+	 - Worker computers = Nodees
+	 - Whole office together = Cluster 
+   - All machines operate to run your app smoothly.
+- A Kubernetes Cluster - Mulitple machines (servers) connected together and managed by Kubernetes to run applications automatically. 
+
+- Why do we need a cluster?
+  Instead of running your app on one computer.
+  - If it crashes -> app stops.
+  - If traffice increases -> slow performance.
+  With a cluster:
+  - App runs on many machines.
+  - Auto load sharing.
+  - If one machine fails -> other continue.
+  - Easy scaling.
+
+- What exists inside a cluster?
+  1, Control plane 
+     - Makes decisions.
+	 - Schedule apps 
+	 - Monitors health.
+  2, Worker Nodes (Workers)
+     - Run actual application containers.
+	 
+Pizza shop Example:
+Think of kubernetes cluster like a pizza chain:
+ - Manager assign orders.
+ - Many chefs cook pizza.
+ - If one chef is sick -> others continue.
+ - More customers -> add more chefs 
+- Customers never notice problems. 
+
+kubectl get pods 
+- pod is the smallest unit that runs your application.
+- Inside the box are containers.
+- Runs one or more containers.
+- All containers inside a pod:
+  - Share same network (IP address)
+  - Share same storage volumes.
+  - Run on same node.
+  - Start & Stop together.
+  - A Pod is a kubernetes abstractions that runs one or more tightly coupled containers sharing networking and storage.   
+- Always deployed inside a cluster node.
+
+-n <namespace>         Prod always has namespace 
+                       - namespace - a way to divide one Kubernetes cluster into multipler isolated sections.
+					   - It helps organize and separate applications.
+					   - Why namespace exist?
+					     - Devteam, Testing team, Production apps,monitoring tools, with out namespaces -> everything mixes together. 
+-A                     Check all namespaces 
+-o wide                Shows node,IP, more details 
+-w                     Watch changes live 
+
+kubectl get pods -n prod -o wide 
+kubectl get pods -w 
+
+kubectl get svc
+- svc is just a short name (alias) for:
+  kubectl get svc
+  means
+  kubectl get services 
+- svc - A service is a stable address used to access Pods.
+- why do we need it?
+  - Pods in Kubernetes are temporary. when a pod dies: it gets recreated, Its IP address changes. Directly connection to the pods is unreliable.
+- A service gives One permanent  name + IP that always points to the correct pods.
+- Real-Life analogy:
+  Think of:
+  - Pods = Employees (they come and go)
+  - Sevice = Reception desk phone number.
+  You don't call employees directly.
+  You call erscption -> it connects you to whoever is available.
+- Visual understanding:
+  Client Request --> Service (svc) --> Pod A, Pod B, Pod Change
+  Service automatically sends traffic to healthy pods.
+- Example:
+  kubectl get svc 
+  NAME     TYPE    CLUSTER-IP    PORT 
+nginx-svc  CluserIP 10.96.10.5   80/TCP 
+- Types of Services (Very Important)
+  Type                         Meaning                     RealUsage 
+  CluserIP                 Internal access only          Microservices communication
+NodePort                   Expose vis node port          Testing externally 
+LoadBalancer               Public external IP            Production apps 
+ExternalName			   Maps external DNS             External DB/API 
+
+Continue... .Next Week
+
+  
+  
+ 
+kubectl get deploy
+kubectl get nodes 
+kubectl get ns 
+
+2, kubectl describe 
+- used to see events, failures, probe issues.
+
+kubectl describe pods mypod -n prod 
+kubectl describe node node1
+
+Shows:
+- Crash reasons 
+- Image pull errors 
+- Liveness/readiness failures 
+- Events timeline
+- First command during failure.
+
+3, kubectl logs (Application debugging)
+
+kubectl logs pod-name 
+kubectl logs pod-name -f 
+kubectl logs pod-name -c container-name 
+kubectl logs --previous pod-name 
+
+-f - Live logs 
+-c - Multi-container pod 
+--previous - Pod crashed & restarted 
+
+Productoin usage:
+
+kubectl logs -f api-pod -n prod 
+kubectl logs --previous api-pod 
+
+4, kubectl exec ( Insider container )
+- USed when logs are not enough 
+
+kubectl exec -it pod-name -- bash 
+
+Production-safe alternatives:
+
+kubectl exec pod-name -- ls /app 
+kubectl exec pod-name -- cat /etc/config/config.yaml 
+
+- In prod: avoid heavy changes.
+
+5, kubectl apply (Deployments & changes)
+- Used to deploy or update resources.
+
+kubectl apply -f deployement.yaml 
+
+-f - file or directory 
+--dry-run=client   validate before apply 
+-o yaml  - Output YAML 
+
+kubectl apply -f ./ 
+kubectl apply -f deploy.yaml --dry-run=client 
+
+6, kubectl rollout (Deployements in prod) 
+- Used for safe production rollouts.
+
+kubectl rollout status deployment app 
+kubectl rollout history deployment app 
+kubectl rollout undo deployment app 
+- Rollback = life saver 
+
+7, kubectl delete (Used carefully)
+
+kubectl delete pod pod-name 
+kubectl delete deploy app 
+
+Prod reality:
+- Pods are deleted to force restart.
+- Deployments rarely deleted directly.
+
+8, kubectl scale (Emergency traffic handling) 
+
+kubectl scale deployment app -replicas=5 
+Used when:
+- Traffic spike 
+- Pod crashes
+- Autoscaler misbehaves 
+
+9, kubectl config (Context & cluster safety) 
+
+kubectl config get-contexts 
+kubectl config use-contect prod-cluster 
+kubectl config current-context 
+
+- very important in prod 
+- many outages happen because wrong context was used. 
+
+10, kubectl top (performance) 
+kubectl top pods 
+kubectl top nodes 
+
+Used to:
+Check CPU/memory pressure 
+Confirm scaling needs 
+
+Production debugging flow : 
+
+When something breaks:
+1, kubectl get pods -n prod 
+2, kubectl describe pod failing-pod -n prod 
+3, kubectl logs failing-pod -n prod 
+4, kubectl exec -it failing-pod -- sh 
+5, kubectl logs --prevous failing-pod -n prod 
+6, kubectl rollout undo deployment app 
+
+***************************************************************************************************************
 
 
 

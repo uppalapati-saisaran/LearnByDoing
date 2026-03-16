@@ -1,62 +1,93 @@
 1, What is MySQL?
-
 A, 
-- MySQL is an open source relational database management system that uses structured Query Language to manage data.
-- It's commonly used in web applications and supports a wide range of platforms.
+- MySQL is an open source relational database management system 
+  -> that uses structured Query Language to manage data.
+- It's commonly used in web applications and 
+  -> supports a wide range of platforms.
 
 Explanation:
-It is know for its speed, reliablility and ease to use.
-MySQL is part of the LAMP stack: Linux, Apache, MySQL, PHP/Python.
+It is know for its 
+   -> speed, 
+   -> reliablility and 
+   -> ease to use.
+MySQL is part of the LAMP stack: 
+    -> Linux, 
+	-> Apache, 
+	-> MySQL, 
+	-> PHP/Python.
 
 ********************************************************************************************************************* 02-08-2025 
 
 2, What are different data types in MySQL?
 A, MySQL supports several data types:
 
-- Numeric: INT, BIGINT, FLOAT, DOUBLE, DECIMAL
-- String: CHAR, VARCHAR, TEXT, BLOB 
-- Date & Time: DATE, TIME, DATETIME, TIMESTAMP, YEAR 
+- Numeric: 
+   -> INT, 
+   -> BIGINT, 
+   -> FLOAT, 
+   -> DOUBLE, 
+   -> DECIMAL
+- String: 
+  -> CHAR, 
+  -> VARCHAR, 
+  -> TEXT, 
+  -> BLOB 
+- Date & Time: 
+  - DATE, 
+  - TIME, 
+  - DATETIME, 
+  - TIMESTAMP, 
+  - YEAR 
 
 
 Explanation: Each data type is used based on the kind of data being stored. 
-             For example, VARCHAR for variable-length strings, INT for integers, DECIMAL for precise values like money.
+             For example, 
+			  -> VARCHAR for variable-length strings, 
+			  -> INT for integers,
+              -> DECIMAL for precise values like money.
 			 
 ******************************************************************************************************************** 02-08-2025 
 			 
 3, What is the difference between CHAR and VARCHAR?
 A, 
- - CHAR(n) is a fixed length string. It always stores n characters.
- - VARCHAR(n) is  a variable-length string. It stores only the actual length of the string up to n characters.
+ - CHAR(n) is a fixed length string. 
+   -> It always stores n characters.
+ - VARCHAR(n) is  a variable-length string.
+   -> It stores only the actual length of the string up to n characters.
  
 CHAR(5) stores 'Hi' as 'Hi   '
 VARCHAR(5) stores 'Hi' as 'Hi'
 
-Explanation: CHAR is faster for fixed size strings,but VARCHAR saves spsce strings vary in length. 
+Explanation: CHAR is faster for fixed size strings,
+             -> but VARCHAR saves space strings vary in length. 
 
 ******************************************************************************************************************** 02-08-2025
 
 4, What is the primary key?
-A, 
-   A primary key is a column (or set of columns) that uniquely identifiest each row in a table. 
+A, A primary key is a column (or set of columns) that
+   -> uniquely identifiest each row in a table. 
    
 Features:
-
 - Unique values
 - Cannot be NULL.
 - Only one primary key per table 
 
-CREATE TABLE employee(id INT PRIMARY KEY, name VARCHAR(100));
+CREATE TABLE employee(
+                      id INT PRIMARY KEY, 
+					  name VARCHAR(100)
+					  );
 
 ******************************************************************************************************************** 09-08-2025
 
 5, What is the difference between WHERE and HAVING?
 A,
-
 - WHERE filters rows before grouping 
 - HAVING filters groups after aggregation 
 
-SELECT department, COUNT(*) FROM employees
-WHERE salary > 3000 GROUP BY department HAVING COUNT(*) > 5;
+SELECT department, COUNT(*) 
+                           FROM employees
+                           WHERE salary > 3000 GROUP BY department 
+						   HAVING COUNT(*) > 5;
 
 1. Look at the employee table. 
 you're starting with a table called employee, which has information about workers - like their department, salary etc
@@ -95,34 +126,46 @@ Types:
 - FULL JOIN: Not supported natively in MYSQL but can be simulated using UNION.
 
 SELECT e.name, d.name AS dept_name
-FROM employee e
-INNTER JOIN department d ON e.dept_id = d.id 
+                                   FROM employee e
+                                   INNTER JOIN department d 
+								   ON e.dept_id = d.id 
 
 ******************************************************************************************************************** 09-08-2025 
 
 7, What is indexing? How does it improve performance?
-A, An index is a data structure that improves the speed of data retrieval.
-Explanation: When you query with a WHERE clause or join, MySQL can use the index to quickly locate rows
-instead of scanning the whole table.
+A, An index is a data structure that 
+   -> improves the speed of data retrieval.
+Explanation: When you query with a WHERE clause or join, 
+             -> MySQL can use the index to quickly locate rows
+             -> instead of scanning the whole table.
 
 Example:
-CREATE INDEX idx_emp_name ON employees(name);
+CREATE INDEX idx_emp_name 
+                         ON employees(name);
 // CREATE INDEX: This tells the database to make a shortcut.
 // index_name: you give the index a name (it can be anything like idx_employeee_name)
 // ON employee(name): you are saying "Make the shortcut on the name coloumn in the employee table."
 
 What Does an Index do?
-
-An index is like a book's table of contents. Instead of searching every page, you jump directly to where you need to go.
-so if you often search for employees by name:
-SELECT * FROM employee WHERE name = 'Alice';
-an index on name will make this much faster, especially if the table has thousands of rows.
+- An index is like a book's table of contents. 
+  -> Instead of searching every page, you jump directly to where you need to go.
+- so if you often search for employees by name:
+  -> SELECT * FROM employee WHERE name = 'Alice';
+  -> an index on name will make this much faster, 
+     -> especially if the table has thousands of rows.
 
 ******************************************************************************************************************** 09-08-2025 
 
 8, What is normalization?
-A, Normalizaion is the process of organizing data to reduce redundancy and improve integrity. 
-- Data integrity in a database means ensuring that the data is accurate, consistent, and reliable through its entire lifecycle. 
+A, 
+- Normalizaion is the process of 
+   -> organizing data 
+   -> to reduce redundancy and improve integrity. 
+- Data integrity in a database means 
+   -> ensuring that the data is 
+                                - accurate, 
+                                - consistent, and 
+								- reliable through its entire lifecycle. 
 
 Forms:
 - 1 NF : Atomic values, no repeating groups.
@@ -155,7 +198,8 @@ DROP            Yes(table)          Mo                       Yes
 DELETE FROM table_name 
 // specifies the table from which you want to delete rows 
 WHERE condition; 
-// specifies which rows to delete based on a condition. Without WHERE, all rows in the table will be deleted!
+// specifies which rows to delete based on a condition.
+   -  Without WHERE, all rows in the table will be deleted!
 
 TRUNCATE TABLE table_name 
 What does it do?
@@ -172,19 +216,20 @@ What does it do?
 - Once dropped, the table cannot be recovered unless you have a backup.
 - Use with cautions 
 
-
 ******************************************************************************************************************** 09-08-2025
-
 
 10, What are stored procedures and functions in MySQL?
 A,
-Stored procedure: A set of SQL statements stored in the database that can be executed with a call.
-Function: Similar to procedures but must return a value.
+Stored procedure: 
+                 - A set of SQL statements stored in the database 
+				 - that can be executed with a call.
+Function: 
+         - Similar to procedures but must return a value.
 
 Procedure Example 1: 
 
 DELIMITER //
-CREATE PROCEDURE GetAllEmployees()
+CREATE PROCEDURE 8()
 BEGIN
    SELECT * FROM employees;
 END //

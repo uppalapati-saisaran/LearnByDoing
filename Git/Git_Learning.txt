@@ -1,4 +1,4 @@
-                                           1, What is Git, and how is it different from SVN (or other VCS)?
+1, What is Git, and how is it different from SVN (or other VCS)?
 A. 
 - Git is distributed version control system. Every developer has a full copy of the repository on every developer's machine, so they can work offline and commit locally. 
 - Git is distributed verions control system that tracks code changes, allows collaboration, and enables branching/merging. 
